@@ -35,11 +35,14 @@ async function fetchAndDisplayContent(postUrl) {
 
         const data = await response.json();
 
+        // Assuming the response is an array and we're interested in the first item
+        const postData = data[0];
+
         // Update the page with the fetched content
-        document.getElementById('profileImageUrl').src = data.ProfilePictureURL || 'placeholder-image-url.png';
-        document.getElementById('posterName').textContent = `${data.FirstName} ${data.LastName}` || 'Name not available';
-        document.getElementById('posterDetails').textContent = `Age: ${data.Age} | Education: ${data.Education}` || 'Details not available';
-        document.getElementById('postContent').textContent = data.Content || 'Content not available';
+        document.getElementById('profileImageUrl').src = postData.ProfilePictureURL || 'placeholder-image-url.png';
+        document.getElementById('posterName').textContent = `${postData.FirstName} ${postData.LastName}` || 'Name not available';
+        document.getElementById('posterDetails').textContent = `Age: ${postData.Age} | Education: ${postData.Education}` || 'Details not available';
+        document.getElementById('postContent').textContent = postData.Content || 'Content not available';
 
         // Show the content container only after the data is fetched
         document.getElementById('content').style.display = 'flex';
