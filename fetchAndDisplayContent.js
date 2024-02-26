@@ -1,6 +1,3 @@
-// Initially hide the content container
-document.getElementById('content').style.display = 'none';
-
 // Function to fetch and display the content
 async function fetchAndDisplayContent(postUrl) {
     try {
@@ -23,10 +20,10 @@ async function fetchAndDisplayContent(postUrl) {
         const data = await response.json();
 
         // Update the page with the fetched content
-        document.getElementById('profileImageUrl').src = data.profileImageUrl || 'placeholder-image-url.png';
-        document.getElementById('posterName').textContent = data.posterName || 'Name not available';
-        document.getElementById('posterDetails').textContent = data.posterDetails || 'Details not available';
-        document.getElementById('postContent').textContent = data.postContent || 'Content not available';
+        document.getElementById('profileImageUrl').src = data.ProfilePictureURL || 'placeholder-image-url.png';
+        document.getElementById('posterName').textContent = data.FirstName + ' ' + data.LastName || 'Name not available';
+        document.getElementById('posterDetails').textContent = 'Age: ' + data.Age + ' | Education: ' + data.Education || 'Details not available';
+        document.getElementById('postContent').textContent = data.Content || 'Content not available';
 
         // Show the content container
         document.getElementById('content').style.display = 'block';
@@ -36,14 +33,3 @@ async function fetchAndDisplayContent(postUrl) {
         document.getElementById('content').style.display = 'none';
     }
 }
-
-// Function to handle form submission
-document.getElementById('reportForm').addEventListener('submit', async function(event) {
-    event.preventDefault(); // Prevent the default form submission
-
-    // Extract the URL from the input field
-    const postUrl = document.getElementById('postUrl').value;
-
-    // Fetch and display the content
-    await fetchAndDisplayContent(postUrl);
-});
