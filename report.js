@@ -49,7 +49,7 @@ document.addEventListener("DOMContentLoaded", function () {
             bar.style.width = '100%';
         }, 2090);
         setTimeout(() => {
-            submitBtn.textContent = 'Submitted'; 
+            submitBtn.textContent = 'Submitted!'; 
             submitted.style.display = 'block';
         }, 2090);
     }
