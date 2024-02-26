@@ -48,6 +48,10 @@ document.addEventListener("DOMContentLoaded", function () {
         setTimeout(() => {
             bar.style.width = '100%';
         }, 2090);
+        setTimeout(() => {
+            submitBtn.textContent = 'Submitted'; 
+            submitted.style.display = 'block';
+        }, 2090);
     }
 
     function isValidUrl(url) {
