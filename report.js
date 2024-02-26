@@ -61,20 +61,20 @@ document.addEventListener("DOMContentLoaded", function () {
         return pattern.test(url);
     }
 
-    async function fetchScrapedContent(url) {
-        try {
-            const response = await fetch('<API_GATEWAY_ENDPOINT>', { // Replace <API_GATEWAY_ENDPOINT> with your actual endpoint
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({ url: url }),
-            });
-            if (!response.ok) throw new Error('Server responded with an error: ' + response.statusText);
-            const data = await response.json();
-            return data; // Return the data for further processing
-        } catch (error) {
-            throw error; // Rethrow the error to be caught by the calling function
-        }
-    }
+    // async function fetchScrapedContent(url) {
+    //     try {
+    //         const response = await fetch('<API_GATEWAY_ENDPOINT>', { // Replace <API_GATEWAY_ENDPOINT> with your actual endpoint
+    //             method: 'POST',
+    //             headers: {
+    //                 'Content-Type': 'application/json',
+    //             },
+    //             body: JSON.stringify({ url: url }),
+    //         });
+    //         if (!response.ok) throw new Error('Server responded with an error: ' + response.statusText);
+    //         const data = await response.json();
+    //         return data; // Return the data for further processing
+    //     } catch (error) {
+    //         throw error; // Rethrow the error to be caught by the calling function
+    //     }
+    // }
 });
