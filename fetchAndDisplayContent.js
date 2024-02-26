@@ -45,7 +45,7 @@ async function fetchAndDisplayContent(postUrl) {
         document.getElementById('postContent').textContent = postData.Content || 'Content not available';
 
         // Show the content container only after the data is fetched
-        document.getElementById('content').style.display = 'flex';
+        document.getElementById('content').style.display = 'initial';
     } catch (error) {
         console.error('Fetch Error:', error);
         // Hide the content container if the fetch fails
