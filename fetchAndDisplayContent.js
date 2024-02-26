@@ -1,8 +1,23 @@
-// Initially hide the content container
+// Initially hide the content container and submitted message
 document.getElementById('content').style.display = 'none';
+document.querySelector('.submitted').style.display = 'none';
+
+// Function to show the progress bar
+function showProgressBar() {
+    document.querySelector('.progressbar').style.display = 'flex';
+    document.querySelector('.progressbar .bar').style.width = '100%';
+}
+
+// Function to hide the progress bar
+function hideProgressBar() {
+    document.querySelector('.progressbar').style.display = 'none';
+    document.querySelector('.progressbar .bar').style.width = '0%';
+}
 
 // Function to fetch and display the content
 async function fetchAndDisplayContent(postUrl) {
+    showProgressBar(); // Show progress bar when starting the fetch
+
     try {
         const apiEndpoint = 'https://cyberguardians.onrender.com/scrape';
 
@@ -27,11 +42,13 @@ async function fetchAndDisplayContent(postUrl) {
         document.getElementById('postContent').textContent = data.Content || 'Content not available';
 
         // Show the content container only after the data is fetched
-        document.getElementById('content').style.display = 'block';
+        document.getElementById('content').style.display = 'flex';
     } catch (error) {
         console.error('Fetch Error:', error);
         // Hide the content container if the fetch fails
         document.getElementById('content').style.display = 'none';
+    } finally {
+        hideProgressBar(); // Hide progress bar after fetch is complete or fails
     }
 }
 
@@ -41,9 +58,7 @@ document.getElementById('reportForm').addEventListener('submit', async function(
 
     // Hide the content container before starting the fetch
     document.getElementById('content').style.display = 'none';
-
-    // Show some loading indicator if necessary
-    // document.getElementById('loadingIndicator').style.display = 'block';
+    document.querySelector('.submitted').style.display = 'none';
 
     // Extract the URL from the input field
     const postUrl = document.getElementById('postUrl').value.trim();
@@ -51,6 +66,6 @@ document.getElementById('reportForm').addEventListener('submit', async function(
     // Fetch and display the content
     await fetchAndDisplayContent(postUrl);
 
-    // Hide the loading indicator after fetch is complete
-    // document.getElementById('loadingIndicator').style.display = 'none';
+    // Show the submitted message
+    document.querySelector('.submitted').style.display = 'block';
 });
