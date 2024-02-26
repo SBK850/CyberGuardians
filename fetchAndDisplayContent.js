@@ -53,7 +53,6 @@ async function fetchAndDisplayContent(postUrl, bar, submitBtn) {
     }
 }
 
-
 // Function to handle form submission
 document.getElementById('reportForm').addEventListener('submit', async function(event) {
     event.preventDefault(); // Prevent the default form submission
