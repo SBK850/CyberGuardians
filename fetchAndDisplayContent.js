@@ -68,7 +68,4 @@ document.getElementById('reportForm').addEventListener('submit', async function(
 
     // Fetch and display the content
     await fetchAndDisplayContent(postUrl);
-
-    // Show the submitted message
-    document.querySelector('.submitted').style.display = 'block';
 });

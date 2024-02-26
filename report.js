@@ -47,7 +47,6 @@ document.addEventListener("DOMContentLoaded", function () {
         }, 1390);
         setTimeout(() => {
             bar.style.width = '100%';
-            submitted.style.top = '0';
         }, 2090);
     }
 
