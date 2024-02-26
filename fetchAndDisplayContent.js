@@ -12,7 +12,7 @@ function hideProgressBar(bar) {
 
 // Function to fetch and display the content
 async function fetchAndDisplayContent(postUrl, bar, submitBtn) {
-    showProgressBar(bar); // Show progress bar when starting the fetch
+    const interval = showProgressBar(bar, submitBtn); // Show progress bar with simulated progress
 
     try {
         const apiEndpoint = 'https://cyberguardians.onrender.com/scrape';
@@ -29,27 +29,30 @@ async function fetchAndDisplayContent(postUrl, bar, submitBtn) {
             throw new Error(`Network response was not ok, status: ${response.status}`);
         }
 
-        const postData = await response.json();
+        const data = await response.json();
 
         // Assuming the response is an array and we're interested in the first item
-        const data = postData[0];
+        const postData = data[0];
 
         // Update the page with the fetched content
-        document.getElementById('profileImageUrl').src = data.ProfilePictureURL || 'placeholder-image-url.png';
-        document.getElementById('posterName').textContent = `${data.FirstName} ${data.LastName}` || 'Name not available';
-        document.getElementById('posterDetails').textContent = `Age: ${data.Age} | Education: ${data.Education}` || 'Details not available';
-        document.getElementById('postContent').textContent = data.Content || 'Content not available';
+        document.getElementById('profileImageUrl').src = postData.ProfilePictureURL || 'placeholder-image-url.png';
+        document.getElementById('posterName').textContent = `${postData.FirstName} ${postData.LastName}` || 'Name not available';
+        document.getElementById('posterDetails').textContent = `Age: ${postData.Age} | Education: ${postData.Education}` || 'Details not available';
+        document.getElementById('postContent').textContent = postData.Content || 'Content not available';
 
         // Show the content container only after the data is fetched
-        document.getElementById('content').style.display = 'initial';
+        document.getElementById('content').style.display = 'block'; // Changed from 'initial' to 'block'
     } catch (error) {
         console.error('Fetch Error:', error);
+        // Hide the content container if the fetch fails
         document.getElementById('content').style.display = 'none';
     } finally {
-        hideProgressBar(bar); // Hide progress bar after fetch is complete or fails
-        submitBtn.textContent = 'Submit'; // Reset button text after operation is complete
+        hideProgressBar(bar, submitBtn, interval); // Hide progress bar after fetch is complete or fails
+        bar.style.width = '100%'; // Set the bar to 100% when the fetch is complete
+        submitBtn.textContent = 'Submitted!'; // Update button text to indicate completion
     }
 }
+
 
 // Function to handle form submission
 document.getElementById('reportForm').addEventListener('submit', async function(event) {
