@@ -30,37 +30,6 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 });
 
-
-async function analyseContentForToxicity(content) {
-    try {
-        const analysisEndpoint = '/analyse-content';
-        const response = await fetch(analysisEndpoint, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({ content: content }),
-        });
-        if (!response.ok) {
-            throw new Error(`Network response was not ok, status: ${response.status}`);
-        }
-        const analysisResult = await response.json();
-        document.getElementById('toxicityScore').textContent = `Toxicity Score: ${analysisResult.score}`;
-    } catch (error) {
-        console.error('Error analyzing content:', error);
-    }
-}
-
-function isValidUrl(url) {
-    var pattern = new RegExp('^(https?:\\/\\/)?' +
-        '((([a-z\\d]([a-z\\d-]*[a-z\\d])*)\\.)+[a-z]{2,}|' +
-        '((\\d{1,3}\\.){3}\\d{1,3}))' +
-        '(\\:\\d+)?(\\/[-a-z\\d%_.~+]*)*' +
-        '(\\?[;&a-z\\d%_.~+=-]*)?' +
-        '(\\#[-a-z\\d_]*)?$', 'i');
-    return pattern.test(url);
-}
-
 async function fetchAndDisplayContent(postUrl, bar, submitBtn, form, contentContainer) {
     showProgressBar(bar);
     try {
@@ -116,6 +85,36 @@ async function fetchAndDisplayContent(postUrl, bar, submitBtn, form, contentCont
     }
 }
 
+async function analyseContentForToxicity(content) {
+    try {
+        const analysisEndpoint = '/analyse-content';
+        const response = await fetch(analysisEndpoint, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ content: content }),
+        });
+        if (!response.ok) {
+            throw new Error(`Network response was not ok, status: ${response.status}`);
+        }
+        const analysisResult = await response.json();
+        document.getElementById('toxicityScore').textContent = `Toxicity Score: ${analysisResult.score}`;
+    } catch (error) {
+        console.error('Error analyzing content:', error);
+    }
+}
+
+function isValidUrl(url) {
+    var pattern = new RegExp('^(https?:\\/\\/)?' +
+        '((([a-z\\d]([a-z\\d-]*[a-z\\d])*)\\.)+[a-z]{2,}|' +
+        '((\\d{1,3}\\.){3}\\d{1,3}))' +
+        '(\\:\\d+)?(\\/[-a-z\\d%_.~+]*)*' +
+        '(\\?[;&a-z\\d%_.~+=-]*)?' +
+        '(\\#[-a-z\\d_]*)?$', 'i');
+    return pattern.test(url);
+}
+
 document.addEventListener("DOMContentLoaded", function () {
     const form = document.querySelector('#reportForm');
     const contentContainer = document.querySelector('#content');
@@ -123,8 +122,6 @@ document.addEventListener("DOMContentLoaded", function () {
     const bar = document.querySelector('.progressbar .bar');
     const submitted = document.querySelector('.submitted');
     const postUrlInput = document.querySelector('#postUrl');
-
-    fetchAndDisplayContent(postUrl, bar, submitBtn, form, contentContainer);
 
     form.addEventListener('submit', async function (event) {
         event.preventDefault();
