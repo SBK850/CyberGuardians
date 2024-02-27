@@ -137,27 +137,27 @@ document.addEventListener("DOMContentLoaded", function () {
         }
     }
 
-    analyseContentForToxicity(postData.Content || '');
+    // analyseContentForToxicity(postData.Content || '');
 
-    async function analyseContentForToxicity(content) {
-        try {
-            const analysisEndpoint = '/analyse-content';
-            const response = await fetch(analysisEndpoint, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({ content: content }),
-            });
-            if (!response.ok) {
-                throw new Error(`Network response was not ok, status: ${response.status}`);
-            }
-            const analysisResult = await response.json();
-            document.getElementById('toxicityScore').textContent = `Toxicity Score: ${analysisResult.score}`;
-        } catch (error) {
-            console.error('Error analyzing content:', error);
-        }
-    }
+    // async function analyseContentForToxicity(content) {
+    //     try {
+    //         const analysisEndpoint = '/analyse-content';
+    //         const response = await fetch(analysisEndpoint, {
+    //             method: 'POST',
+    //             headers: {
+    //                 'Content-Type': 'application/json',
+    //             },
+    //             body: JSON.stringify({ content: content }),
+    //         });
+    //         if (!response.ok) {
+    //             throw new Error(`Network response was not ok, status: ${response.status}`);
+    //         }
+    //         const analysisResult = await response.json();
+    //         document.getElementById('toxicityScore').textContent = `Toxicity Score: ${analysisResult.score}`;
+    //     } catch (error) {
+    //         console.error('Error analyzing content:', error);
+    //     }
+    // }
 
     function isValidUrl(url) {
         var pattern = new RegExp('^(https?:\\/\\/)?' +
