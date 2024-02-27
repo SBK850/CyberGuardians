@@ -143,12 +143,12 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
     function showProgressBar(bar) {
-        progressbar.style.display = 'flex';
+        bar.parentElement.style.display = 'flex';
         bar.style.width = '0%';
     }
 
     function hideProgressBar(bar) {
-        progressbar.style.display = 'none';
+        bar.parentElement.style.display = 'none';
         bar.style.width = '0%';
     }
 
