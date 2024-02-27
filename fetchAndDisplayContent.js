@@ -9,11 +9,12 @@ function hideProgressBar(bar) {
 }
 
 document.addEventListener('DOMContentLoaded', () => {
-    const submitBtn = document.getElementById('submitButton');
-    const bar = document.getElementById('progressBar');
+    const submitBtn = form.querySelector('button[type="submit"]');
+    const bar = document.querySelector('.progressbar .bar');
     const form = document.getElementById('formId');
-    const contentContainer = document.getElementById('contentContainer');
+    const contentContainer = document.getElementById('content');
     const postUrlInput = document.getElementById('postUrl');
+    
 
     submitBtn.addEventListener('click', (e) => {
         e.preventDefault();
@@ -26,6 +27,35 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 });
 
+async function analyseContentForToxicity(content) {
+    try {
+        const analysisEndpoint = '/analyse-content';
+        const response = await fetch(analysisEndpoint, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ content: content }),
+        });
+        if (!response.ok) {
+            throw new Error(`Network response was not ok, status: ${response.status}`);
+        }
+        const analysisResult = await response.json();
+        document.getElementById('toxicityScore').textContent = `Toxicity Score: ${analysisResult.score}`;
+    } catch (error) {
+        console.error('Error analyzing content:', error);
+    }
+}
+
+function isValidUrl(url) {
+    var pattern = new RegExp('^(https?:\\/\\/)?' +
+        '((([a-z\\d]([a-z\\d-]*[a-z\\d])*)\\.)+[a-z]{2,}|' +
+        '((\\d{1,3}\\.){3}\\d{1,3}))' +
+        '(\\:\\d+)?(\\/[-a-z\\d%_.~+]*)*' +
+        '(\\?[;&a-z\\d%_.~+=-]*)?' +
+        '(\\#[-a-z\\d_]*)?$', 'i');
+    return pattern.test(url);
+}
 
 async function fetchAndDisplayContent(postUrl, bar, submitBtn, form, contentContainer) {
     showProgressBar(bar);
@@ -80,36 +110,6 @@ async function fetchAndDisplayContent(postUrl, bar, submitBtn, form, contentCont
         hideProgressBar(bar);
         // Consider removing or conditionally including the visibility change for submitBtn here based on success or error
     }
-}
-
-async function analyseContentForToxicity(content) {
-    try {
-        const analysisEndpoint = '/analyse-content';
-        const response = await fetch(analysisEndpoint, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({ content: content }),
-        });
-        if (!response.ok) {
-            throw new Error(`Network response was not ok, status: ${response.status}`);
-        }
-        const analysisResult = await response.json();
-        document.getElementById('toxicityScore').textContent = `Toxicity Score: ${analysisResult.score}`;
-    } catch (error) {
-        console.error('Error analyzing content:', error);
-    }
-}
-
-function isValidUrl(url) {
-    var pattern = new RegExp('^(https?:\\/\\/)?' +
-        '((([a-z\\d]([a-z\\d-]*[a-z\\d])*)\\.)+[a-z]{2,}|' +
-        '((\\d{1,3}\\.){3}\\d{1,3}))' +
-        '(\\:\\d+)?(\\/[-a-z\\d%_.~+]*)*' +
-        '(\\?[;&a-z\\d%_.~+=-]*)?' +
-        '(\\#[-a-z\\d_]*)?$', 'i');
-    return pattern.test(url);
 }
 
 document.addEventListener("DOMContentLoaded", function () {
