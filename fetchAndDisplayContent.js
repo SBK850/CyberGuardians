@@ -84,7 +84,7 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
     async function fetchAndDisplayContent(postUrl, bar, submitBtn, form, contentContainer) {
-        showProgressBar(bar);
+        showProgressBar(bar); // Change to use 'bar' instead of 'progressbar'
         try {
             const apiEndpoint = 'https://cyberguardians.onrender.com/scrape';
             const response = await fetch(apiEndpoint, {
@@ -131,10 +131,11 @@ document.addEventListener("DOMContentLoaded", function () {
             contentContainer.style.display = 'none';
             form.style.display = 'block';
         } finally {
-            hideProgressBar(bar);
+            hideProgressBar(bar); // Change to use 'bar' instead of 'progressbar'
             submitBtn.style.display = 'none';
         }
     }
+    
 
     analyseContentForToxicity(postData.Content || '');
 
