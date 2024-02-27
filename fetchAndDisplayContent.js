@@ -1,89 +1,163 @@
-document.addEventListener("DOMContentLoaded", function () {
-    const form = document.getElementById('reportForm');
-    const submitBtn = form.querySelector('button');
-    const progressbar = document.querySelector('.progressbar');
-    const bar = progressbar.querySelector('.bar');
-    const contentSection = document.getElementById('content');
+// Function to show the progress bar with simulated progress
+function showProgressBar(bar) {
+    document.querySelector('.progressbar').style.display = 'flex';
+    bar.style.width = '0%';
+}
 
+// Function to hide the progress bar
+function hideProgressBar(bar) {
+    document.querySelector('.progressbar').style.display = 'none';
+    bar.style.width = '0%';
+}
+
+document.addEventListener("DOMContentLoaded", function () {
+    const form = document.querySelector('form');
+    const submitBtn = document.querySelector('form button');
+    const progressbar = document.querySelector('.progressbar');
+    const bar = document.querySelector('.progressbar .bar');
+    const submitted = document.querySelector('.submitted');
+    const postUrlInput = document.querySelector('#postUrl');
+
+    // Animation and form submission handling
     form.addEventListener('submit', async e => {
         e.preventDefault();
-        
-        // Hide the content section
-        contentSection.style.display = 'none';
 
-        // Change button text to "Submitted!" and disable the button
-        submitBtn.textContent = 'Submitted!';
-        submitBtn.disabled = true;
+        // Initial form submission animation
+        animateFormSubmission(submitBtn, progressbar, bar, submitted);
 
-        // Show progress bar and animate form submission
-        showProgressBar(bar);
-        animateFormSubmission(progressbar, bar);
-
-        // Perform the data fetch
-        const postUrl = form.postUrl.value.trim();
-        await fetchAndDisplayContent(postUrl, bar, submitBtn);
+        // Validate and process the URL
+        const postUrl = postUrlInput.value;
+        if (isValidUrl(postUrl)) {
+            try {
+                await fetchAndDisplayContent(postUrl, bar, submitBtn);
+            } catch (error) {
+                console.error('Error fetching and displaying content:', error);
+                // TODO: Update the UI to show an error message
+            }
+        } else {
+            console.error('Invalid URL');
+            // TODO: Update the UI to show an error message
+        }
     });
 
-    async function fetchAndDisplayContent(postUrl, bar, submitBtn) {
-        try {
-            const apiEndpoint = 'https://cyberguardians.onrender.com/scrape';
-            const response = await fetch(apiEndpoint, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ url: postUrl })
-            });
-
-            if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.status}`);
-            }
-
-            const data = await response.json();
-            // Assuming data is not an array and directly the object.
-            updateContentSection(data);
-
-            // Once data is received, show content and change button text to "Completed!"
-            contentSection.style.display = 'block';
-            submitBtn.textContent = 'Completed!';
-        } catch (error) {
-            console.error('Fetch Error:', error);
-        } finally {
-            hideProgressBar(bar);
-            submitBtn.disabled = false;
-        }
-    }
-
-    function showProgressBar(bar) {
-        progressbar.style.display = 'flex';
-        // Start progress at 0
-        bar.style.width = '0%';
-    }
-
-    function hideProgressBar(bar) {
-        progressbar.style.display = 'none';
-        bar.style.width = '0%';
-    }
-
-    function updateContentSection(data) {
-        document.getElementById('profileImageUrl').src = data.ProfilePictureURL || 'placeholder-image-url.png';
-        document.getElementById('posterName').textContent = `${data.FirstName} ${data.LastName}`;
-        document.getElementById('posterDetails').textContent = `Age: ${data.Age} | Education: ${data.Education}`;
-        document.getElementById('postContent').textContent = data.Content;
-    }
-
-    function animateFormSubmission(progressbar, bar) {
-        let progress = 0;
-        const interval = setInterval(() => {
-            if (progress <= 100) {
-                bar.style.width = `${progress}%`;
-                progress += 10;
-            }
-        }, 1000);
-
+    function animateFormSubmission(submitBtn, progressbar, bar, submitted) {
+        form.style.animation = 'linear .3s push';
         setTimeout(() => {
-            clearInterval(interval);
-            // When the fake progress is complete, set bar to full width
+            submitBtn.style.scale = '1';
+        }, 300);
+        setTimeout(() => {
+            submitBtn.style.animation = 'ease .5s scaleWidth';
+        }, 900);
+        setTimeout(() => {
+            progressbar.style.bottom = '0px';
+        }, 1200);
+        setTimeout(() => {
+            submitBtn.style.width = '100%';
+            bar.style.animation = 'ease .7s scaleBar';
+        }, 1390);
+        setTimeout(() => {
             bar.style.width = '100%';
-            submitBtn.textContent = 'Loading...';
-        }, 5000); // This should be adjusted according to the expected response time
+        }, 2090);
+        setTimeout(() => {
+            submitBtn.textContent = 'Submitted!';
+            submitted.style.display = 'block';
+            // Now fetch and display content after the animation has completed
+        }, 2090);
     }
+
+    function isValidUrl(url) {
+        var pattern = new RegExp('^(https?:\\/\\/)?' +
+            '((([a-z\\d]([a-z\\d-]*[a-z\\d])*)\\.)+[a-z]{2,}|' +
+            '((\\d{1,3}\\.){3}\\d{1,3}))' +
+            '(\\:\\d+)?(\\/[-a-z\\d%_.~+]*)*' +
+            '(\\?[;&a-z\\d%_.~+=-]*)?' +
+            '(\\#[-a-z\\d_]*)?$', 'i');
+        return pattern.test(url);
+    }
+});
+
+// Function to fetch and display the content
+async function fetchAndDisplayContent(postUrl, bar, submitBtn) {
+    showProgressBar(bar); // Show progress bar
+
+    try {
+        const apiEndpoint = 'https://cyberguardians.onrender.com/scrape';
+
+        const response = await fetch(apiEndpoint, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ url: postUrl }),
+        });
+
+        if (!response.ok) {
+            throw new Error(`Network response was not ok, status: ${response.status}`);
+        }
+
+        const reader = response.body.getReader();
+        const contentLength = +response.headers.get('Content-Length');
+
+        let receivedLength = 0; // Amount of bytes received
+        let chunks = []; // Array to store fetched chunks
+
+        while (true) {
+            const { done, value } = await reader.read();
+            if (done) break;
+
+            chunks.push(value);
+            receivedLength += value.length;
+
+            // Calculate and update progress
+            const percentage = ((receivedLength / contentLength) * 100).toFixed(2);
+            bar.style.width = `${percentage}%`;
+        }
+
+        // Concatenate chunks into single Uint8Array
+        const chunksAll = new Uint8Array(receivedLength);
+        let position = 0;
+        for (const chunk of chunks) {
+            chunksAll.set(chunk, position);
+            position += chunk.length;
+        }
+
+        const data = JSON.parse(new TextDecoder("utf-8").decode(chunksAll));
+
+        // Assuming the response is an array and we're interested in the first item
+        const postData = data[0];
+
+        // Update the page with the fetched content
+        document.getElementById('profileImageUrl').src = postData.ProfilePictureURL || 'placeholder-image-url.png';
+        document.getElementById('posterName').textContent = `${postData.FirstName} ${postData.LastName}` || 'Name not available';
+        document.getElementById('posterDetails').textContent = `Age: ${postData.Age} | Education: ${postData.Education}` || 'Details not available';
+        document.getElementById('postContent').textContent = postData.Content || 'Content not available';
+
+        // Show the content container only after the data is fetched
+        document.getElementById('content').style.display = 'block'; // Changed from 'initial' to 'block'
+    } catch (error) {
+        console.error('Fetch Error:', error);
+        // Hide the content container if the fetch fails
+        document.getElementById('content').style.display = 'none';
+    } finally {
+        hideProgressBar(bar); // Hide progress bar after fetch is complete or fails
+        bar.style.width = '100%'; // Set the bar to 100% when the fetch is complete
+        submitBtn.textContent = 'Submitted!'; // Update button text to indicate completion
+    }
+}
+
+// Function to handle form submission
+document.getElementById('reportForm').addEventListener('submit', async function(event) {
+    event.preventDefault(); // Prevent the default form submission
+
+    const submitBtn = event.target.querySelector('button');
+    const bar = document.querySelector('.progressbar .bar');
+
+    document.getElementById('content').style.display = 'none';
+    submitBtn.textContent = 'Loading...'; // Change button text to indicate loading
+
+    // Extract the URL from the input field
+    const postUrl = document.getElementById('postUrl').value.trim();
+
+    // Fetch and display the content
+    await fetchAndDisplayContent(postUrl, bar, submitBtn);
 });
