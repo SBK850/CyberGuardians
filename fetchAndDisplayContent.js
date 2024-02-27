@@ -1,3 +1,13 @@
+function showProgressBar(bar) {
+    bar.parentElement.style.display = 'flex';
+    bar.style.width = '0%';
+}
+
+function hideProgressBar(bar) {
+    bar.parentElement.style.display = 'none';
+    bar.style.width = '0%';
+}
+
 async function fetchAndDisplayContent(postUrl, bar, submitBtn, form, contentContainer) {
     showProgressBar(bar);
     try {
@@ -140,16 +150,6 @@ document.addEventListener("DOMContentLoaded", function () {
             submitBtn.textContent = 'Loading...';
             simulateLoadingProcess(submitBtn, bar);
         }, 6000);
-    }
-
-    function showProgressBar(bar) {
-        bar.parentElement.style.display = 'flex';
-        bar.style.width = '0%';
-    }
-
-    function hideProgressBar(bar) {
-        bar.parentElement.style.display = 'none';
-        bar.style.width = '0%';
     }
 
     function simulateLoadingProcess(submitBtn, bar, onComplete) {
