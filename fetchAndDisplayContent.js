@@ -174,7 +174,7 @@ document.addEventListener("DOMContentLoaded", function () {
         }, 6000);
     }
 
-    function simulateLoadingProcess(submitBtn, bar, onComplete) {
+    function simulateLoadingProcess(bar, onComplete) {
         let loadPercentage = 0;
         const loadingInterval = setInterval(() => {
             loadPercentage++;
@@ -187,4 +187,5 @@ document.addEventListener("DOMContentLoaded", function () {
             }
         }, 100);
     }
+    
 });
