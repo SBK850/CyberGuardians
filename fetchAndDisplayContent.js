@@ -10,6 +10,32 @@ function hideProgressBar(bar) {
     bar.style.width = '0%';
 }
 
+function animateFormSubmission(submitBtn, progressbar, bar, submitted) {
+    form.style.animation = 'linear .3s push';
+    setTimeout(() => {
+        submitBtn.style.scale = '1';
+    }, 300);
+    setTimeout(() => {
+        submitBtn.style.animation = 'ease .5s scaleWidth';
+    }, 900);
+    setTimeout(() => {
+        progressbar.style.bottom = '0px';
+    }, 1200);
+    setTimeout(() => {
+        submitBtn.style.width = '100%';
+        bar.style.animation = 'ease .7s scaleBar';
+    }, 1390);
+    setTimeout(() => {
+        bar.style.width = '100%';
+    }, 2090);
+    setTimeout(() => {
+        submitBtn.textContent = 'Submitted!';
+        submitted.style.display = 'block';
+        // Now fetch and display content after the animation has completed
+        fetchAndDisplayContent();
+    }, 2090);
+}
+
 // Function to fetch and display the content
 async function fetchAndDisplayContent(postUrl, bar, submitBtn) {
     const interval = showProgressBar(bar, submitBtn); // Show progress bar with simulated progress
