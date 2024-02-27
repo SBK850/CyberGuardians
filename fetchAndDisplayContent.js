@@ -10,17 +10,17 @@ function hideProgressBar(bar) {
 
 document.addEventListener('DOMContentLoaded', () => {
     const form = document.getElementById('reportForm');
-    const submitBtn = form.querySelector('button[type="submit"]');
     const bar = document.querySelector('.progressbar .bar');
     const contentContainer = document.getElementById('content');
     const postUrlInput = document.getElementById('postUrl');
 
-    submitBtn.addEventListener('click', async (e) => {
-        e.preventDefault();
+    form.addEventListener('submit', async (e) => {
+        e.preventDefault(); 
         const postUrl = postUrlInput.value;
+
         if (isValidUrl(postUrl)) {
             try {
-                await fetchAndDisplayContent(postUrl, bar, submitBtn, form, contentContainer);
+                await fetchAndDisplayContent(postUrl, bar, form, contentContainer);
             } catch (error) {
                 console.error('Error fetching and displaying content:', error);
             }
@@ -186,6 +186,5 @@ document.addEventListener("DOMContentLoaded", function () {
                 }
             }
         }, 100);
-    }
-    
+    }    
 });
