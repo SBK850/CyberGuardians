@@ -15,16 +15,21 @@ document.addEventListener('DOMContentLoaded', () => {
     const contentContainer = document.getElementById('content');
     const postUrlInput = document.getElementById('postUrl');
 
-    submitBtn.addEventListener('click', (e) => {
+    submitBtn.addEventListener('click', async (e) => {
         e.preventDefault();
         const postUrl = postUrlInput.value;
-        if (postUrl) {
-            fetchAndDisplayContent(postUrl, bar, submitBtn, form, contentContainer);
+        if (isValidUrl(postUrl)) {
+            try {
+                await fetchAndDisplayContent(postUrl, bar, submitBtn, form, contentContainer);
+            } catch (error) {
+                console.error('Error fetching and displaying content:', error);
+            }
         } else {
-            alert('Please enter a URL.');
+            console.error('Invalid URL');
         }
     });
 });
+
 
 
 async function analyseContentForToxicity(content) {
