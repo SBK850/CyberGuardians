@@ -1,10 +1,8 @@
-// Function to show the progress bar with simulated progress
 function showProgressBar(bar) {
     document.querySelector('.progressbar').style.display = 'flex';
     bar.style.width = '0%';
 }
 
-// Function to hide the progress bar
 function hideProgressBar(bar) {
     document.querySelector('.progressbar').style.display = 'none';
     bar.style.width = '0%';
@@ -18,25 +16,20 @@ document.addEventListener("DOMContentLoaded", function () {
     const submitted = document.querySelector('.submitted');
     const postUrlInput = document.querySelector('#postUrl');
 
-    // Animation and form submission handling
     form.addEventListener('submit', async e => {
         e.preventDefault();
 
-        // Initial form submission animation
         animateFormSubmission(submitBtn, progressbar, bar, submitted);
 
-        // Validate and process the URL
         const postUrl = postUrlInput.value;
         if (isValidUrl(postUrl)) {
             try {
                 await fetchAndDisplayContent(postUrl, bar, submitBtn);
             } catch (error) {
                 console.error('Error fetching and displaying content:', error);
-                // TODO: Update the UI to show an error message
             }
         } else {
             console.error('Invalid URL');
-            // TODO: Update the UI to show an error message
         }
     });
 
@@ -61,7 +54,6 @@ document.addEventListener("DOMContentLoaded", function () {
         setTimeout(() => {
             submitBtn.textContent = 'Submitted!';
             submitted.style.display = 'block';
-            // Now fetch and display content after the animation has completed
         }, 2090);
     }
 
@@ -76,9 +68,8 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 });
 
-// Function to fetch and display the content
 async function fetchAndDisplayContent(postUrl, bar, submitBtn) {
-    showProgressBar(bar); // Show progress bar
+    showProgressBar(bar);
 
     try {
         const apiEndpoint = 'https://cyberguardians.onrender.com/scrape';
@@ -98,8 +89,8 @@ async function fetchAndDisplayContent(postUrl, bar, submitBtn) {
         const reader = response.body.getReader();
         const contentLength = +response.headers.get('Content-Length');
 
-        let receivedLength = 0; // Amount of bytes received
-        let chunks = []; // Array to store fetched chunks
+        let receivedLength = 0;
+        let chunks = [];
 
         while (true) {
             const { done, value } = await reader.read();
@@ -108,12 +99,10 @@ async function fetchAndDisplayContent(postUrl, bar, submitBtn) {
             chunks.push(value);
             receivedLength += value.length;
 
-            // Calculate and update progress
             const percentage = ((receivedLength / contentLength) * 100).toFixed(2);
             bar.style.width = `${percentage}%`;
         }
 
-        // Concatenate chunks into single Uint8Array
         const chunksAll = new Uint8Array(receivedLength);
         let position = 0;
         for (const chunk of chunks) {
@@ -122,42 +111,34 @@ async function fetchAndDisplayContent(postUrl, bar, submitBtn) {
         }
 
         const data = JSON.parse(new TextDecoder("utf-8").decode(chunksAll));
-
-        // Assuming the response is an array and we're interested in the first item
         const postData = data[0];
 
-        // Update the page with the fetched content
         document.getElementById('profileImageUrl').src = postData.ProfilePictureURL || 'placeholder-image-url.png';
         document.getElementById('posterName').textContent = `${postData.FirstName} ${postData.LastName}` || 'Name not available';
         document.getElementById('posterDetails').textContent = `Age: ${postData.Age} | Education: ${postData.Education}` || 'Details not available';
         document.getElementById('postContent').textContent = postData.Content || 'Content not available';
 
-        // Show the content container only after the data is fetched
-        document.getElementById('content').style.display = 'block'; // Changed from 'initial' to 'block'
+        document.getElementById('content').style.display = 'block';
     } catch (error) {
         console.error('Fetch Error:', error);
-        // Hide the content container if the fetch fails
         document.getElementById('content').style.display = 'none';
     } finally {
-        hideProgressBar(bar); // Hide progress bar after fetch is complete or fails
-        bar.style.width = '100%'; // Set the bar to 100% when the fetch is complete
-        submitBtn.textContent = 'Submitted!'; // Update button text to indicate completion
+        hideProgressBar(bar);
+        bar.style.width = '100%';
+        submitBtn.textContent = 'Submitted!';
     }
 }
 
-// Function to handle form submission
 document.getElementById('reportForm').addEventListener('submit', async function(event) {
-    event.preventDefault(); // Prevent the default form submission
+    event.preventDefault();
 
     const submitBtn = event.target.querySelector('button');
     const bar = document.querySelector('.progressbar .bar');
 
     document.getElementById('content').style.display = 'none';
-    submitBtn.textContent = 'Loading...'; // Change button text to indicate loading
+    submitBtn.textContent = 'Loading...';
 
-    // Extract the URL from the input field
     const postUrl = document.getElementById('postUrl').value.trim();
 
-    // Fetch and display the content
     await fetchAndDisplayContent(postUrl, bar, submitBtn);
 });
