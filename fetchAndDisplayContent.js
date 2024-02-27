@@ -121,7 +121,8 @@ document.addEventListener("DOMContentLoaded", function () {
         }
     });
 
-    function animateFormSubmission(submitBtn, progressbar, bar, submitted) {
+    function animateFormSubmission(submitBtn, bar, submitted) {
+        // Animation for form submission
         form.style.animation = 'linear .3s push';
         setTimeout(() => {
             submitBtn.style.scale = '1';
@@ -130,7 +131,7 @@ document.addEventListener("DOMContentLoaded", function () {
             submitBtn.style.animation = 'ease .5s scaleWidth';
         }, 900);
         setTimeout(() => {
-            progressbar.style.bottom = '0px';
+            bar.style.bottom = '0px';
         }, 1200);
         setTimeout(() => {
             submitBtn.style.width = '100%';
@@ -146,16 +147,21 @@ document.addEventListener("DOMContentLoaded", function () {
         setTimeout(() => {
             submitted.textContent = 'Submitted!!';
             submitted.style.display = 'block';
-            showProgressBar(bar);
+            // Show progress bar here if required
+            // showProgressBar(bar);
         }, 3000);
         setTimeout(() => {
             submitted.style.display = 'none';
             submitBtn.textContent = 'Loading...';
-            simulateLoadingProcess(submitBtn, bar);
+            simulateLoadingProcess(bar, () => {
+                // Callback after loading is complete
+                // Do something here after loading is complete
+            });
         }, 6000);
     }
 
     function simulateLoadingProcess(bar, onComplete) {
+        // Simulation of loading process
         let loadPercentage = 0;
         const loadingInterval = setInterval(() => {
             loadPercentage++;
@@ -167,5 +173,5 @@ document.addEventListener("DOMContentLoaded", function () {
                 }
             }
         }, 100);
-    }    
+    }   
 });
