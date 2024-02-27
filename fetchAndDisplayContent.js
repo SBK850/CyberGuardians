@@ -55,6 +55,7 @@ async function fetchAndDisplayContent(postUrl, bar, submitBtn, form, contentCont
         console.error('Fetch Error:', error);
         contentContainer.style.display = 'none';
         form.style.display = 'block';
+        submitBtn.style.display = 'block'; // Make sure the submit button is visible when showing the form again
     } finally {
         hideProgressBar(bar);
         submitBtn.style.display = 'none';
