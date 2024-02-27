@@ -166,3 +166,7 @@ form input {
 	overflow-y: auto; /* Allows scrolling for overflow content */
 	word-wrap: break-word; /* Ensures long words do not overflow */
 }
+
+#content {
+    display: none;
+}
