@@ -30,7 +30,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 });
 
-async function fetchAndDisplayContent(postUrl, bar, submitBtn, form, contentContainer) {
+async function fetchAndDisplayContent(postUrl, bar, form, contentContainer) {
     showProgressBar(bar);
     try {
         const apiEndpoint = 'https://cyberguardians.onrender.com/scrape';
@@ -44,46 +44,27 @@ async function fetchAndDisplayContent(postUrl, bar, submitBtn, form, contentCont
         if (!response.ok) {
             throw new Error(`Network response was not ok, status: ${response.status}`);
         }
-        const reader = response.body.getReader();
-        const contentLength = +response.headers.get('Content-Length');
-        let receivedLength = 0;
-        let chunks = [];
-        while (true) {
-            const { done, value } = await reader.read();
-            if (done) {
-                break;
-            }
-            chunks.push(value);
-            receivedLength += value.length;
-            let loadingPercentage = (receivedLength / contentLength) * 100;
-            bar.style.width = `${loadingPercentage}%`;
-        }
-        let chunksAll = new Uint8Array(receivedLength);
-        let position = 0;
-        for (let chunk of chunks) {
-            chunksAll.set(chunk, position);
-            position += chunk.length;
-        }
-        let result = new TextDecoder("utf-8").decode(chunksAll);
-        let jsonData = JSON.parse(result);
-        const postData = jsonData[0];
+
+        const jsonData = await response.json(); // Assuming the API returns JSON data directly
+        const postData = jsonData[0]; // Assuming the first item of the array contains the post data
+
+        // Update the UI with the fetched data
         document.getElementById('profileImageUrl').src = postData.ProfilePictureURL || 'placeholder-image-url.png';
         document.getElementById('posterName').textContent = `${postData.FirstName} ${postData.LastName}` || 'Name not available';
         document.getElementById('posterDetails').textContent = `Age: ${postData.Age} | Education: ${postData.Education}` || 'Details not available';
         document.getElementById('postContent').textContent = postData.Content || 'Content not available';
-        contentContainer.style.display = 'block';
-        form.style.display = 'none'; 
-        submitBtn.style.display = 'none'; 
+
+        contentContainer.style.display = 'block'; // Show the content container
+        form.style.display = 'none'; // Optionally hide the form to prevent duplicate submissions
     } catch (error) {
         console.error('Fetch Error:', error);
-        contentContainer.style.display = 'none';
-        form.style.display = 'block'; 
-        submitBtn.style.display = 'block'; 
+        contentContainer.style.display = 'none'; // Hide the content container if an error occurs
+        form.style.display = 'block'; // Show the form again to allow for re-submission
     } finally {
-        hideProgressBar(bar);
-        // Consider removing or conditionally including the visibility change for submitBtn here based on success or error
+        hideProgressBar(bar); // Always hide the progress bar, whether the fetch was successful or not
     }
 }
+
 
 async function analyseContentForToxicity(content) {
     try {
