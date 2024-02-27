@@ -10,21 +10,22 @@ function hideProgressBar(bar) {
 
 document.addEventListener('DOMContentLoaded', () => {
     const submitBtn = document.getElementById('submitButton');
-    const bar = document.getElementById('progressBar'); // Assuming you have a progress bar element
-    const form = document.getElementById('formId'); // Replace 'formId' with the actual ID of your form
-    const contentContainer = document.getElementById('contentContainer'); // The container to display fetched content
-    const postUrlInput = document.getElementById('postUrl'); // The input field for the URL
+    const bar = document.getElementById('progressBar');
+    const form = document.getElementById('formId');
+    const contentContainer = document.getElementById('contentContainer');
+    const postUrlInput = document.getElementById('postUrl');
 
     submitBtn.addEventListener('click', (e) => {
-        e.preventDefault(); // Prevent the form from submitting traditionally
-        const postUrl = postUrlInput.value; // Get the URL from the input field
-        if (postUrl) { // Check if the URL is not empty
+        e.preventDefault();
+        const postUrl = postUrlInput.value;
+        if (postUrl) {
             fetchAndDisplayContent(postUrl, bar, submitBtn, form, contentContainer);
         } else {
-            alert('Please enter a URL.'); // Prompt the user if the URL field is empty
+            alert('Please enter a URL.');
         }
     });
 });
+
 
 
 async function fetchAndDisplayContent(postUrl, bar, submitBtn, form, contentContainer) {
