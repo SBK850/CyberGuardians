@@ -142,3 +142,32 @@ document.getElementById('reportForm').addEventListener('submit', async function(
 
     await fetchAndDisplayContent(postUrl, bar, submitBtn);
 });
+
+analyseContentForToxicity(postData.Content || '');
+
+async function analyseContentForToxicity(content) {
+    try {
+        const analysisEndpoint = '/analyse-content'; // You need to create this endpoint on your server
+        const response = await fetch(analysisEndpoint, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ content: content }),
+        });
+
+        if (!response.ok) {
+            throw new Error(`Network response was not ok, status: ${response.status}`);
+        }
+
+        const analysisResult = await response.json();
+        console.log('Analysis Result:', analysisResult);
+
+        // You can then display the analysis result on your page
+        // For example, showing toxicity score
+        document.getElementById('toxicityScore').textContent = `Toxicity Score: ${analysisResult.score}`;
+
+    } catch (error) {
+        console.error('Error analyzing content:', error);
+    }
+}

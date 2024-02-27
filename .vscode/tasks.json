@@ -4,7 +4,7 @@
         {
             "label": "Git Commit and Push",
             "type": "shell",
-            "command": "git commit && git push",
+            "command": "git add . && git commit -m \"Auto-commit\" && git push",
             "problemMatcher": [],
             "group": {
                 "kind": "build",
