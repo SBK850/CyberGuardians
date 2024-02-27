@@ -9,12 +9,11 @@ function hideProgressBar(bar) {
 }
 
 document.addEventListener('DOMContentLoaded', () => {
+    const form = document.getElementById('reportForm');
     const submitBtn = form.querySelector('button[type="submit"]');
     const bar = document.querySelector('.progressbar .bar');
-    const form = document.getElementById('formId');
     const contentContainer = document.getElementById('content');
     const postUrlInput = document.getElementById('postUrl');
-    
 
     submitBtn.addEventListener('click', (e) => {
         e.preventDefault();
@@ -26,6 +25,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 });
+
 
 async function analyseContentForToxicity(content) {
     try {
@@ -99,13 +99,13 @@ async function fetchAndDisplayContent(postUrl, bar, submitBtn, form, contentCont
         document.getElementById('posterDetails').textContent = `Age: ${postData.Age} | Education: ${postData.Education}` || 'Details not available';
         document.getElementById('postContent').textContent = postData.Content || 'Content not available';
         contentContainer.style.display = 'block';
-        form.style.display = 'none'; // Hide the form on successful fetch
-        submitBtn.style.display = 'none'; // Optionally, hide submit button after successful operation
+        form.style.display = 'none'; 
+        submitBtn.style.display = 'none'; 
     } catch (error) {
         console.error('Fetch Error:', error);
         contentContainer.style.display = 'none';
-        form.style.display = 'block'; // Show the form again on error
-        submitBtn.style.display = 'block'; // Ensure the submit button is visible for retry
+        form.style.display = 'block'; 
+        submitBtn.style.display = 'block'; 
     } finally {
         hideProgressBar(bar);
         // Consider removing or conditionally including the visibility change for submitBtn here based on success or error
