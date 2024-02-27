@@ -27,7 +27,6 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 
-
 async function fetchAndDisplayContent(postUrl, bar, submitBtn, form, contentContainer) {
     showProgressBar(bar);
     try {
