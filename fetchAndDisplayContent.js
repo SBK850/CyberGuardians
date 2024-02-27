@@ -29,11 +29,9 @@ document.addEventListener("DOMContentLoaded", function () {
         const postUrl = postUrlInput.value;
         if (isValidUrl(postUrl)) {
             try {
-                const data = await fetchScrapedContent(postUrl);
-                console.log(data); // Log or process your data here
-                // TODO: Update the UI with fetched content
+                await fetchAndDisplayContent(postUrl, bar, submitBtn);
             } catch (error) {
-                console.error('Error scraping content:', error);
+                console.error('Error fetching and displaying content:', error);
                 // TODO: Update the UI to show an error message
             }
         } else {
@@ -59,13 +57,11 @@ document.addEventListener("DOMContentLoaded", function () {
         }, 1390);
         setTimeout(() => {
             bar.style.width = '100%';
-            submitted.style.top = '0';
         }, 2090);
         setTimeout(() => {
             submitBtn.textContent = 'Submitted!';
             submitted.style.display = 'block';
             // Now fetch and display content after the animation has completed
-            fetchAndDisplayContent();
         }, 2090);
     }
 
@@ -78,11 +74,11 @@ document.addEventListener("DOMContentLoaded", function () {
             '(\\#[-a-z\\d_]*)?$', 'i');
         return pattern.test(url);
     }
-})
+});
 
 // Function to fetch and display the content
 async function fetchAndDisplayContent(postUrl, bar, submitBtn) {
-    const interval = showProgressBar(bar, submitBtn); // Show progress bar with simulated progress
+    showProgressBar(bar); // Show progress bar
 
     try {
         const apiEndpoint = 'https://cyberguardians.onrender.com/scrape';
@@ -99,7 +95,33 @@ async function fetchAndDisplayContent(postUrl, bar, submitBtn) {
             throw new Error(`Network response was not ok, status: ${response.status}`);
         }
 
-        const data = await response.json();
+        const reader = response.body.getReader();
+        const contentLength = +response.headers.get('Content-Length');
+
+        let receivedLength = 0; // Amount of bytes received
+        let chunks = []; // Array to store fetched chunks
+
+        while (true) {
+            const { done, value } = await reader.read();
+            if (done) break;
+
+            chunks.push(value);
+            receivedLength += value.length;
+
+            // Calculate and update progress
+            const percentage = ((receivedLength / contentLength) * 100).toFixed(2);
+            bar.style.width = `${percentage}%`;
+        }
+
+        // Concatenate chunks into single Uint8Array
+        const chunksAll = new Uint8Array(receivedLength);
+        let position = 0;
+        for (const chunk of chunks) {
+            chunksAll.set(chunk, position);
+            position += chunk.length;
+        }
+
+        const data = JSON.parse(new TextDecoder("utf-8").decode(chunksAll));
 
         // Assuming the response is an array and we're interested in the first item
         const postData = data[0];
@@ -117,7 +139,7 @@ async function fetchAndDisplayContent(postUrl, bar, submitBtn) {
         // Hide the content container if the fetch fails
         document.getElementById('content').style.display = 'none';
     } finally {
-        hideProgressBar(bar, submitBtn, interval); // Hide progress bar after fetch is complete or fails
+        hideProgressBar(bar); // Hide progress bar after fetch is complete or fails
         bar.style.width = '100%'; // Set the bar to 100% when the fetch is complete
         submitBtn.textContent = 'Submitted!'; // Update button text to indicate completion
     }
