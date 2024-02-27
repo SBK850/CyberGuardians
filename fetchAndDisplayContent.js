@@ -1,8 +1,11 @@
 document.addEventListener("DOMContentLoaded", function () {
-    const form = document.querySelector('form');
-    const submitBtn = document.querySelector('form button');
-    const progressbar = document.querySelector('.progressbar');
+    const form = document.querySelector('#myForm'); // Replace with your actual form's selector
+    const contentContainer = document.querySelector('#content'); // Replace with your actual content container's selector
+    const submitBtn = form.querySelector('button[type="submit"]');
     const bar = document.querySelector('.progressbar .bar');
+
+    fetchAndDisplayContent(postUrl, bar, submitBtn, form, contentContainer);
+
     const submitted = document.querySelector('.submitted');
     const postUrlInput = document.querySelector('#postUrl');
 
@@ -92,13 +95,13 @@ document.addEventListener("DOMContentLoaded", function () {
         }, 100); // The interval duration here depends on your actual loading time
     }
 
-    // In the finally block of fetchAndDisplayContent function, hide the submit button
-    async function fetchAndDisplayContent(postUrl, bar, submitBtn, onSuccess, onError) {
-        showProgressBar(bar);
-
+    async function fetchAndDisplayContent(postUrl, bar, submitBtn, form, contentContainer) {
+        showProgressBar(bar); // Assuming this function initiates the progress bar
+    
         try {
             const apiEndpoint = 'https://cyberguardians.onrender.com/scrape';
-
+    
+            // Initiate the fetch request
             const response = await fetch(apiEndpoint, {
                 method: 'POST',
                 headers: {
@@ -106,57 +109,69 @@ document.addEventListener("DOMContentLoaded", function () {
                 },
                 body: JSON.stringify({ url: postUrl }),
             });
-
+    
+            // Check if the response was successful
             if (!response.ok) {
                 throw new Error(`Network response was not ok, status: ${response.status}`);
             }
-
-            // Reading the response stream
+    
+            // Read the stream and update the progress bar
             const reader = response.body.getReader();
             const contentLength = +response.headers.get('Content-Length');
-            let receivedLength = 0; // received that many bytes at the moment
+            let receivedLength = 0; // this will be the length we have received so far
             let chunks = []; // array of received binary chunks (comprises the body)
-
+    
             while (true) {
                 const { done, value } = await reader.read();
-
+    
                 if (done) {
                     break;
                 }
-
+    
                 chunks.push(value);
                 receivedLength += value.length;
-
-                // Update the progress bar with the current percentage
-                const percentage = ((receivedLength / contentLength) * 100).toFixed(2);
-                bar.style.width = `${percentage}%`;
+    
+                let loadingPercentage = (receivedLength / contentLength) * 100;
+                bar.style.width = `${loadingPercentage}%`; // Update the progress bar width
             }
-
-            // Concatenate chunks into single Uint8Array
+    
+            // Concatenate chunks into a single Uint8Array
             let chunksAll = new Uint8Array(receivedLength);
             let position = 0;
             for (let chunk of chunks) {
                 chunksAll.set(chunk, position);
                 position += chunk.length;
             }
-
-            // Decode into a string
+    
+            // Decode the Uint8Array into a string
             let result = new TextDecoder("utf-8").decode(chunksAll);
-
-            // Parse the JSON
-            const data = JSON.parse(result);
-            const postData = data[0];
-
-            // Update the UI with the fetched content
-            onSuccess(postData);
+    
+            // Parse the JSON string into an object
+            let jsonData = JSON.parse(result);
+            const postData = jsonData[0];
+    
+            // Update your UI with the fetched data
+            document.getElementById('profileImageUrl').src = postData.ProfilePictureURL || 'placeholder-image-url.png';
+            document.getElementById('posterName').textContent = `${postData.FirstName} ${postData.LastName}` || 'Name not available';
+            document.getElementById('posterDetails').textContent = `Age: ${postData.Age} | Education: ${postData.Education}` || 'Details not available';
+            document.getElementById('postContent').textContent = postData.Content || 'Content not available';
+    
+            // Show the content container and hide the form
+            contentContainer.style.display = 'block';
+            form.style.display = 'none';
+    
         } catch (error) {
             console.error('Fetch Error:', error);
-            onError(error);
+            // Optionally reset the UI in case of an error
+            contentContainer.style.display = 'none';
+            form.style.display = 'block';
         } finally {
-            hideProgressBar(bar);
-            submitBtn.style.display = 'none'; // Hide the submit button after loading is complete
+            // Hide the progress bar and the submit button
+            hideProgressBar(bar); // Assuming this function hides the progress bar
+            submitBtn.style.display = 'none';
         }
     }
+    
 
     analyseContentForToxicity(postData.Content || '');
 
