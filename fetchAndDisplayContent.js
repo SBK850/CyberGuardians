@@ -1,23 +1,22 @@
 document.addEventListener("DOMContentLoaded", function () {
-    const form = document.querySelector('#myForm');
+    const form = document.querySelector('#reportForm');
     const contentContainer = document.querySelector('#content');
     const submitBtn = form.querySelector('button[type="submit"]');
     const bar = document.querySelector('.progressbar .bar');
-
-    fetchAndDisplayContent(postUrl, bar, submitBtn, form, contentContainer);
-
     const submitted = document.querySelector('.submitted');
     const postUrlInput = document.querySelector('#postUrl');
 
-    form.addEventListener('submit', async e => {
-        e.preventDefault();
+    fetchAndDisplayContent(postUrl, bar, submitBtn, form, contentContainer);
 
-        animateFormSubmission(submitBtn, progressbar, bar, submitted);
+    form.addEventListener('submit', async function (event) {
+        event.preventDefault();
+
+        animateFormSubmission(submitBtn, bar, submitted);
 
         const postUrl = postUrlInput.value;
         if (isValidUrl(postUrl)) {
             try {
-                await fetchAndDisplayContent(postUrl, bar, submitBtn, form, contentContainer);
+                await fetchAndDisplayContent(postUrl, contentContainer);
             } catch (error) {
                 console.error('Error fetching and displaying content:', error);
             }
@@ -78,7 +77,7 @@ document.addEventListener("DOMContentLoaded", function () {
             if (loadPercentage >= 100) {
                 clearInterval(loadingInterval);
                 if (onComplete && typeof onComplete === 'function') {
-                    onComplete(); 
+                    onComplete();
                 }
             }
         }, 100);
