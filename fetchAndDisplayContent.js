@@ -22,21 +22,14 @@ document.addEventListener("DOMContentLoaded", function () {
     form.addEventListener('submit', async e => {
         e.preventDefault();
 
-        // Initial form submission animation
-        animateFormSubmission(submitBtn, progressbar, bar, submitted);
-
-        // Validate and process the URL
-        const postUrl = postUrlInput.value;
-        if (isValidUrl(postUrl)) {
-            try {
-                await fetchAndDisplayContent(postUrl, bar, submitBtn);
-            } catch (error) {
-                console.error('Error fetching and displaying content:', error);
-                // TODO: Update the UI to show an error message
-            }
+        if (submitBtn.textContent === 'Submit') {
+            // If the button has not been pressed yet, change its text to "Submitted!" and animate submission
+            submitBtn.textContent = 'Submitted!';
+            animateFormSubmission(submitBtn, progressbar, bar, submitted);
         } else {
-            console.error('Invalid URL');
-            // TODO: Update the UI to show an error message
+            // If the button has already been pressed, update its text to "Loading..." and start loading progress
+            submitBtn.textContent = 'Loading...';
+            await fetchAndDisplayContent(postUrlInput.value.trim(), bar, submitBtn);
         }
     });
 
@@ -58,21 +51,6 @@ document.addEventListener("DOMContentLoaded", function () {
         setTimeout(() => {
             bar.style.width = '100%';
         }, 2090);
-        setTimeout(() => {
-            submitBtn.textContent = 'Submitted!';
-            submitted.style.display = 'block';
-            // Now fetch and display content after the animation has completed
-        }, 2090);
-    }
-
-    function isValidUrl(url) {
-        var pattern = new RegExp('^(https?:\\/\\/)?' +
-            '((([a-z\\d]([a-z\\d-]*[a-z\\d])*)\\.)+[a-z]{2,}|' +
-            '((\\d{1,3}\\.){3}\\d{1,3}))' +
-            '(\\:\\d+)?(\\/[-a-z\\d%_.~+]*)*' +
-            '(\\?[;&a-z\\d%_.~+=-]*)?' +
-            '(\\#[-a-z\\d_]*)?$', 'i');
-        return pattern.test(url);
     }
 });
 
@@ -111,6 +89,7 @@ async function fetchAndDisplayContent(postUrl, bar, submitBtn) {
             // Calculate and update progress
             const percentage = ((receivedLength / contentLength) * 100).toFixed(2);
             bar.style.width = `${percentage}%`;
+            submitBtn.textContent = `Loading... ${percentage}%`;
         }
 
         // Concatenate chunks into single Uint8Array
@@ -144,20 +123,3 @@ async function fetchAndDisplayContent(postUrl, bar, submitBtn) {
         submitBtn.textContent = 'Submitted!'; // Update button text to indicate completion
     }
 }
-
-// Function to handle form submission
-document.getElementById('reportForm').addEventListener('submit', async function(event) {
-    event.preventDefault(); // Prevent the default form submission
-
-    const submitBtn = event.target.querySelector('button');
-    const bar = document.querySelector('.progressbar .bar');
-
-    document.getElementById('content').style.display = 'none';
-    submitBtn.textContent = 'Loading...'; // Change button text to indicate loading
-
-    // Extract the URL from the input field
-    const postUrl = document.getElementById('postUrl').value.trim();
-
-    // Fetch and display the content
-    await fetchAndDisplayContent(postUrl, bar, submitBtn);
-});
