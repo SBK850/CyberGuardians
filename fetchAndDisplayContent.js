@@ -31,7 +31,6 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 
-
 async function analyseContentForToxicity(content) {
     try {
         const analysisEndpoint = '/analyse-content';
