@@ -15,14 +15,17 @@ document.addEventListener('DOMContentLoaded', () => {
     const postUrlInput = document.getElementById('postUrl');
 
     form.addEventListener('submit', async (e) => {
-        e.preventDefault(); 
+        e.preventDefault();
         const postUrl = postUrlInput.value;
 
         if (isValidUrl(postUrl)) {
             try {
-                await fetchAndDisplayContent(postUrl, bar, form, contentContainer);
+                // Fetch the content
+                const content = await fetchAndDisplayContent(postUrl, bar, form, contentContainer);
+                // Once content is fetched, analyse it for toxicity
+                await analyseContentForToxicity(content);
             } catch (error) {
-                console.error('Error fetching and displaying content:', error);
+                console.error('Error:', error);
             }
         } else {
             console.error('Invalid URL');
@@ -41,6 +44,7 @@ async function fetchAndDisplayContent(postUrl, bar, form, contentContainer) {
             },
             body: JSON.stringify({ url: postUrl }),
         });
+
         if (!response.ok) {
             throw new Error(`Network response was not ok, status: ${response.status}`);
         }
@@ -56,6 +60,9 @@ async function fetchAndDisplayContent(postUrl, bar, form, contentContainer) {
 
         contentContainer.style.display = 'block'; // Show the content container
         form.style.display = 'none'; // Optionally hide the form to prevent duplicate submissions
+        
+        // Return the fetched content for further processing
+        return postData.Content;
     } catch (error) {
         console.error('Fetch Error:', error);
         contentContainer.style.display = 'none'; // Hide the content container if an error occurs
@@ -63,7 +70,9 @@ async function fetchAndDisplayContent(postUrl, bar, form, contentContainer) {
     } finally {
         hideProgressBar(bar); // Always hide the progress bar, whether the fetch was successful or not
     }
+    return null; // Return null if content fetch was unsuccessful
 }
+
 
 
 async function analyseContentForToxicity(content) {
@@ -96,82 +105,56 @@ function isValidUrl(url) {
     return pattern.test(url);
 }
 
-document.addEventListener("DOMContentLoaded", function () {
-    const form = document.querySelector('#reportForm');
-    const contentContainer = document.querySelector('#content');
-    const submitBtn = form.querySelector('button[type="submit"]');
-    const bar = document.querySelector('.progressbar .bar');
-    const submitted = document.querySelector('.submitted');
-    const postUrlInput = document.querySelector('#postUrl');
+function animateFormSubmission(submitBtn, bar, submitted) {
+    // Animation for form submission
+    form.style.animation = 'linear .3s push';
+    setTimeout(() => {
+        submitBtn.style.scale = '1';
+    }, 300);
+    setTimeout(() => {
+        submitBtn.style.animation = 'ease .5s scaleWidth';
+    }, 900);
+    setTimeout(() => {
+        bar.style.bottom = '0px';
+    }, 1200);
+    setTimeout(() => {
+        submitBtn.style.width = '100%';
+        bar.style.animation = 'ease .7s scaleBar';
+    }, 1390);
+    setTimeout(() => {
+        bar.style.width = '100%';
+    }, 2090);
+    setTimeout(() => {
+        submitBtn.textContent = 'Submitted!';
+        submitted.style.display = 'block';
+    }, 2090);
+    setTimeout(() => {
+        submitted.textContent = 'Submitted!!';
+        submitted.style.display = 'block';
+        // Show progress bar here if required
+        // showProgressBar(bar);
+    }, 3000);
+    setTimeout(() => {
+        submitted.style.display = 'none';
+        submitBtn.textContent = 'Loading...';
+        simulateLoadingProcess(bar, () => {
+            // Callback after loading is complete
+            // Do something here after loading is complete
+        });
+    }, 6000);
+}
 
-    form.addEventListener('submit', async function (event) {
-        event.preventDefault();
-
-        animateFormSubmission(submitBtn, bar, submitted);
-
-        const postUrl = postUrlInput.value;
-        if (isValidUrl(postUrl)) {
-            try {
-                await fetchAndDisplayContent(postUrl, bar, submitBtn, form, contentContainer);
-            } catch (error) {
-                console.error('Error fetching and displaying content:', error);
+function simulateLoadingProcess(bar, onComplete) {
+    // Simulation of loading process
+    let loadPercentage = 0;
+    const loadingInterval = setInterval(() => {
+        loadPercentage++;
+        bar.style.width = `${loadPercentage}%`;
+        if (loadPercentage >= 100) {
+            clearInterval(loadingInterval);
+            if (onComplete && typeof onComplete === 'function') {
+                onComplete();
             }
-        } else {
-            console.error('Invalid URL');
         }
-    });
-
-    function animateFormSubmission(submitBtn, bar, submitted) {
-        // Animation for form submission
-        form.style.animation = 'linear .3s push';
-        setTimeout(() => {
-            submitBtn.style.scale = '1';
-        }, 300);
-        setTimeout(() => {
-            submitBtn.style.animation = 'ease .5s scaleWidth';
-        }, 900);
-        setTimeout(() => {
-            bar.style.bottom = '0px';
-        }, 1200);
-        setTimeout(() => {
-            submitBtn.style.width = '100%';
-            bar.style.animation = 'ease .7s scaleBar';
-        }, 1390);
-        setTimeout(() => {
-            bar.style.width = '100%';
-        }, 2090);
-        setTimeout(() => {
-            submitBtn.textContent = 'Submitted!';
-            submitted.style.display = 'block';
-        }, 2090);
-        setTimeout(() => {
-            submitted.textContent = 'Submitted!!';
-            submitted.style.display = 'block';
-            // Show progress bar here if required
-            // showProgressBar(bar);
-        }, 3000);
-        setTimeout(() => {
-            submitted.style.display = 'none';
-            submitBtn.textContent = 'Loading...';
-            simulateLoadingProcess(bar, () => {
-                // Callback after loading is complete
-                // Do something here after loading is complete
-            });
-        }, 6000);
-    }
-
-    function simulateLoadingProcess(bar, onComplete) {
-        // Simulation of loading process
-        let loadPercentage = 0;
-        const loadingInterval = setInterval(() => {
-            loadPercentage++;
-            bar.style.width = `${loadPercentage}%`;
-            if (loadPercentage >= 100) {
-                clearInterval(loadingInterval);
-                if (onComplete && typeof onComplete === 'function') {
-                    onComplete();
-                }
-            }
-        }, 100);
-    }   
-});
+    }, 100);
+}   
