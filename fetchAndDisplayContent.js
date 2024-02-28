@@ -68,7 +68,7 @@ async function fetchAndDisplayContent(postUrl, bar, form, contentContainer, subm
 
 async function analyseContentForToxicity(content) {
     try {
-        const analysisEndpoint = '/analyse-content';
+        const analysisEndpoint = 'https://google-perspective-api.onrender.com/analyse-content';
         const response = await fetch(analysisEndpoint, {
             method: 'POST',
             headers: {
