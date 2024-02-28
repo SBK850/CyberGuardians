@@ -309,8 +309,7 @@ body {
 }
 
 .single-chart {
-  width: 33%;
-  justify-content: space-around ;
+  width: 15rem;
 }
 
 .circular-chart {
