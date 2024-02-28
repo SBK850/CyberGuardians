@@ -104,7 +104,7 @@ function isValidUrl(url) {
     return pattern.test(url);
 }
 
-function animateFormSubmission(submitBtn, bar, submitted) {
+function animateFormSubmission(submitBtn, bar, submitted, form) {
     // Animation for form submission
     form.style.animation = 'linear .3s push';
     setTimeout(() => {
@@ -130,15 +130,12 @@ function animateFormSubmission(submitBtn, bar, submitted) {
     setTimeout(() => {
         submitted.textContent = 'Submitted!!';
         submitted.style.display = 'block';
-        // Show progress bar here if required
-        // showProgressBar(bar);
+
     }, 3000);
     setTimeout(() => {
         submitted.style.display = 'none';
         submitBtn.textContent = 'Loading...';
         simulateLoadingProcess(bar, () => {
-            // Callback after loading is complete
-            // Do something here after loading is complete
         });
     }, 6000);
 }
@@ -156,4 +153,4 @@ function simulateLoadingProcess(bar, onComplete) {
             }
         }
     }, 100);
-}   
+}
