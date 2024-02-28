@@ -92,7 +92,7 @@ async function analyseContentForToxicity(content) {
 
         document.querySelector('.container-s').style.display = 'block';
     } catch (error) {
-        console.error('Error analyzing content:', error);
+        console.error('Error analysing content:', error);
     }
 }
 
