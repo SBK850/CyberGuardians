@@ -74,7 +74,6 @@ async function fetchAndDisplayContent(postUrl, bar, form, contentContainer) {
 }
 
 
-
 async function analyseContentForToxicity(content) {
     try {
         const analysisEndpoint = '/analyse-content';
