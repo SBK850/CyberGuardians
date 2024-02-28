@@ -351,5 +351,5 @@ body {
 
 .container-s {
   display: flex;
-  align-items: start; /* Adjust as needed to align items at the top */
+  align-items: center;
 }
