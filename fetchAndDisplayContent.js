@@ -82,12 +82,13 @@ async function analyseContentForToxicity(content) {
             throw new Error(`Network response was not ok, status: ${response.status}`);
         }
         const analysisResult = await response.json();
+        
+        const toxicityScore = analysisResult.score;
+        document.getElementById('toxicityScore').textContent = `Toxicity Score: ${toxicityScore}`;
 
-        document.getElementById('toxicityScore').textContent = `Toxicity Score: ${analysisResult.score}`;
-
-        const scorePercentage = Math.round(analysisResult.score * 100);
-        document.querySelector('.percentage').textContent = `${scorePercentage}%`;
-        document.querySelector('.circle').setAttribute("stroke-dasharray", `${scorePercentage}, 100`);
+        const percentage = Math.round(toxicityScore * 100);
+        document.querySelector('.percentage').textContent = `${percentage}%`;
+        document.querySelector('.circle').setAttribute('stroke-dasharray', `${percentage}, 100`);
 
         document.querySelector('.container-s').style.display = 'block';
     } catch (error) {
