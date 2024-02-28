@@ -42,29 +42,28 @@ async function fetchAndDisplayContent(postUrl, bar, form, contentContainer, subm
             throw new Error(`Network response was not ok, status: ${response.status}`);
         }
 
-        const jsonData = await response.json(); // Assuming the API returns JSON data directly
-        const postData = jsonData[0]; // Assuming the first item of the array contains the post data
+        const jsonData = await response.json();
+        const postData = jsonData[0];
 
-        // Update the UI with the fetched data
         document.getElementById('profileImageUrl').src = postData.ProfilePictureURL || 'placeholder-image-url.png';
         document.getElementById('posterName').textContent = `${postData.FirstName} ${postData.LastName}` || 'Name not available';
         document.getElementById('posterDetails').textContent = `Age: ${postData.Age} | Education: ${postData.Education}` || 'Details not available';
         document.getElementById('postContent').textContent = postData.Content || 'Content not available';
 
-        contentContainer.style.display = 'block'; // Show the content container
-        form.style.display = 'none'; // Optionally hide the form to prevent duplicate submissions
-        
-        // Return the fetched content for further processing
+        contentContainer.style.display = 'block';
+        form.style.display = 'none';
+
         return postData.Content;
     } catch (error) {
         console.error('Fetch Error:', error);
-        contentContainer.style.display = 'none'; // Hide the content container if an error occurs
-        form.style.display = 'block'; // Show the form again to allow for re-submission
+        contentContainer.style.display = 'none';
+        form.style.display = 'block';
     } finally {
-        hideProgressBar(bar); // Always hide the progress bar, whether the fetch was successful or not
+        hideProgressBar(bar);
     }
-    return null; // Return null if content fetch was unsuccessful
+    return null;
 }
+
 
 async function analyseContentForToxicity(content) {
     document.querySelector('single-chart').style.display = 'none';
