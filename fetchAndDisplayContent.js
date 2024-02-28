@@ -1,18 +1,9 @@
-function showProgressBar(bar) {
-    bar.parentElement.style.display = 'flex';
-    bar.style.width = '0%';
-}
-
-function hideProgressBar(bar) {
-    bar.parentElement.style.display = 'none';
-    bar.style.width = '0%';
-}
-
 document.addEventListener('DOMContentLoaded', () => {
     const form = document.getElementById('reportForm');
     const bar = document.querySelector('.progressbar .bar');
     const contentContainer = document.getElementById('content');
     const postUrlInput = document.getElementById('postUrl');
+    const submitted = document.querySelector('.submitted');
 
     form.addEventListener('submit', async (e) => {
         e.preventDefault();
@@ -21,9 +12,11 @@ document.addEventListener('DOMContentLoaded', () => {
         if (isValidUrl(postUrl)) {
             try {
                 // Fetch the content
-                const content = await fetchAndDisplayContent(postUrl, bar, form, contentContainer);
-                // Once content is fetched, analyse it for toxicity
-                await analyseContentForToxicity(content);
+                const content = await fetchAndDisplayContent(postUrl, bar, form, contentContainer, submitted);
+                // If content is fetched successfully, analyse it for toxicity
+                if (content !== null) {
+                    await analyseContentForToxicity(content);
+                }
             } catch (error) {
                 console.error('Error:', error);
             }
@@ -33,7 +26,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 });
 
-async function fetchAndDisplayContent(postUrl, bar, form, contentContainer) {
+async function fetchAndDisplayContent(postUrl, bar, form, contentContainer, submitted) {
     showProgressBar(bar);
     try {
         const apiEndpoint = 'https://cyberguardians.onrender.com/scrape';
@@ -73,7 +66,6 @@ async function fetchAndDisplayContent(postUrl, bar, form, contentContainer) {
     return null; // Return null if content fetch was unsuccessful
 }
 
-
 async function analyseContentForToxicity(content) {
     try {
         const analysisEndpoint = '/analyse-content';
@@ -102,6 +94,16 @@ function isValidUrl(url) {
         '(\\?[;&a-z\\d%_.~+=-]*)?' +
         '(\\#[-a-z\\d_]*)?$', 'i');
     return pattern.test(url);
+}
+
+function showProgressBar(bar) {
+    bar.parentElement.style.display = 'flex';
+    bar.style.width = '0%';
+}
+
+function hideProgressBar(bar) {
+    bar.parentElement.style.display = 'none';
+    bar.style.width = '0%';
 }
 
 function animateFormSubmission(submitBtn, bar, submitted, form) {
