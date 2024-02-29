@@ -87,7 +87,7 @@ async function analyseContentForToxicity(content) {
         document.querySelector('.percentage').textContent = `${percentage}%`;
         document.querySelector('.circle').setAttribute('stroke-dasharray', `${percentage}, 100`);
 
-        document.querySelector('single-chart').style.display = 'block';
+        document.querySelector('.single-chart').style.display = 'block';
     } catch (error) {
         console.error('Error analysing content:', error);
     }
