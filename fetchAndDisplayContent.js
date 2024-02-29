@@ -91,6 +91,18 @@ async function analyseContentForToxicity(content) {
     }
 }
 
+  const circle = document.querySelector('.percent svg circle:nth-child(2)');
+  
+  function setPercentage(percentage) {
+    const circumference = circle.getTotalLength();
+    const offset = circumference - (circumference * percentage) / 100;
+    circle.style.strokeDashoffset = offset;
+    // Update the percentage text
+    document.querySelector('.percent .num h2').textContent = percentage;
+  }
+
+  setPercentage(80);
+
 
 
 
