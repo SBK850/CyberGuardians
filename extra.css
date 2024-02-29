@@ -134,7 +134,7 @@ h2 {
     line-height: 1.1;
     text-wrap: balance;
     margin: 0;
-    margin-block-end: var(--spacing);
+    /* margin-block-end: var(--spacing); */
 
     & span {
         color: var(--color-cyan);
