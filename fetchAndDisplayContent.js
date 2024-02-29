@@ -103,9 +103,6 @@ async function analyseContentForToxicity(content) {
 
   setPercentage(80);
 
-
-
-
 function isValidUrl(url) {
     var pattern = new RegExp('^(https?:\\/\\/)?' +
         '((([a-z\\d]([a-z\\d-]*[a-z\\d])*)\\.)+[a-z]{2,}|' +
