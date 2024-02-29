@@ -79,15 +79,15 @@ async function analyseContentForToxicity(content) {
             throw new Error(`Network response was not ok, status: ${response.status}`);
         }
         const analysisResult = await response.json();
-        
+
         const toxicityScore = analysisResult.score;
         document.getElementById('toxicityScore').textContent = `Toxicity Score: ${toxicityScore}`;
 
         const percentage = Math.round(toxicityScore * 100);
         document.querySelector('.percentage').textContent = `${percentage}%`;
         document.querySelector('.circle').setAttribute('stroke-dasharray', `${percentage}, 100`);
-
         document.querySelector('.single-chart').style.display = 'block'; // Corrected selector
+        console.log('Chart should now be visible. Current display style:', document.querySelector('.single-chart').style.display);
     } catch (error) {
         console.error('Error analysing content:', error);
     }
