@@ -66,8 +66,6 @@ async function fetchAndDisplayContent(postUrl, bar, form, contentContainer, subm
 
 
 async function analyseContentForToxicity(content) {
-    document.querySelector('single-chart').style.display = 'none';
-
     try {
         const analysisEndpoint = 'https://google-perspective-api.onrender.com/analyse-content';
         const response = await fetch(analysisEndpoint, {
