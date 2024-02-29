@@ -79,19 +79,18 @@ async function analyseContentForToxicity(content) {
             throw new Error(`Network response was not ok, status: ${response.status}`);
         }
         const analysisResult = await response.json();
-
+        
         const toxicityScore = analysisResult.score;
-        document.getElementById('toxicityScore').textContent = `Toxicity Score: ${toxicityScore}`;
-
         const percentage = Math.round(toxicityScore * 100);
-        document.querySelector('.percentage').textContent = `${percentage}%`;
-        document.querySelector('.circle').setAttribute('stroke-dasharray', `${percentage}, 100`);
-        document.querySelector('.single-chart').style.display = 'block'; // Corrected selector
-        console.log('Chart should now be visible. Current display style:', document.querySelector('.single-chart').style.display);
+        document.getElementById('toxicityScore').textContent = `${percentage}% Likely to be Toxic`;
+        
+        document.getElementById('toxicityReport').style.display = 'block';
     } catch (error) {
         console.error('Error analysing content:', error);
+        document.getElementById('toxicityScore').textContent = "Error calculating toxicity score";
     }
 }
+
 
 
 function isValidUrl(url) {
