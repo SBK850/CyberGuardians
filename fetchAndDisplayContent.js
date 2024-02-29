@@ -82,26 +82,26 @@ async function analyseContentForToxicity(content) {
         
         const toxicityScore = analysisResult.score;
         const percentage = Math.round(toxicityScore * 100);
-        document.getElementById('toxicityScore').textContent = `${percentage}% Likely to be Toxic`;
+        document.getElementById('customToxicityScore').textContent = percentage;
         
-        document.getElementById('toxicityReport').style.display = 'block'; // Now we show the toxicity report
+        document.querySelector('.custom-container').style.display = 'block';
+        
+        setPercentage(percentage);
     } catch (error) {
         console.error('Error analysing content:', error);
-        document.getElementById('toxicityScore').textContent = "Error calculating toxicity score";
+        document.getElementById('customToxicityScore').textContent = "Error calculating toxicity score";
     }
 }
 
-  const circle = document.querySelector('.percent svg circle:nth-child(2)');
-  
-  function setPercentage(percentage) {
+function setPercentage(percentage) {
+    const circle = document.querySelector('.custom-percent svg circle:nth-child(2)');
     const circumference = circle.getTotalLength();
     const offset = circumference - (circumference * percentage) / 100;
     circle.style.strokeDashoffset = offset;
-    // Update the percentage text
-    document.querySelector('.percent .num h2').textContent = percentage;
-  }
+    document.querySelector('.custom-percent .custom-num h2').textContent = percentage;
+}
 
-  setPercentage(80);
+document.querySelector('.custom-container').style.display = 'none';
 
 function isValidUrl(url) {
     var pattern = new RegExp('^(https?:\\/\\/)?' +
