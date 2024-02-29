@@ -84,11 +84,13 @@ async function analyseContentForToxicity(content) {
         const percentage = Math.round(toxicityScore * 100);
         document.getElementById('toxicityScore').textContent = `${percentage}% Likely to be Toxic`;
         
-        document.getElementById('toxicityReport').style.display = 'block';
+        document.getElementById('toxicityReport').style.display = 'block'; // Now we show the toxicity report
+    } catch (error) {
         console.error('Error analysing content:', error);
         document.getElementById('toxicityScore').textContent = "Error calculating toxicity score";
     }
 }
+
 
 
 
