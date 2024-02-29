@@ -168,5 +168,9 @@ form input {
 }
 
 #content {
-    display: none;
+	display: none;
+}
+
+.single-chart {
+	display: none;
 }
