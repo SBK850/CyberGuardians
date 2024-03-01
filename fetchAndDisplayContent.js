@@ -87,6 +87,7 @@ async function analyseContentForToxicity(content) {
         document.querySelector('.custom-container').style.display = 'block';
         
         setPercentage(percentage);
+        updateStrokeColor(toxicityScore);
     } catch (error) {
         console.error('Error analysing content:', error);
         document.getElementById('customToxicityScore').textContent = "Error calculating toxicity score";
@@ -101,7 +102,25 @@ function setPercentage(percentage) {
     document.querySelector('.custom-percent .custom-num h2').textContent = percentage;
 }
 
+function updateStrokeColor(toxicityScore) {
+    const circle = document.querySelector('.custom-percent svg circle:nth-child(2)');
+    const scorePercentage = toxicityScore * 100;
+    const color = getColorForScore(scorePercentage);
+    circle.style.stroke = color;
+}
+
+function getColorForScore(scorePercentage) {
+    if (scorePercentage >= 70) {
+        return '#ff0000'; 
+    } else if (scorePercentage >= 30) {
+        return '#ffa500'; 
+    } else {
+        return '#00ff43';
+    }
+}
+
 document.querySelector('.custom-container').style.display = 'none';
+
 
 function isValidUrl(url) {
     var pattern = new RegExp('^(https?:\\/\\/)?' +
