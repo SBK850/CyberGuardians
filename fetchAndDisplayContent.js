@@ -121,6 +121,27 @@ function getColorForScore(scorePercentage) {
 
 document.querySelector('.custom-container').style.display = 'none';
 
+async function removePostIfToxic(toxicityScore, postId) {
+    if (toxicityScore > 0.7) { // Check if score is greater than 70%
+        try {
+            const removalEndpoint = '/remove-post'; // Your server-side endpoint
+            const response = await fetch(removalEndpoint, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ postId: postId }), // Send post ID to identify which post to remove
+            });
+            if (!response.ok) {
+                throw new Error(`Network response was not ok, status: ${response.status}`);
+            }
+            const removalResult = await response.json();
+            console.log('Post removal result:', removalResult.message);
+        } catch (error) {
+            console.error('Error removing post:', error);
+        }
+    }
+}
 
 function isValidUrl(url) {
     var pattern = new RegExp('^(https?:\\/\\/)?' +
