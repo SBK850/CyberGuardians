@@ -26,6 +26,70 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 });
 
+document.addEventListener('DOMContentLoaded', () => {
+    const form = document.getElementById('reportForm');
+    const postUrlInput = document.getElementById('postUrl');
+    const embedContainer = document.getElementById('embedContainer'); // Make sure this exists in your HTML
+
+    form.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const postUrl = postUrlInput.value;
+
+        if (isValidUrl(postUrl)) {
+            const domain = getDomainFromUrl(postUrl);
+
+            if (domain === 'twitter.com' || domain === 'x.com') {
+                // Handle Twitter URL
+                const twitterPublishUrl = convertToTwitterPublishUrl(postUrl);
+                const embedCode = await fetchTwitterEmbedCode(twitterPublishUrl);
+                embedContainer.innerHTML = embedCode; // Insert the embed code into the page
+            } else if (domain === 'youthvibe.com') {
+                // Handle YouthVibe URL
+                // Call the function that handles YouthVibe content
+            } else {
+                // Handle other URLs
+            }
+        } else {
+            console.error('Invalid URL');
+        }
+    });
+});
+
+function convertToTwitterPublishUrl(postUrl) {
+    const encodedUrl = encodeURIComponent(postUrl);
+    return `https://publish.twitter.com/?query=${encodedUrl}&widget=Tweet`;
+}
+
+async function fetchTwitterEmbedCode(twitterUrl) {
+    try {
+        // This should be the endpoint on your Render service that fetches the Twitter embed code
+        const apiEndpoint = 'https://twitter.onrender.com/get-twitter-embed';
+        const response = await fetch(apiEndpoint, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ url: twitterUrl }),
+        });
+
+        if (!response.ok) {
+            throw new Error(`Network response was not ok, status: ${response.status}`);
+        }
+
+        const data = await response.json();
+        return data.html; // Return the embed code as a string
+    } catch (error) {
+        console.error('Error fetching Twitter embed code:', error);
+        return ''; // Return an empty string in case of error
+    }
+}
+
+function getDomainFromUrl(url) {
+    const matches = url.match(/^https?:\/\/([^\/]+)/i);
+    const domain = (matches && matches[1]) ? matches[1] : '';
+    return domain.toLowerCase();
+}
+
 async function fetchAndDisplayContent(postUrl, bar, form, contentContainer, submitted) {
     showProgressBar(bar);
     try {
