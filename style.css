@@ -332,10 +332,10 @@ body {
   transition: 0.5s;
 }
 
-.custom-container .custom-card:hover {
+/* .custom-container .custom-card:hover {
   transform: translateY(-10px);
   box-shadow: 0 15px 35px rgba(0, 0, 0, 0.5);
-}
+} */
 
 /* .custom-container .custom-card:before {
   content: "";
