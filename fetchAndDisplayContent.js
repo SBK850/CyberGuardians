@@ -2,34 +2,9 @@ document.addEventListener('DOMContentLoaded', () => {
     const form = document.getElementById('reportForm');
     const bar = document.querySelector('.progressbar .bar');
     const contentContainer = document.getElementById('content');
+    const embedContainer = document.getElementById('embedContainer'); // Make sure this exists in your HTML
     const postUrlInput = document.getElementById('postUrl');
     const submitted = document.querySelector('.submitted');
-
-    form.addEventListener('submit', async (e) => {
-        e.preventDefault();
-        const postUrl = postUrlInput.value;
-
-        if (isValidUrl(postUrl)) {
-            try {
-                // Fetch the content
-                const content = await fetchAndDisplayContent(postUrl, bar, form, contentContainer, submitted);
-                // If content is fetched successfully, analyse it for toxicity
-                if (content !== null) {
-                    await analyseContentForToxicity(content);
-                }
-            } catch (error) {
-                console.error('Error:', error);
-            }
-        } else {
-            console.error('Invalid URL');
-        }
-    });
-});
-
-document.addEventListener('DOMContentLoaded', () => {
-    const form = document.getElementById('reportForm');
-    const postUrlInput = document.getElementById('postUrl');
-    const embedContainer = document.getElementById('embedContainer'); // Make sure this exists in your HTML
 
     form.addEventListener('submit', async (e) => {
         e.preventDefault();
@@ -43,11 +18,22 @@ document.addEventListener('DOMContentLoaded', () => {
                 const twitterPublishUrl = convertToTwitterPublishUrl(postUrl);
                 const embedCode = await fetchTwitterEmbedCode(twitterPublishUrl);
                 embedContainer.innerHTML = embedCode; // Insert the embed code into the page
-            } else if (domain === 'youthvibe.com') {
+                contentContainer.style.display = 'none'; // Hide other content container
+            } else if (domain === 'youthvibe.000webhostapp.com') {
                 // Handle YouthVibe URL
-                // Call the function that handles YouthVibe content
+                try {
+                    const content = await fetchAndDisplayContent(postUrl, bar, form, contentContainer, submitted);
+                    // If content is fetched successfully, analyse it for toxicity
+                    if (content !== null) {
+                        await analyseContentForToxicity(content);
+                    }
+                } catch (error) {
+                    console.error('Error fetching and analyzing YouthVibe content:', error);
+                }
+                embedContainer.innerHTML = ''; // Clear the embed container
             } else {
                 // Handle other URLs
+                console.error('URL domain not recognized for special handling.');
             }
         } else {
             console.error('Invalid URL');
@@ -63,7 +49,7 @@ function convertToTwitterPublishUrl(postUrl) {
 async function fetchTwitterEmbedCode(twitterUrl) {
     try {
         // This should be the endpoint on your Render service that fetches the Twitter embed code
-        const apiEndpoint = 'https://twitter.onrender.com/get-twitter-embed';
+        const apiEndpoint = 'https://twitter-n01a.onrender.com/get-twitter-embed';
         const response = await fetch(apiEndpoint, {
             method: 'POST',
             headers: {
