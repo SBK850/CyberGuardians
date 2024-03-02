@@ -20,10 +20,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 embedContainer.innerHTML = embedCode; // Insert the embed code into the page
                 contentContainer.style.display = 'none'; // Hide other content container
             } else if (domain === 'youthvibe.000webhostapp.com') {
-                // Handle YouthVibe URL
                 try {
                     const content = await fetchAndDisplayContent(postUrl, bar, form, contentContainer, submitted);
-                    // If content is fetched successfully, analyse it for toxicity
                     if (content !== null) {
                         await analyseContentForToxicity(content);
                     }
@@ -32,7 +30,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
                 embedContainer.innerHTML = ''; // Clear the embed container
             } else {
-                // Handle other URLs
                 console.error('URL domain not recognized for special handling.');
             }
         } else {
@@ -42,12 +39,12 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 function convertToTwitterPublishUrl(postUrl) {
-    return `https://publish.twitter.com/?query=${postUrl}&widget=Tweet`;
+    return postUrl;
 }
+
 
 async function fetchTwitterEmbedCode(twitterUrl) {
     try {
-        // This should be the endpoint on your Render service that fetches the Twitter embed code
         const apiEndpoint = 'https://twitter-n01a.onrender.com/get-twitter-embed';
         const response = await fetch(apiEndpoint, {
             method: 'POST',
