@@ -49,7 +49,8 @@
 
     <div
         style="width: 800px; height: auto; margin: 0 auto; display: flex; flex-direction: column; justify-content: center; align-items: center;">
-        <h2 style="text-align: center; margin-bottom: 1rem;">Empowering Action Against Cyberbullying: <span>Report Online Abuse</span></h2>
+        <h2 style="text-align: center; margin-bottom: 1rem;">Empowering Action Against Cyberbullying: <span>Report
+                Online Abuse</span></h2>
         <form id="reportForm" class="input">
             <input type="text" id="postUrl" autofocus="true" required placeholder="Enter Post URL">
             <button type="submit">Submit</button>
@@ -75,21 +76,82 @@
 
         <div class="custom-container">
             <div class="custom-card">
-              <div class="custom-box">
-                <div class="custom-percent">
-                  <svg>
-                    <circle cx="70" cy="70" r="70"></circle>
-                    <circle cx="70" cy="70" r="70"></circle>
-                    <svg>
-                      <div class="custom-num">
-                        <h2><span id="customToxicityScore"></span><span>%</span></h2>
-                      </div>
-                </div>
+                <div class="custom-box">
+                    <div class="custom-percent">
+                        <svg>
+                            <circle cx="70" cy="70" r="70"></circle>
+                            <circle cx="70" cy="70" r="70"></circle>
+                            <svg>
+                                <div class="custom-num">
+                                    <h2><span id="customToxicityScore"></span><span>%</span></h2>
+                                </div>
+                    </div>
                     <h2 class="custom-text">Toxicity Score</h2>
-              </div>
+                </div>
             </div>
-          </div>                    
+        </div>
     </div>
+
+    <form class="form">
+
+        <h2>Report Post as Dangerous</h2>
+        <div class="inputGroup">
+            <input id="dangerousReport" name="dangerousReport" type="checkbox" />
+            <label for="dangerousReport">This post is dangerous and requires immediate action.</label>
+        </div>
+
+        <h2>Type of Content</h2>
+        <div class="inputGroup">
+            <input id="cyberbullying" name="contentType" type="checkbox" />
+            <label for="cyberbullying">Cyberbullying</label>
+        </div>
+
+        <div class="inputGroup">
+            <input id="hateSpeech" name="contentType" type="checkbox" />
+            <label for="hateSpeech">Hate Speech</label>
+        </div>
+
+        <div class="inputGroup">
+            <input id="threatening" name="contentType" type="checkbox" />
+            <label for="threatening">Threatening</label>
+        </div>
+
+        <h2>Severity Level</h2>
+        <div class="inputGroup">
+            <input id="lowSeverity" name="severity" type="radio" />
+            <label for="lowSeverity">Low</label>
+        </div>
+
+        <div class="inputGroup">
+            <input id="mediumSeverity" name="severity" type="radio" />
+            <label for="mediumSeverity">Medium</label>
+        </div>
+
+        <div class="inputGroup">
+            <input id="highSeverity" name="severity" type="radio" />
+            <label for="highSeverity">High</label>
+        </div>
+
+        <h2>Actions to Be Taken</h2>
+        <div class="inputGroup">
+            <input id="contactCyberGuardians" name="action" type="radio" />
+            <label for="contactCyberGuardians">Contact CyberGuardians to remove the content</label>
+        </div>
+
+        <div class="inputGroup">
+            <input id="removeAutomatically" name="action" type="radio" />
+            <label for="removeAutomatically">Remove the post automatically if it's posted in YouthVibe</label>
+        </div>
+    </form>
+
+    <div style="max-width: 600px; margin: 24px auto;">
+        <p><strong>Important Notice:</strong> You can still submit dangerous or cyberbullying content. If it's on
+            Twitter, Facebook, Instagram, Snapchat, or Discord, we will contact them with all the information necessary
+            to remove the post as soon as possible. In some cases, the removal may happen automatically.</p>
+        <p>Cyberbullying is a serious issue that can have lasting effects on individuals. We are committed to combating
+            cyberbullying and creating a safer online environment for everyone.</p>
+    </div>
+
 
 
     <footer>
