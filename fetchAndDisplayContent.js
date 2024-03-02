@@ -42,8 +42,7 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 function convertToTwitterPublishUrl(postUrl) {
-    const encodedUrl = encodeURIComponent(postUrl);
-    return `https://publish.twitter.com/?query=${encodedUrl}&widget=Tweet`;
+    return `https://publish.twitter.com/?query=${postUrl}&widget=Tweet`;
 }
 
 async function fetchTwitterEmbedCode(twitterUrl) {
