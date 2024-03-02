@@ -124,7 +124,7 @@ document.querySelector('.custom-container').style.display = 'none';
 async function removePostIfToxic(toxicityScore, postId) {
     if (toxicityScore > 0.7) { // Check if score is greater than 70%
         try {
-            const removalEndpoint = '/remove-post'; // Your server-side endpoint
+            const removalEndpoint = 'remove-post.php'; // Your server-side endpoint
             const response = await fetch(removalEndpoint, {
                 method: 'POST',
                 headers: {
