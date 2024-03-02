@@ -134,6 +134,7 @@ h2 {
     line-height: 1.1;
     text-wrap: balance;
     margin: 0;
+    margin-bottom: 1rem;
     /* margin-block-end: var(--spacing); */
 
     & span {
