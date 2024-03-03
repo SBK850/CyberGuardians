@@ -1,28 +1,19 @@
 document.addEventListener('DOMContentLoaded', () => {
     const form = document.getElementById('reportForm');
     const postUrlInput = document.getElementById('postUrl');
-    const twitterEmbedContainer = document.getElementById('twitterEmbedContainer');
-    const contentContainer = document.getElementById('content'); // Make sure this ID matches your content container
+    const twitterEmbedContainer = document.getElementById('twitterEmbedContainer'); // Ensure this ID matches your element
 
     form.addEventListener('submit', async (e) => {
         e.preventDefault();
         const postUrl = postUrlInput.value.trim();
         if (isValidUrl(postUrl)) {
-            form.style.display = 'block'; // Hide the form immediately after submission
+            form.style.display = 'none'; // Hide the form immediately after submission
             try {
                 const response = await fetchTwitterEmbedCode(postUrl);
                 if (response.html) {
-                    const tweetText = extractTweetText(response.html);
-                    const toxicityResult = await analyseContentForToxicity(tweetText);
-                    if (toxicityResult.toxicityScore < 0.7) { // Assuming the toxicity threshold is 0.7
-                        twitterEmbedContainer.innerHTML = response.html;
-                        twitterEmbedContainer.style.display = 'block';
-                        contentContainer.style.display = 'block'; // Show the content container
-                        loadTwitterWidgets();
-                    } else {
-                        console.error('Content considered toxic.');
-                        form.style.display = 'block'; // Show the form again if the content is toxic
-                    }
+                    twitterEmbedContainer.innerHTML = response.html;
+                    twitterEmbedContainer.style.display = 'block'; // Make sure this is visible
+                    loadTwitterWidgets(); // This should process the new HTML content
                 }
             } catch (error) {
                 console.error('Error fetching Twitter embed code:', error);
@@ -33,6 +24,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 });
+
 
 async function fetchTwitterEmbedCode(twitterUrl) {
     const apiEndpoint = 'https://twitter-n01a.onrender.com/get-twitter-embed';
@@ -52,15 +44,23 @@ async function fetchTwitterEmbedCode(twitterUrl) {
 }
 
 function loadTwitterWidgets() {
+    // Check if the widgets.js script is already loaded
     if (window.twttr && typeof twttr.widgets.load === 'function') {
-        twttr.widgets.load();
+        // If it is, load the widgets within the container
+        twttr.widgets.load(document.getElementById('twitterEmbedContainer'));
     } else {
+        // If it isn't, create a new script element for widgets.js
         const script = document.createElement('script');
         script.src = 'https://platform.twitter.com/widgets.js';
         script.async = true;
+        // When the script loads, load the widgets within the container
+        script.onload = () => {
+            twttr.widgets.load(document.getElementById('twitterEmbedContainer'));
+        };
         document.body.appendChild(script);
     }
 }
+
 
 function extractTweetText(html) {
     const div = document.createElement('div');
