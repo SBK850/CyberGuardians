@@ -1,7 +1,7 @@
 document.addEventListener('DOMContentLoaded', () => {
     const form = document.getElementById('reportForm');
     const postUrlInput = document.getElementById('postUrl');
-    const twitterEmbedContainer = document.getElementById('twitterEmbedContainer'); // Ensure this ID matches your element
+    const twitterEmbedContainer = document.getElementById('twitterEmbedContainer');
 
     form.addEventListener('submit', async (e) => {
         e.preventDefault();
@@ -12,8 +12,11 @@ document.addEventListener('DOMContentLoaded', () => {
                 const response = await fetchTwitterEmbedCode(postUrl);
                 if (response.html) {
                     twitterEmbedContainer.innerHTML = response.html;
-                    twitterEmbedContainer.style.display = 'block'; // Make sure this is visible
-                    loadTwitterWidgets(); // This should process the new HTML content
+                    twitterEmbedContainer.style.display = 'block';
+                    loadTwitterWidgets();
+                    // Extract the text from the tweet for toxicity analysis
+                    const tweetText = extractTweetText(response.html);
+                    await analyseContentForToxicity(tweetText);
                 }
             } catch (error) {
                 console.error('Error fetching Twitter embed code:', error);
