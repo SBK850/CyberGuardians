@@ -44,7 +44,30 @@ async function fetchTwitterEmbedCode(twitterUrl) {
     }
 
     const data = await response.json();
-    return data; // Return the entire response object for further processing
+    const div = document.createElement('div');
+    div.innerHTML = data.html;
+    const tweetText = div.textContent || div.innerText || "";
+
+    // Perform the toxicity analysis
+    const analysisResult = await analyseContentForToxicity(tweetText);
+    if (analysisResult.toxicityScore < 0.7) { // Example threshold
+        document.getElementById('twitterEmbedContainer').innerHTML = data.html;
+        loadTwitterWidgets();
+    } else {
+        console.error('Content considered toxic.');
+    }
+}
+
+
+function loadTwitterWidgets() {
+    if (window.twttr && typeof twttr.widgets.load === 'function') {
+        twttr.widgets.load();
+    } else {
+        const script = document.createElement('script');
+        script.src = 'https://platform.twitter.com/widgets.js';
+        script.async = true;
+        document.body.appendChild(script);
+    }
 }
 
 function isValidUrl(string) {
@@ -55,7 +78,6 @@ function isValidUrl(string) {
         return false;
     }
 }
-
 
 async function fetchAndDisplayContent(postUrl, bar, form, contentContainer, submitted) {
     showProgressBar(bar);
@@ -110,13 +132,13 @@ async function analyseContentForToxicity(content) {
             throw new Error(`Network response was not ok, status: ${response.status}`);
         }
         const analysisResult = await response.json();
-        
+
         const toxicityScore = analysisResult.score;
         const percentage = Math.round(toxicityScore * 100);
         document.getElementById('customToxicityScore').textContent = percentage;
-        
+
         document.querySelector('.custom-container').style.display = 'block';
-        
+
         setPercentage(percentage);
         updateStrokeColor(toxicityScore);
     } catch (error) {
@@ -142,9 +164,9 @@ function updateStrokeColor(toxicityScore) {
 
 function getColorForScore(scorePercentage) {
     if (scorePercentage >= 70) {
-        return '#ff0000'; 
+        return '#ff0000';
     } else if (scorePercentage >= 30) {
-        return '#ffa500'; 
+        return '#ffa500';
     } else {
         return '#00ff43';
     }
