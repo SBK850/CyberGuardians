@@ -7,24 +7,12 @@ document.addEventListener('DOMContentLoaded', () => {
     const progressBar = document.querySelector('.progressbar');
     const submittedIndicator = document.querySelector('.submitted');
 
-    // Hide or show elements function
-    const toggleDisplay = (elements, displayStyle) => {
-        elements.forEach(element => {
-            if (typeof element === 'string') {
-                document.getElementById(element).style.display = displayStyle;
-            } else if (element instanceof HTMLElement) {
-                element.style.display = displayStyle;
-            }
-        });
-    };
-
     form.addEventListener('submit', async (e) => {
         e.preventDefault();
         const postUrl = postUrlInput.value.trim();
 
-        progressBar.style.display = 'block'; 
+        progressBar.style.display = 'block';
         submittedIndicator.textContent = ''; // Clear any previous submitted message
-        toggleDisplay([twitterEmbedContainer, contentContainer, customContainer], 'none'); // Initially hide all content containers
 
         if (!isValidUrl(postUrl)) {
             console.error('Invalid URL');
@@ -32,7 +20,7 @@ document.addEventListener('DOMContentLoaded', () => {
             return;
         }
 
-        toggleDisplay([form], 'none'); // Hide the form to indicate processing
+        form.style.display = 'none'; // Hide the form to indicate processing
 
         const domain = getDomainFromUrl(postUrl);
         try {
@@ -41,20 +29,21 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (response.html) {
                     twitterEmbedContainer.innerHTML = response.html;
                     loadTwitterWidgets();
-                    toggleDisplay([twitterEmbedContainer], 'block');
                     const tweetText = extractTweetText(response.html);
-                    await analyseContentForToxicity(tweetText, customContainer); // Pass customContainer to function
+                    await analyseContentForToxicity(tweetText, customContainer); // Call analyseContentForToxicity after fetching Twitter embed code
                 }
             } else if (domain.includes('youthvibe.000webhostapp.com')) {
                 await fetchAndDisplayContent(postUrl, contentContainer);
-                toggleDisplay([contentContainer], 'block');
+                const postData = await fetchAndDisplayContent(postUrl, contentContainer); // Call fetchAndDisplayContent and store the response in postData
+                const postContent = postData.Content || ''; // Extract the post content
+                await analyseContentForToxicity(postContent, customContainer); // Call analyseContentForToxicity with the post content
             } else {
                 console.error('URL domain not recognized for special handling.');
             }
         } catch (error) {
             console.error(error);
         } finally {
-            progressBar.style.display = 'none'; 
+            progressBar.style.display = 'none';
             submittedIndicator.textContent = 'Submitted!';
         }
     });
@@ -126,11 +115,16 @@ async function fetchAndDisplayContent(postUrl, contentContainer) {
     const jsonData = await response.json();
     const postData = jsonData[0];
 
+    // Display content container
+    contentContainer.style.display = 'block';
+
+    // Update content
     document.getElementById('profileImageUrl').src = postData.ProfilePictureURL || 'placeholder-image-url.png';
     document.getElementById('posterName').textContent = `${postData.FirstName} ${postData.LastName}` || 'Name not available';
     document.getElementById('posterDetails').textContent = `Age: ${postData.Age} | Education: ${postData.Education}` || 'Details not available';
     document.getElementById('postContent').textContent = postData.Content || 'Content not available';
 }
+
 
 async function analyseContentForToxicity(content, customContainer) {
     const analysisEndpoint = 'https://google-perspective-api.onrender.com/analyse-content';
@@ -152,13 +146,13 @@ async function analyseContentForToxicity(content, customContainer) {
         setPercentage(percentage);
         updateStrokeColor(toxicityScore);
 
-        // Ensure custom container is shown only after analysis results are ready
-        customContainer.style.display = 'block';
     } catch (error) {
         console.error('Error analyzing content:', error);
-        // Handle error state appropriately, e.g., show error message to user
+    } finally {
+        customContainer.style.display = 'block';
     }
 }
+
 
 function setPercentage(percentage) {
     const circle = document.querySelector('.custom-percent svg circle:nth-child(2)');
