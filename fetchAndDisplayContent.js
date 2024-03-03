@@ -183,8 +183,6 @@ function getColorForScore(scorePercentage) {
     }
 }
 
-document.querySelector('.custom-container').style.display = 'none';
-
 async function removePostIfToxic(toxicityScore, postId) {
     if (toxicityScore > 0.7) { // Check if score is greater than 70%
         try {
