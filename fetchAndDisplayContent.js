@@ -2,20 +2,31 @@ document.addEventListener('DOMContentLoaded', () => {
     const form = document.getElementById('reportForm');
     const postUrlInput = document.getElementById('postUrl');
     const twitterEmbedContainer = document.getElementById('twitterEmbedContainer');
+    const contentContainer = document.getElementById('content'); // Make sure this ID matches your content container
 
     form.addEventListener('submit', async (e) => {
         e.preventDefault();
         const postUrl = postUrlInput.value.trim();
         if (isValidUrl(postUrl)) {
+            form.style.display = 'none'; // Hide the form immediately after submission
             try {
                 const response = await fetchTwitterEmbedCode(postUrl);
                 if (response.html) {
-                    twitterEmbedContainer.innerHTML = response.html;
-                    twitterEmbedContainer.style.display = 'block';
-                    loadTwitterWidgets();
+                    const tweetText = extractTweetText(response.html);
+                    const toxicityResult = await analyseContentForToxicity(tweetText);
+                    if (toxicityResult.toxicityScore < 0.7) { // Assuming the toxicity threshold is 0.7
+                        twitterEmbedContainer.innerHTML = response.html;
+                        twitterEmbedContainer.style.display = 'block';
+                        contentContainer.style.display = 'block'; // Show the content container
+                        loadTwitterWidgets();
+                    } else {
+                        console.error('Content considered toxic.');
+                        form.style.display = 'block'; // Show the form again if the content is toxic
+                    }
                 }
             } catch (error) {
                 console.error('Error fetching Twitter embed code:', error);
+                form.style.display = 'block'; // Show the form again if there was an error
             }
         } else {
             console.error('Invalid URL');
@@ -49,6 +60,13 @@ function loadTwitterWidgets() {
         script.async = true;
         document.body.appendChild(script);
     }
+}
+
+function extractTweetText(html) {
+    const div = document.createElement('div');
+    div.innerHTML = html;
+    const tweetParagraph = div.querySelector('p');
+    return tweetParagraph ? tweetParagraph.textContent : "";
 }
 
 function isValidUrl(string) {
