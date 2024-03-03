@@ -7,17 +7,14 @@ document.addEventListener('DOMContentLoaded', () => {
     const progressBar = document.querySelector('.progressbar');
     const submittedIndicator = document.querySelector('.submitted');
 
-    // Hide custom container initially
-    customContainer.style.display = 'none'; 
+    customContainer.style.display = 'none';
 
-    // Function to clear content and toggle display
-    const clearAndToggleDisplay = (elements, displayStyle) => {
+    // Hide or show elements function
+    const toggleDisplay = (elements, displayStyle) => {
         elements.forEach(element => {
             if (typeof element === 'string') {
-                document.getElementById(element).innerHTML = ''; // Clear content
                 document.getElementById(element).style.display = displayStyle;
             } else if (element instanceof HTMLElement) {
-                element.innerHTML = ''; // Clear content
                 element.style.display = displayStyle;
             }
         });
@@ -27,9 +24,9 @@ document.addEventListener('DOMContentLoaded', () => {
         e.preventDefault();
         const postUrl = postUrlInput.value.trim();
 
-        progressBar.style.display = 'block';
+        progressBar.style.display = 'block'; 
         submittedIndicator.textContent = ''; // Clear any previous submitted message
-        clearAndToggleDisplay([twitterEmbedContainer, contentContainer, customContainer], 'none'); // Clear content and hide all content containers
+        toggleDisplay([twitterEmbedContainer, contentContainer, customContainer], 'none'); // Initially hide all content containers
 
         if (!isValidUrl(postUrl)) {
             console.error('Invalid URL');
@@ -37,7 +34,7 @@ document.addEventListener('DOMContentLoaded', () => {
             return;
         }
 
-        form.style.display = 'none'; // Hide the form to indicate processing
+        toggleDisplay([form], 'none'); // Hide the form to indicate processing
 
         const domain = getDomainFromUrl(postUrl);
         try {
@@ -46,27 +43,24 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (response.html) {
                     twitterEmbedContainer.innerHTML = response.html;
                     loadTwitterWidgets();
-                    twitterEmbedContainer.style.display = 'block';
+                    toggleDisplay([twitterEmbedContainer], 'block');
                     const tweetText = extractTweetText(response.html);
                     await analyseContentForToxicity(tweetText, customContainer); // Pass customContainer to function
                 }
             } else if (domain.includes('youthvibe.000webhostapp.com')) {
                 await fetchAndDisplayContent(postUrl, contentContainer);
-                contentContainer.style.display = 'block';
+                toggleDisplay([contentContainer], 'block');
             } else {
                 console.error('URL domain not recognized for special handling.');
             }
         } catch (error) {
-            console.error('Error:', error);
-            // Display error message to the user
+            console.error(error);
         } finally {
-            progressBar.style.display = 'none';
+            progressBar.style.display = 'none'; 
             submittedIndicator.textContent = 'Submitted!';
-            customContainer.style.display = 'block'; // Show custom container regardless of response
         }
     });
 });
-
 
 function getDomainFromUrl(url) {
     const matches = url.match(/^https?:\/\/([^\/]+)/i);
@@ -161,6 +155,8 @@ async function analyseContentForToxicity(content, customContainer) {
 
     setPercentage(percentage);
     updateStrokeColor(toxicityScore);
+
+    customContainer.style.display = 'block'; 
 }
 
 
