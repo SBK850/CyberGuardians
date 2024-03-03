@@ -22,7 +22,7 @@ document.addEventListener('DOMContentLoaded', () => {
         e.preventDefault();
         const postUrl = postUrlInput.value.trim();
 
-        progressBar.style.display = 'block'; 
+        progressBar.style.display = 'block';
         submittedIndicator.textContent = ''; // Clear any previous submitted message
         toggleDisplay([twitterEmbedContainer, contentContainer, customContainer], 'none'); // Initially hide all content containers
 
@@ -54,7 +54,7 @@ document.addEventListener('DOMContentLoaded', () => {
         } catch (error) {
             console.error(error);
         } finally {
-            progressBar.style.display = 'none'; 
+            progressBar.style.display = 'none';
             submittedIndicator.textContent = 'Submitted!';
         }
     });
@@ -82,10 +82,10 @@ async function fetchAndDisplayContent(postUrl, contentContainer) {
         document.getElementById('posterName').textContent = `${postData.FirstName} ${postData.LastName}` || 'Name not available';
         document.getElementById('posterDetails').textContent = `Age: ${postData.Age} | Education: ${postData.Education}` || 'Details not available';
         document.getElementById('postContent').textContent = postData.Content || 'Content not available';
-        
+
         // Set content container to display block
         contentContainer.style.display = 'block';
-        
+
         // Set container-s class elements to display block
         const containerS = document.querySelectorAll('.container-s');
         containerS.forEach(element => {
@@ -120,6 +120,38 @@ async function fetchTwitterEmbedCode(twitterUrl) {
     return await response.json();
 }
 
+async function analyseContentForToxicity(content, customContainer) {
+    const analysisEndpoint = 'https://google-perspective-api.onrender.com/analyse-content';
+    try {
+        const response = await fetch(analysisEndpoint, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ content: content }),
+        });
+
+        if (!response.ok) {
+            throw new Error(`Network response was not ok, status: ${response.status}`);
+        }
+
+        const analysisResult = await response.json();
+
+        const toxicityScore = analysisResult.score;
+        const percentage = Math.round(toxicityScore * 100);
+        document.getElementById('customToxicityScore').textContent = `${percentage}%`;
+
+        setPercentage(percentage);
+        updateStrokeColor(toxicityScore);
+
+        customContainer.style.display = 'block'; // Adjusted to display customContainer after analysis
+    } catch (error) {
+        console.error('Error analyzing content:', error);
+        // Handle error state appropriately, e.g., show error message to user
+    }
+}
+
+
 function getDomainFromUrl(url) {
     const matches = url.match(/^https?:\/\/([^\/]+)/i);
     return matches && matches[1] ? matches[1].replace('www.', '').toLowerCase() : '';
@@ -150,32 +182,6 @@ function isValidUrl(string) {
     } catch (error) {
         return false;
     }
-}
-
-
-async function analyseContentForToxicity(content, customContainer) {
-    const analysisEndpoint = 'https://google-perspective-api.onrender.com/analyse-content';
-    const response = await fetch(analysisEndpoint, {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ content: content }),
-    });
-
-    if (!response.ok) {
-        throw new Error(`Network response was not ok, status: ${response.status}`);
-    }
-    const analysisResult = await response.json();
-
-    const toxicityScore = analysisResult.score;
-    const percentage = Math.round(toxicityScore * 100);
-    document.getElementById('customToxicityScore').textContent = percentage;
-
-    setPercentage(percentage);
-    updateStrokeColor(toxicityScore);
-
-    customContainer.style.display = 'block'; // Adjusted to display customContainer after analysis
 }
 
 function setPercentage(percentage) {
