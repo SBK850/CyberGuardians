@@ -133,9 +133,6 @@ async function fetchAndDisplayContent(postUrl, contentContainer) {
 }
 
 async function analyseContentForToxicity(content, customContainer) {
-
-    const customContainer = document.querySelector('.custom-container');
-
     const analysisEndpoint = 'https://google-perspective-api.onrender.com/analyse-content';
     const response = await fetch(analysisEndpoint, {
         method: 'POST',
