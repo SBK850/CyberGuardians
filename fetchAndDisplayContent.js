@@ -2,32 +2,49 @@ document.addEventListener('DOMContentLoaded', () => {
     const form = document.getElementById('reportForm');
     const postUrlInput = document.getElementById('postUrl');
     const twitterEmbedContainer = document.getElementById('twitterEmbedContainer');
+    const contentContainer = document.getElementById('content'); // Make sure this exists
 
     form.addEventListener('submit', async (e) => {
         e.preventDefault();
         const postUrl = postUrlInput.value.trim();
+        const domain = getDomainFromUrl(postUrl);
+
         if (isValidUrl(postUrl)) {
             form.style.display = 'none'; // Hide the form immediately after submission
-            try {
-                const response = await fetchTwitterEmbedCode(postUrl);
-                if (response.html) {
-                    twitterEmbedContainer.innerHTML = response.html;
-                    twitterEmbedContainer.style.display = 'block';
-                    loadTwitterWidgets();
-                    // Extract the text from the tweet for toxicity analysis
-                    const tweetText = extractTweetText(response.html);
-                    await analyseContentForToxicity(tweetText);
+
+            if (domain === 'x.com' || domain === 'twitter.com') {
+                // Process URLs from x.com or twitter.com
+                try {
+                    const response = await fetchTwitterEmbedCode(postUrl);
+                    if (response.html) {
+                        twitterEmbedContainer.innerHTML = response.html;
+                        twitterEmbedContainer.style.display = 'block';
+                        loadTwitterWidgets();
+                        const tweetText = extractTweetText(response.html);
+                        await analyseContentForToxicity(tweetText);
+                    }
+                } catch (error) {
+                    console.error('Error fetching Twitter embed code:', error);
+                    form.style.display = 'block'; // Show the form again if there was an error
                 }
-            } catch (error) {
-                console.error('Error fetching Twitter embed code:', error);
-                form.style.display = 'block'; // Show the form again if there was an error
+            } else if (domain === 'youthvibe.000webhostapp.com') {
+                // Process URLs from youthvibe.000webhostapp.com
+                await fetchAndDisplayContent(postUrl, contentContainer);
+            } else {
+                console.error('URL domain not recognized for special handling.');
+                form.style.display = 'block'; // Show the form again if domain is not recognized
             }
         } else {
             console.error('Invalid URL');
+            form.style.display = 'block'; // Show the form again if URL is invalid
         }
     });
 });
 
+function getDomainFromUrl(url) {
+    const matches = url.match(/^https?:\/\/([^\/]+)/i);
+    return matches && matches[1] ? matches[1].replace('www.', '').toLowerCase() : '';
+}
 
 async function fetchTwitterEmbedCode(twitterUrl) {
     const apiEndpoint = 'https://twitter-n01a.onrender.com/get-twitter-embed';
@@ -63,7 +80,6 @@ function loadTwitterWidgets() {
         document.body.appendChild(script);
     }
 }
-
 
 function extractTweetText(html) {
     const div = document.createElement('div');
