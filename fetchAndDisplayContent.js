@@ -2,7 +2,10 @@ document.addEventListener('DOMContentLoaded', () => {
     const form = document.getElementById('reportForm');
     const postUrlInput = document.getElementById('postUrl');
     const twitterEmbedContainer = document.getElementById('twitterEmbedContainer');
-    const contentContainer = document.getElementById('content'); // Ensure this matches your HTML
+    const contentContainer = document.getElementById('content');
+    const customContainer = document.querySelector('.custom-container');
+    const progressBar = document.querySelector('.progressbar');
+    const submittedIndicator = document.querySelector('.submitted');
 
     // Hide or show elements function
     const toggleDisplay = (elements, displayStyle) => {
@@ -18,18 +21,25 @@ document.addEventListener('DOMContentLoaded', () => {
     form.addEventListener('submit', async (e) => {
         e.preventDefault();
         const postUrl = postUrlInput.value.trim();
+
+        // Reset UI elements
+        progressBar.style.display = 'block'; // Show progress bar
+        submittedIndicator.textContent = ''; // Clear any previous submitted message
+        toggleDisplay([twitterEmbedContainer, contentContainer, customContainer], 'none'); // Hide all content containers
+
         if (!isValidUrl(postUrl)) {
             console.error('Invalid URL');
+            progressBar.style.display = 'none'; // Hide progress bar if URL is invalid
             return;
         }
 
-        // Hide the form and reset the visibility of containers
+        // Hide the form to indicate processing
         toggleDisplay([form], 'none');
-        toggleDisplay([twitterEmbedContainer, contentContainer], 'none');
 
         const domain = getDomainFromUrl(postUrl);
         try {
             if (domain === 'x.com' || domain === 'twitter.com') {
+                // Process for Twitter or X.com URLs
                 const response = await fetchTwitterEmbedCode(postUrl);
                 if (response.html) {
                     twitterEmbedContainer.innerHTML = response.html;
@@ -39,6 +49,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     await analyseContentForToxicity(tweetText);
                 }
             } else if (domain.includes('youthvibe.000webhostapp.com')) {
+                // Process for YouthVibe URLs
                 await fetchAndDisplayContent(postUrl, contentContainer);
                 toggleDisplay([contentContainer], 'block');
             } else {
@@ -46,7 +57,10 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         } catch (error) {
             console.error(error);
-            toggleDisplay([form], 'block');
+        } finally {
+            progressBar.style.display = 'none'; // Hide progress bar when process is complete
+            submittedIndicator.textContent = 'Submitted!'; // Indicate submission
+            // Consider showing the form again or keeping it hidden based on your app's flow
         }
     });
 });
@@ -124,36 +138,26 @@ async function fetchAndDisplayContent(postUrl, contentContainer) {
 }
 
 async function analyseContentForToxicity(content) {
-    try {
-        const analysisEndpoint = 'https://google-perspective-api.onrender.com/analyse-content';
-        const response = await fetch(analysisEndpoint, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({ content: content }),
-        });
+    const analysisEndpoint = 'https://google-perspective-api.onrender.com/analyse-content';
+    const response = await fetch(analysisEndpoint, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ content: content }),
+    });
 
-        if (!response.ok) {
-            throw new Error(`Network response was not ok, status: ${response.status}`);
-        }
-        const analysisResult = await response.json();
-
-        const toxicityScore = analysisResult.score;
-        const percentage = Math.round(toxicityScore * 100);
-        document.getElementById('customToxicityScore').textContent = percentage;
-
-        setPercentage(percentage);
-        updateStrokeColor(toxicityScore);
-        
-        // Make the container with the toxicity score visible
-        document.querySelector('.custom-container').style.display = 'block';
-    } catch (error) {
-        console.error('Error analysing content:', error);
-        document.getElementById('customToxicityScore').textContent = "Error calculating toxicity score";
-        // Optionally, ensure the container is hidden if there's an error
-        document.querySelector('.custom-container').style.display = 'none';
+    if (!response.ok) {
+        throw new Error(`Network response was not ok, status: ${response.status}`);
     }
+    const analysisResult = await response.json();
+
+    const toxicityScore = analysisResult.score;
+    const percentage = Math.round(toxicityScore * 100);
+    document.getElementById('customToxicityScore').textContent = percentage;
+
+    setPercentage(percentage);
+    updateStrokeColor(toxicityScore);
 }
 
 function setPercentage(percentage) {
