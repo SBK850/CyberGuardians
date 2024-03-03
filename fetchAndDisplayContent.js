@@ -4,17 +4,20 @@ document.addEventListener('DOMContentLoaded', () => {
     const twitterEmbedContainer = document.getElementById('twitterEmbedContainer');
     const contentContainer = document.getElementById('content');
     const customContainer = document.querySelector('.custom-container');
+    const progressBar = document.querySelector('.progressbar');
     const submittedIndicator = document.querySelector('.submitted');
 
-    customContainer.style.display = 'none';
+    // Hide custom container initially
+    customContainer.style.display = 'none'; 
 
+    // Function to clear content and toggle display
     const clearAndToggleDisplay = (elements, displayStyle) => {
         elements.forEach(element => {
             if (typeof element === 'string') {
-                document.getElementById(element).innerHTML = '';
+                document.getElementById(element).innerHTML = ''; // Clear content
                 document.getElementById(element).style.display = displayStyle;
             } else if (element instanceof HTMLElement) {
-                element.innerHTML = '';
+                element.innerHTML = ''; // Clear content
                 element.style.display = displayStyle;
             }
         });
@@ -24,15 +27,17 @@ document.addEventListener('DOMContentLoaded', () => {
         e.preventDefault();
         const postUrl = postUrlInput.value.trim();
 
-        submittedIndicator.textContent = '';
-        clearAndToggleDisplay([twitterEmbedContainer, contentContainer, customContainer], 'none');
+        progressBar.style.display = 'block';
+        submittedIndicator.textContent = ''; // Clear any previous submitted message
+        clearAndToggleDisplay([twitterEmbedContainer, contentContainer, customContainer], 'none'); // Clear content and hide all content containers
 
         if (!isValidUrl(postUrl)) {
             console.error('Invalid URL');
+            progressBar.style.display = 'none'; // Hide progress bar if URL is invalid
             return;
         }
 
-        form.style.display = 'none';
+        form.style.display = 'none'; // Hide the form to indicate processing
 
         const domain = getDomainFromUrl(postUrl);
         try {
@@ -40,9 +45,10 @@ document.addEventListener('DOMContentLoaded', () => {
                 const response = await fetchTwitterEmbedCode(postUrl);
                 if (response.html) {
                     twitterEmbedContainer.innerHTML = response.html;
+                    loadTwitterWidgets();
                     twitterEmbedContainer.style.display = 'block';
                     const tweetText = extractTweetText(response.html);
-                    await analyseContentForToxicity(tweetText, customContainer);
+                    await analyseContentForToxicity(tweetText, customContainer); // Pass customContainer to function
                 }
             } else if (domain.includes('youthvibe.000webhostapp.com')) {
                 await fetchAndDisplayContent(postUrl, contentContainer);
@@ -52,12 +58,15 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         } catch (error) {
             console.error('Error:', error);
+            // Display error message to the user
         } finally {
+            progressBar.style.display = 'none';
             submittedIndicator.textContent = 'Submitted!';
-            customContainer.style.display = 'block';
+            customContainer.style.display = 'block'; // Show custom container regardless of response
         }
     });
 });
+
 
 function getDomainFromUrl(url) {
     const matches = url.match(/^https?:\/\/([^\/]+)/i);
@@ -81,6 +90,17 @@ async function fetchTwitterEmbedCode(twitterUrl) {
     return await response.json();
 }
 
+function loadTwitterWidgets() {
+    if (window.twttr && typeof twttr.widgets.load === 'function') {
+        twttr.widgets.load(document.getElementById('twitterEmbedContainer'));
+    } else {
+        const script = document.createElement('script');
+        script.src = 'https://platform.twitter.com/widgets.js';
+        script.async = true;
+        document.body.appendChild(script);
+    }
+}
+
 function extractTweetText(html) {
     const div = document.createElement('div');
     div.innerHTML = html;
@@ -88,14 +108,13 @@ function extractTweetText(html) {
     return tweetParagraph ? tweetParagraph.textContent : "";
 }
 
-function isValidUrl(url) {
-    var pattern = new RegExp('^(https?:\\/\\/)?' +
-        '((([a-z\\d]([a-z\\d-]*[a-z\\d])*)\\.)+[a-z]{2,}|' +
-        '((\\d{1,3}\\.){3}\\d{1,3}))' +
-        '(\\:\\d+)?(\\/[-a-z\\d%_.~+]*)*' +
-        '(\\?[;&a-z\\d%_.~+=-]*)?' +
-        '(\\#[-a-z\\d_]*)?$', 'i');
-    return pattern.test(url);
+function isValidUrl(string) {
+    try {
+        new URL(string);
+        return true;
+    } catch (error) {
+        return false;
+    }
 }
 
 async function fetchAndDisplayContent(postUrl, contentContainer) {
@@ -144,6 +163,7 @@ async function analyseContentForToxicity(content, customContainer) {
     updateStrokeColor(toxicityScore);
 }
 
+
 function setPercentage(percentage) {
     const circle = document.querySelector('.custom-percent svg circle:nth-child(2)');
     const circumference = circle.getTotalLength();
@@ -167,4 +187,97 @@ function getColorForScore(scorePercentage) {
     } else {
         return '#00ff43';
     }
+}
+
+async function removePostIfToxic(toxicityScore, postId) {
+    if (toxicityScore > 0.7) { // Check if score is greater than 70%
+        try {
+            const removalEndpoint = 'remove-post.php'; // Your server-side endpoint
+            const response = await fetch(removalEndpoint, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ postId: postId }), // Send post ID to identify which post to remove
+            });
+            if (!response.ok) {
+                throw new Error(`Network response was not ok, status: ${response.status}`);
+            }
+            const removalResult = await response.json();
+            console.log('Post removal result:', removalResult.message);
+        } catch (error) {
+            console.error('Error removing post:', error);
+        }
+    }
+}
+
+function isValidUrl(url) {
+    var pattern = new RegExp('^(https?:\\/\\/)?' +
+        '((([a-z\\d]([a-z\\d-]*[a-z\\d])*)\\.)+[a-z]{2,}|' +
+        '((\\d{1,3}\\.){3}\\d{1,3}))' +
+        '(\\:\\d+)?(\\/[-a-z\\d%_.~+]*)*' +
+        '(\\?[;&a-z\\d%_.~+=-]*)?' +
+        '(\\#[-a-z\\d_]*)?$', 'i');
+    return pattern.test(url);
+}
+
+function showProgressBar(bar) {
+    bar.parentElement.style.display = 'flex';
+    bar.style.width = '0%';
+}
+
+function hideProgressBar(bar) {
+    bar.parentElement.style.display = 'none';
+    bar.style.width = '0%';
+}
+
+function animateFormSubmission(submitBtn, bar, submitted, form) {
+    // Animation for form submission
+    form.style.animation = 'linear .3s push';
+    setTimeout(() => {
+        submitBtn.style.scale = '1';
+    }, 300);
+    setTimeout(() => {
+        submitBtn.style.animation = 'ease .5s scaleWidth';
+    }, 900);
+    setTimeout(() => {
+        bar.style.bottom = '0px';
+    }, 1200);
+    setTimeout(() => {
+        submitBtn.style.width = '100%';
+        bar.style.animation = 'ease .7s scaleBar';
+    }, 1390);
+    setTimeout(() => {
+        bar.style.width = '100%';
+    }, 2090);
+    setTimeout(() => {
+        submitBtn.textContent = 'Submitted!';
+        submitted.style.display = 'block';
+    }, 2090);
+    setTimeout(() => {
+        submitted.textContent = 'Submitted!!';
+        submitted.style.display = 'block';
+
+    }, 3000);
+    setTimeout(() => {
+        submitted.style.display = 'none';
+        submitBtn.textContent = 'Loading...';
+        simulateLoadingProcess(bar, () => {
+        });
+    }, 6000);
+}
+
+function simulateLoadingProcess(bar, onComplete) {
+    // Simulation of loading process
+    let loadPercentage = 0;
+    const loadingInterval = setInterval(() => {
+        loadPercentage++;
+        bar.style.width = `${loadPercentage}%`;
+        if (loadPercentage >= 100) {
+            clearInterval(loadingInterval);
+            if (onComplete && typeof onComplete === 'function') {
+                onComplete();
+            }
+        }
+    }, 100);
 }
