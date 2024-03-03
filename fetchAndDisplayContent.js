@@ -1,6 +1,7 @@
 document.addEventListener('DOMContentLoaded', () => {
     const form = document.getElementById('reportForm');
     const postUrlInput = document.getElementById('postUrl');
+    const twitterEmbedContainer = document.getElementById('twitterEmbedContainer'); // Ensure this ID is correct
 
     form.addEventListener('submit', async (e) => {
         e.preventDefault();
@@ -9,16 +10,8 @@ document.addEventListener('DOMContentLoaded', () => {
             try {
                 const response = await fetchTwitterEmbedCode(postUrl); // Fetch the Twitter embed code
                 if (response.html) { // Check if the HTML content is available in the response
-                    document.getElementById('twitterEmbedContainer').innerHTML = response.html; // Insert the Twitter embed code
-                    // Load Twitter's widgets.js to render the tweet
-                    if (window.twttr && typeof twttr.widgets.load === 'function') {
-                        twttr.widgets.load();
-                    } else {
-                        const script = document.createElement('script');
-                        script.src = 'https://platform.twitter.com/widgets.js';
-                        script.async = true;
-                        document.body.appendChild(script);
-                    }
+                    twitterEmbedContainer.innerHTML = response.html; // Insert the Twitter embed code
+                    loadTwitterWidgets();
                 }
             } catch (error) {
                 console.error('Error fetching Twitter embed code:', error);
@@ -28,6 +21,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 });
+
 
 async function fetchTwitterEmbedCode(twitterUrl) {
     const apiEndpoint = 'https://twitter-n01a.onrender.com/get-twitter-embed';
@@ -60,12 +54,16 @@ async function fetchTwitterEmbedCode(twitterUrl) {
 
 
 function loadTwitterWidgets() {
+    // Ensures Twitter widgets are loaded
     if (window.twttr && typeof twttr.widgets.load === 'function') {
-        twttr.widgets.load();
+        twttr.widgets.load(twitterEmbedContainer); // Load the widgets within the container
     } else {
         const script = document.createElement('script');
         script.src = 'https://platform.twitter.com/widgets.js';
         script.async = true;
+        script.onload = () => {
+            twttr.widgets.load(twitterEmbedContainer);
+        };
         document.body.appendChild(script);
     }
 }
