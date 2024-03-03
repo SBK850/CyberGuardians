@@ -42,6 +42,12 @@ function convertToTwitterPublishUrl(postUrl) {
     return postUrl;
 }
 
+function getDomainFromUrl(url) {
+    const matches = url.match(/^https?:\/\/([^\/]+)/i);
+    return matches && matches[1] ? matches[1].toLowerCase() : '';
+}
+
+
 // Fetches Twitter embed code
 async function fetchTwitterEmbedCode(twitterUrl) {
     const apiEndpoint = 'https://twitter-n01a.onrender.com/get-twitter-embed';
