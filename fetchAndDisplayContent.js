@@ -47,7 +47,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
             } else if (domain.includes('youthvibe.000webhostapp.com')) {
                 await fetchAndDisplayContent(postUrl, contentContainer);
-                toggleDisplay([contentContainer], 'flex');
+                toggleDisplay([contentContainer], 'block');
             } else {
                 console.error('URL domain not recognized for special handling.');
             }
@@ -95,7 +95,7 @@ async function fetchAndDisplayContent(postUrl, contentContainer) {
         // Set custom-container class elements to display block
         const customContainers = document.querySelectorAll('.custom-container');
         customContainers.forEach(element => {
-            element.style.display = 'block';
+            element.style.display = 'flex';
         });
 
         // Here we add the call to analyseContentForToxicity using postData.Content
