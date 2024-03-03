@@ -7,8 +7,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const progressBar = document.querySelector('.progressbar');
     const submittedIndicator = document.querySelector('.submitted');
 
-    customContainer.style.display = 'none';
-
     // Hide or show elements function
     const toggleDisplay = (elements, displayStyle) => {
         elements.forEach(element => {
