@@ -47,52 +47,60 @@
         </nav>
     </header>
 
+    <!-- Container for form and instruction -->
     <div
         style="width: 800px; height: auto; margin: 0 auto; display: flex; flex-direction: column; justify-content: center; align-items: center;">
         <h2 style="text-align: center; margin-bottom: 1rem;">Empowering Action Against Cyberbullying: <span>Report
                 Online Abuse</span></h2>
+
+        <!-- Report Form -->
         <form id="reportForm" class="input">
             <input type="text" id="postUrl" autofocus="true" required placeholder="Enter Post URL">
             <button type="submit">Submit</button>
 
+            <!-- Progress bar and submission status -->
             <div class="progressbar">
                 <div class="bar"></div>
             </div>
-
             <div class="submitted"></div>
         </form>
     </div>
 
+    <!-- Container for results display -->
+    <div class="container-s" style="width: 800px; margin: 0 auto; display: none;">
+        <!-- Adjusted to match the form's width and initially hidden -->
+        <!-- Twitter Embed Container -->
+        <div id="twitterEmbedContainer" style="width: 21rem;"></div>
 
-    <div class="container-s">
-        <div id="twitterEmbedContainer" style="width: 21rem;">
-            <div id="content">
-                <div class="profile-image">
-                    <img id="profileImageUrl" src="" alt="Profile Image">
-                </div>
-                <div class="poster-name" id="posterName"></div>
-                <div class="poster-details" id="posterDetails"></div>
-                <div class="post-content" id="postContent"></div>
+        <!-- Content Container -->
+        <div id="content" style="width: initial !important; display: none;"> <!-- Initially hidden -->
+            <div class="profile-image">
+                <img id="profileImageUrl" src="" alt="Profile Image">
             </div>
+            <div class="poster-name" id="posterName"></div>
+            <div class="poster-details" id="posterDetails"></div>
+            <div class="post-content" id="postContent"></div>
+        </div>
 
-            <div class="custom-container">
-                <div class="custom-card">
-                    <div class="custom-box">
-                        <div class="custom-percent">
-                            <svg>
-                                <circle cx="70" cy="70" r="70"></circle>
-                                <circle cx="70" cy="70" r="70"></circle>
-                                <svg>
-                                    <div class="custom-num">
-                                        <h2><span id="customToxicityScore"></span><span>%</span></h2>
-                                    </div>
+        <!-- Custom Container for Toxicity Score -->
+        <div class="custom-container" id="custom-container" style="display: none;"> <!-- Initially hidden -->
+            <div class="custom-card">
+                <div class="custom-box">
+                    <div class="custom-percent">
+                        <svg>
+                            <circle cx="70" cy="70" r="70"></circle>
+                            <circle cx="70" cy="70" r="70"></circle>
+                        </svg>
+                        <div class="custom-num">
+                            <h2><span id="customToxicityScore"></span><span>%</span></h2>
                         </div>
-                        <h2 class="custom-text">Toxicity Score</h2>
                     </div>
+                    <h2 class="custom-text">Toxicity Score</h2>
                 </div>
             </div>
         </div>
     </div>
+
 
     <!-- <form class="form">
 
