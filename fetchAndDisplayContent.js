@@ -84,7 +84,7 @@ async function fetchAndDisplayContent(postUrl, contentContainer) {
         document.getElementById('postContent').textContent = postData.Content || 'Content not available';
 
         // Set content container to display block
-        contentContainer.style.display = 'block';
+        contentContainer.style.display = 'flex';
 
         // Set container-s class elements to display block
         const containerS = document.querySelectorAll('.container-s');
