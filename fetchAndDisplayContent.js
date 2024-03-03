@@ -24,7 +24,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         progressBar.style.display = 'block'; 
         submittedIndicator.textContent = ''; // Clear any previous submitted message
-        toggleDisplay([twitterEmbedContainer, contentContainer, customContainer], 'none'); // Hide all content containers
+        toggleDisplay([twitterEmbedContainer, contentContainer, customContainer], 'none'); // Initially hide all content containers
 
         if (!isValidUrl(postUrl)) {
             console.error('Invalid URL');
@@ -32,23 +32,20 @@ document.addEventListener('DOMContentLoaded', () => {
             return;
         }
 
-        // Hide the form to indicate processing
-        toggleDisplay([form], 'none');
+        toggleDisplay([form], 'none'); // Hide the form to indicate processing
 
         const domain = getDomainFromUrl(postUrl);
         try {
             if (domain === 'x.com' || domain === 'twitter.com') {
-                // Process for Twitter or X.com URLs
                 const response = await fetchTwitterEmbedCode(postUrl);
                 if (response.html) {
                     twitterEmbedContainer.innerHTML = response.html;
                     loadTwitterWidgets();
                     toggleDisplay([twitterEmbedContainer], 'block');
                     const tweetText = extractTweetText(response.html);
-                    await analyseContentForToxicity(tweetText);
+                    await analyseContentForToxicity(tweetText, customContainer); // Pass customContainer to function
                 }
             } else if (domain.includes('youthvibe.000webhostapp.com')) {
-                // Process for YouthVibe URLs
                 await fetchAndDisplayContent(postUrl, contentContainer);
                 toggleDisplay([contentContainer], 'block');
             } else {
@@ -58,7 +55,7 @@ document.addEventListener('DOMContentLoaded', () => {
             console.error(error);
         } finally {
             progressBar.style.display = 'none'; 
-            submittedIndicator.textContent = 'Submitted!'; 
+            submittedIndicator.textContent = 'Submitted!';
         }
     });
 });
@@ -135,7 +132,7 @@ async function fetchAndDisplayContent(postUrl, contentContainer) {
     document.getElementById('postContent').textContent = postData.Content || 'Content not available';
 }
 
-async function analyseContentForToxicity(content) {
+async function analyseContentForToxicity(content, customContainer) {
     const analysisEndpoint = 'https://google-perspective-api.onrender.com/analyse-content';
     const response = await fetch(analysisEndpoint, {
         method: 'POST',
@@ -156,7 +153,10 @@ async function analyseContentForToxicity(content) {
 
     setPercentage(percentage);
     updateStrokeColor(toxicityScore);
+
+    toggleDisplay([customContainer], 'block'); // Show the custom container after analysis
 }
+
 
 function setPercentage(percentage) {
     const circle = document.querySelector('.custom-percent svg circle:nth-child(2)');
@@ -182,6 +182,8 @@ function getColorForScore(scorePercentage) {
         return '#00ff43';
     }
 }
+
+document.querySelector('.custom-container').style.display = 'none';
 
 async function removePostIfToxic(toxicityScore, postId) {
     if (toxicityScore > 0.7) { // Check if score is greater than 70%
