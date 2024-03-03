@@ -97,6 +97,11 @@ async function fetchAndDisplayContent(postUrl, contentContainer) {
         customContainers.forEach(element => {
             element.style.display = 'block';
         });
+
+        // Here we add the call to analyseContentForToxicity using postData.Content
+        if (postData.Content) {
+            await analyseContentForToxicity(postData.Content, document.querySelector('.custom-container'));
+        }
     } catch (error) {
         console.error(error);
         // Handle error appropriately
