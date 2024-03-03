@@ -2,7 +2,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const form = document.getElementById('reportForm');
     const bar = document.querySelector('.progressbar .bar');
     const contentContainer = document.getElementById('content');
-    const embedContainer = document.getElementById('embedContainer'); // Make sure this exists in your HTML
     const postUrlInput = document.getElementById('postUrl');
     const submitted = document.querySelector('.submitted');
 
@@ -16,19 +15,19 @@ document.addEventListener('DOMContentLoaded', () => {
             if (domain === 'twitter.com' || domain === 'x.com') {
                 // Handle Twitter URL
                 const twitterPublishUrl = convertToTwitterPublishUrl(postUrl);
-                const embedCode = await fetchTwitterEmbedCode(twitterPublishUrl);
-                embedContainer.innerHTML = embedCode; // Insert the embed code into the page
-                contentContainer.style.display = 'none'; // Hide other content container
+                try {
+                    const embedCode = await fetchTwitterEmbedCode(twitterPublishUrl);
+                    displayTweetDetails(embedCode, postUrl); // Display tweet details using the embed code and URL
+                } catch (error) {
+                    console.error('Error fetching Twitter embed code:', error);
+                }
             } else if (domain === 'youthvibe.000webhostapp.com') {
                 try {
-                    const content = await fetchAndDisplayContent(postUrl, bar, form, contentContainer, submitted);
-                    if (content !== null) {
-                        await analyseContentForToxicity(content);
-                    }
+                    // Assuming fetchAndDisplayContent function is defined elsewhere to handle YouthVibe content
+                    await fetchAndDisplayContent(postUrl, bar, form, contentContainer, submitted);
                 } catch (error) {
                     console.error('Error fetching and analyzing YouthVibe content:', error);
                 }
-                embedContainer.innerHTML = ''; // Clear the embed container
             } else {
                 console.error('URL domain not recognized for special handling.');
             }
@@ -38,38 +37,59 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 });
 
+// Adjusted to directly return the postUrl
 function convertToTwitterPublishUrl(postUrl) {
     return postUrl;
 }
 
-
+// Fetches Twitter embed code
 async function fetchTwitterEmbedCode(twitterUrl) {
-    try {
-        const apiEndpoint = 'https://twitter-n01a.onrender.com/get-twitter-embed';
-        const response = await fetch(apiEndpoint, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({ url: twitterUrl }),
-        });
+    const apiEndpoint = 'https://twitter-n01a.onrender.com/get-twitter-embed';
+    const response = await fetch(apiEndpoint, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ url: twitterUrl }),
+    });
 
-        if (!response.ok) {
-            throw new Error(`Network response was not ok, status: ${response.status}`);
-        }
+    if (!response.ok) {
+        throw new Error(`Network response was not ok, status: ${response.status}`);
+    }
 
-        const data = await response.json();
-        return data.html; // Return the embed code as a string
-    } catch (error) {
-        console.error('Error fetching Twitter embed code:', error);
-        return ''; // Return an empty string in case of error
+    const data = await response.json();
+    return data; // Return the entire response object
+}
+
+function displayTweetDetails(data, postUrl) {
+    const posterName = postUrl.split('/')[3]; // Extract poster name from URL
+    const postDate = data.html.match(/&mdash; .+ \((.+)\)<\/a><\/blockquote>/)[1]; // Extract post date from HTML
+
+    // Set details in the HTML
+    document.getElementById('posterName').textContent = posterName || 'Not found';
+    document.getElementById('posterDetails').textContent = postDate || 'Not found';
+    document.getElementById('postContent').innerHTML = data.html; // Use innerHTML to render the tweet embed code
+
+    // Ensure Twitter's widgets.js script is loaded to process the embed
+    if (window.twttr && typeof twttr.widgets.load === 'function') {
+        twttr.widgets.load();
+    } else {
+        const script = document.createElement('script');
+        script.setAttribute('src', 'https://platform.twitter.com/widgets.js');
+        script.setAttribute('charset', 'utf-8');
+        script.setAttribute('async', '');
+        document.body.appendChild(script);
     }
 }
 
-function getDomainFromUrl(url) {
-    const matches = url.match(/^https?:\/\/([^\/]+)/i);
-    const domain = (matches && matches[1]) ? matches[1] : '';
-    return domain.toLowerCase();
+// Validation function for URLs
+function isValidUrl(string) {
+    try {
+        new URL(string);
+        return true;
+    } catch (error) {
+        return false;
+    }
 }
 
 async function fetchAndDisplayContent(postUrl, bar, form, contentContainer, submitted) {
