@@ -7,6 +7,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const progressBar = document.querySelector('.progressbar');
     const submittedIndicator = document.querySelector('.submitted');
 
+    customContainer.style.display = 'none';
+
     // Hide or show elements function
     const toggleDisplay = (elements, displayStyle) => {
         elements.forEach(element => {
@@ -154,7 +156,7 @@ async function analyseContentForToxicity(content, customContainer) {
     setPercentage(percentage);
     updateStrokeColor(toxicityScore);
 
-    toggleDisplay([customContainer], 'block'); // Show the custom container after analysis
+    customContainer.style.display = 'block'; 
 }
 
 
