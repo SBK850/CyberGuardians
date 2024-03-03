@@ -110,20 +110,51 @@ async function fetchAndDisplayContent(postUrl, contentContainer) {
 
 async function fetchTwitterEmbedCode(twitterUrl) {
     const apiEndpoint = 'https://twitter-n01a.onrender.com/get-twitter-embed';
-    const response = await fetch(apiEndpoint, {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ url: twitterUrl }),
-    });
+    try {
+        const response = await fetch(apiEndpoint, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ url: twitterUrl }),
+        });
 
-    if (!response.ok) {
-        throw new Error(`Network response was not ok, status: ${response.status}`);
+        if (!response.ok) {
+            throw new Error(`Network response was not ok, status: ${response.status}`);
+        }
+
+        const responseData = await response.json();
+        const twitterHtml = responseData.html;
+
+        // Display the twitter embed container
+        twitterEmbedContainer.innerHTML = twitterHtml;
+        loadTwitterWidgets();
+        toggleDisplay([twitterEmbedContainer], 'block');
+
+        // Extract text from the tweet HTML
+        const tweetText = extractTweetText(twitterHtml);
+
+        // Analyze content for toxicity and display custom container if needed
+        await analyseContentForToxicity(tweetText, customContainer);
+
+        // Set container-s class elements to display block
+        const containerS = document.querySelectorAll('.container-s');
+        containerS.forEach(element => {
+            element.style.display = 'block';
+        });
+
+        // Set custom-container class elements to display block
+        const customContainers = document.querySelectorAll('.custom-container');
+        customContainers.forEach(element => {
+            element.style.display = 'block';
+        });
+
+    } catch (error) {
+        console.error(error);
+        // Handle error appropriately
     }
-
-    return await response.json();
 }
+
 
 async function analyseContentForToxicity(content, customContainer) {
     const analysisEndpoint = 'https://google-perspective-api.onrender.com/analyse-content';
