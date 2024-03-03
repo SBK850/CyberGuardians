@@ -22,8 +22,7 @@ document.addEventListener('DOMContentLoaded', () => {
         e.preventDefault();
         const postUrl = postUrlInput.value.trim();
 
-        // Reset UI elements
-        progressBar.style.display = 'block'; // Show progress bar
+        progressBar.style.display = 'block'; 
         submittedIndicator.textContent = ''; // Clear any previous submitted message
         toggleDisplay([twitterEmbedContainer, contentContainer, customContainer], 'none'); // Hide all content containers
 
@@ -58,9 +57,8 @@ document.addEventListener('DOMContentLoaded', () => {
         } catch (error) {
             console.error(error);
         } finally {
-            progressBar.style.display = 'none'; // Hide progress bar when process is complete
-            submittedIndicator.textContent = 'Submitted!'; // Indicate submission
-            // Consider showing the form again or keeping it hidden based on your app's flow
+            progressBar.style.display = 'none'; 
+            submittedIndicator.textContent = 'Submitted!'; 
         }
     });
 });
