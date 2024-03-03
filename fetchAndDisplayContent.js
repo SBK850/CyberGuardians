@@ -118,12 +118,6 @@ async function fetchTwitterEmbedCode(twitterUrl) {
         body: JSON.stringify({ url: twitterUrl }),
     });
 
-    // Set container-s class elements to display block
-    const containerS = document.querySelectorAll('.container-s');
-    containerS.forEach(element => {
-        element.style.display = 'block';
-    });
-
     if (!response.ok) {
         throw new Error(`Network response was not ok, status: ${response.status}`);
     }
