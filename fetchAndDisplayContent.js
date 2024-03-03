@@ -119,7 +119,8 @@ async function fetchAndDisplayContent(postUrl, bar, form, contentContainer, subm
         document.getElementById('profileImageUrl').src = postData.ProfilePictureURL || 'placeholder-image-url.png';
         document.getElementById('posterName').textContent = `${postData.FirstName} ${postData.LastName}` || 'Name not available';
         document.getElementById('posterDetails').textContent = `Age: ${postData.Age} | Education: ${postData.Education}` || 'Details not available';
-        document.getElementById('postContent').textContent = postData.Content || 'Content not available';
+        document.getElementById('postContent').textContent = postData.Content || 'Content not available';]
+        document.getElementById('container-s').style.display = 'block';
 
         contentContainer.style.display = 'block';
         form.style.display = 'none';
