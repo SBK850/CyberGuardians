@@ -124,26 +124,36 @@ async function fetchAndDisplayContent(postUrl, contentContainer) {
 }
 
 async function analyseContentForToxicity(content) {
-    const analysisEndpoint = 'https://google-perspective-api.onrender.com/analyse-content';
-    const response = await fetch(analysisEndpoint, {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ content: content }),
-    });
+    try {
+        const analysisEndpoint = 'https://google-perspective-api.onrender.com/analyse-content';
+        const response = await fetch(analysisEndpoint, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ content: content }),
+        });
 
-    if (!response.ok) {
-        throw new Error(`Network response was not ok, status: ${response.status}`);
+        if (!response.ok) {
+            throw new Error(`Network response was not ok, status: ${response.status}`);
+        }
+        const analysisResult = await response.json();
+
+        const toxicityScore = analysisResult.score;
+        const percentage = Math.round(toxicityScore * 100);
+        document.getElementById('customToxicityScore').textContent = percentage;
+
+        setPercentage(percentage);
+        updateStrokeColor(toxicityScore);
+        
+        // Make the container with the toxicity score visible
+        document.querySelector('.custom-container').style.display = 'block';
+    } catch (error) {
+        console.error('Error analysing content:', error);
+        document.getElementById('customToxicityScore').textContent = "Error calculating toxicity score";
+        // Optionally, ensure the container is hidden if there's an error
+        document.querySelector('.custom-container').style.display = 'none';
     }
-    const analysisResult = await response.json();
-
-    const toxicityScore = analysisResult.score;
-    const percentage = Math.round(toxicityScore * 100);
-    document.getElementById('customToxicityScore').textContent = percentage;
-
-    setPercentage(percentage);
-    updateStrokeColor(toxicityScore);
 }
 
 function setPercentage(percentage) {
