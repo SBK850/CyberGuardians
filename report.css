@@ -167,7 +167,7 @@ form input {
 	word-wrap: break-word; /* Ensures long words do not overflow */
 }
 
-#content {
+#content, #custom-container {
 	display: none;
 }
 

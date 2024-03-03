@@ -156,9 +156,8 @@ async function analyseContentForToxicity(content, customContainer) {
     setPercentage(percentage);
     updateStrokeColor(toxicityScore);
 
-    customContainer.style.display = 'block'; 
+    customContainer.style.display = 'block'; // Adjusted to display customContainer after analysis
 }
-
 
 function setPercentage(percentage) {
     const circle = document.querySelector('.custom-percent svg circle:nth-child(2)');
