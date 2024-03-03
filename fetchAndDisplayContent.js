@@ -89,7 +89,7 @@ async function fetchAndDisplayContent(postUrl, contentContainer) {
         // Set container-s class elements to display block
         const containerS = document.querySelectorAll('.container-s');
         containerS.forEach(element => {
-            element.style.display = 'block';
+            element.style.display = 'flex';
         });
 
         // Set custom-container class elements to display block
