@@ -1,16 +1,17 @@
 document.addEventListener('DOMContentLoaded', () => {
     const form = document.getElementById('reportForm');
     const postUrlInput = document.getElementById('postUrl');
-    const twitterEmbedContainer = document.getElementById('twitterEmbedContainer'); // Ensure this ID is correct
+    const twitterEmbedContainer = document.getElementById('twitterEmbedContainer');
 
     form.addEventListener('submit', async (e) => {
         e.preventDefault();
         const postUrl = postUrlInput.value;
         if (isValidUrl(postUrl)) {
             try {
-                const response = await fetchTwitterEmbedCode(postUrl); // Fetch the Twitter embed code
-                if (response.html) { // Check if the HTML content is available in the response
-                    twitterEmbedContainer.innerHTML = response.html; // Insert the Twitter embed code
+                const response = await fetchTwitterEmbedCode(postUrl);
+                if (response.html) {
+                    twitterEmbedContainer.innerHTML = response.html;
+                    twitterEmbedContainer.style.display = 'block'; // Ensure this is set to block
                     loadTwitterWidgets();
                 }
             } catch (error) {
@@ -54,9 +55,8 @@ async function fetchTwitterEmbedCode(twitterUrl) {
 
 
 function loadTwitterWidgets() {
-    // Ensures Twitter widgets are loaded
     if (window.twttr && typeof twttr.widgets.load === 'function') {
-        twttr.widgets.load(twitterEmbedContainer); // Load the widgets within the container
+        twttr.widgets.load(twitterEmbedContainer);
     } else {
         const script = document.createElement('script');
         script.src = 'https://platform.twitter.com/widgets.js';
