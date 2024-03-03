@@ -102,11 +102,16 @@ async function fetchAndDisplayContent(postUrl, contentContainer) {
         if (postData.Content) {
             await analyseContentForToxicity(postData.Content, document.querySelector('.custom-container'));
         }
+
+        // Set twitterEmbedContainer to display block
+        twitterEmbedContainer.style.display = 'block';
+
     } catch (error) {
         console.error(error);
         // Handle error appropriately
     }
 }
+
 
 async function fetchTwitterEmbedCode(twitterUrl) {
     const apiEndpoint = 'https://twitter-n01a.onrender.com/get-twitter-embed';
