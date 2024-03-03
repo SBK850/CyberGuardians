@@ -60,10 +60,43 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 });
 
-function getDomainFromUrl(url) {
-    const matches = url.match(/^https?:\/\/([^\/]+)/i);
-    return matches && matches[1] ? matches[1].replace('www.', '').toLowerCase() : '';
+async function fetchAndDisplayContent(postUrl, contentContainer) {
+    const apiEndpoint = 'https://cyberguardians.onrender.com/scrape';
+    try {
+        const response = await fetch(apiEndpoint, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ url: postUrl }),
+        });
+
+        if (!response.ok) {
+            throw new Error(`Network response was not ok, status: ${response.status}`);
+        }
+
+        const jsonData = await response.json();
+        const postData = jsonData[0];
+
+        document.getElementById('profileImageUrl').src = postData.ProfilePictureURL || 'placeholder-image-url.png';
+        document.getElementById('posterName').textContent = `${postData.FirstName} ${postData.LastName}` || 'Name not available';
+        document.getElementById('posterDetails').textContent = `Age: ${postData.Age} | Education: ${postData.Education}` || 'Details not available';
+        document.getElementById('postContent').textContent = postData.Content || 'Content not available';
+        
+        // Set content container to display block
+        contentContainer.style.display = 'block';
+        
+        // Set container-s class elements to display block
+        const containerS = document.querySelectorAll('.container-s');
+        containerS.forEach(element => {
+            element.style.display = 'block';
+        });
+    } catch (error) {
+        console.error(error);
+        // Handle error appropriately
+    }
 }
+
 
 async function fetchTwitterEmbedCode(twitterUrl) {
     const apiEndpoint = 'https://twitter-n01a.onrender.com/get-twitter-embed';
@@ -80,6 +113,11 @@ async function fetchTwitterEmbedCode(twitterUrl) {
     }
 
     return await response.json();
+}
+
+function getDomainFromUrl(url) {
+    const matches = url.match(/^https?:\/\/([^\/]+)/i);
+    return matches && matches[1] ? matches[1].replace('www.', '').toLowerCase() : '';
 }
 
 function loadTwitterWidgets() {
@@ -109,28 +147,6 @@ function isValidUrl(string) {
     }
 }
 
-async function fetchAndDisplayContent(postUrl, contentContainer) {
-    const apiEndpoint = 'https://cyberguardians.onrender.com/scrape';
-    const response = await fetch(apiEndpoint, {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ url: postUrl }),
-    });
-
-    if (!response.ok) {
-        throw new Error(`Network response was not ok, status: ${response.status}`);
-    }
-
-    const jsonData = await response.json();
-    const postData = jsonData[0];
-
-    document.getElementById('profileImageUrl').src = postData.ProfilePictureURL || 'placeholder-image-url.png';
-    document.getElementById('posterName').textContent = `${postData.FirstName} ${postData.LastName}` || 'Name not available';
-    document.getElementById('posterDetails').textContent = `Age: ${postData.Age} | Education: ${postData.Education}` || 'Details not available';
-    document.getElementById('postContent').textContent = postData.Content || 'Content not available';
-}
 
 async function analyseContentForToxicity(content, customContainer) {
     const analysisEndpoint = 'https://google-perspective-api.onrender.com/analyse-content';
