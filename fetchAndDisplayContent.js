@@ -5,13 +5,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
     form.addEventListener('submit', async (e) => {
         e.preventDefault();
-        const postUrl = postUrlInput.value;
+        const postUrl = postUrlInput.value.trim();
         if (isValidUrl(postUrl)) {
             try {
                 const response = await fetchTwitterEmbedCode(postUrl);
                 if (response.html) {
                     twitterEmbedContainer.innerHTML = response.html;
-                    twitterEmbedContainer.style.display = 'block'; // Ensure this is set to block
+                    twitterEmbedContainer.style.display = 'block';
                     loadTwitterWidgets();
                 }
             } catch (error) {
@@ -22,7 +22,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 });
-
 
 async function fetchTwitterEmbedCode(twitterUrl) {
     const apiEndpoint = 'https://twitter-n01a.onrender.com/get-twitter-embed';
@@ -38,32 +37,16 @@ async function fetchTwitterEmbedCode(twitterUrl) {
         throw new Error(`Network response was not ok, status: ${response.status}`);
     }
 
-    const data = await response.json();
-    const div = document.createElement('div');
-    div.innerHTML = data.html;
-    const tweetText = div.textContent || div.innerText || "";
-
-    // Perform the toxicity analysis
-    const analysisResult = await analyseContentForToxicity(tweetText);
-    if (analysisResult.toxicityScore < 0.7) { // Example threshold
-        document.getElementById('twitterEmbedContainer').innerHTML = data.html;
-        loadTwitterWidgets();
-    } else {
-        console.error('Content considered toxic.');
-    }
+    return await response.json();
 }
-
 
 function loadTwitterWidgets() {
     if (window.twttr && typeof twttr.widgets.load === 'function') {
-        twttr.widgets.load(twitterEmbedContainer);
+        twttr.widgets.load();
     } else {
         const script = document.createElement('script');
         script.src = 'https://platform.twitter.com/widgets.js';
         script.async = true;
-        script.onload = () => {
-            twttr.widgets.load(twitterEmbedContainer);
-        };
         document.body.appendChild(script);
     }
 }
