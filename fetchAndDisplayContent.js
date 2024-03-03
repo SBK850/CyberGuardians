@@ -2,41 +2,51 @@ document.addEventListener('DOMContentLoaded', () => {
     const form = document.getElementById('reportForm');
     const postUrlInput = document.getElementById('postUrl');
     const twitterEmbedContainer = document.getElementById('twitterEmbedContainer');
-    const contentContainer = document.getElementById('content'); // Make sure this exists
+    const contentContainer = document.getElementById('content'); // Ensure this matches your HTML
+
+    // Hide or show elements function
+    const toggleDisplay = (elements, displayStyle) => {
+        elements.forEach(element => {
+            if (typeof element === 'string') {
+                document.getElementById(element).style.display = displayStyle;
+            } else if (element instanceof HTMLElement) {
+                element.style.display = displayStyle;
+            }
+        });
+    };
 
     form.addEventListener('submit', async (e) => {
         e.preventDefault();
         const postUrl = postUrlInput.value.trim();
+        if (!isValidUrl(postUrl)) {
+            console.error('Invalid URL');
+            return;
+        }
+
+        // Hide the form and reset the visibility of containers
+        toggleDisplay([form], 'none');
+        toggleDisplay([twitterEmbedContainer, contentContainer], 'none');
+
         const domain = getDomainFromUrl(postUrl);
-
-        if (isValidUrl(postUrl)) {
-            form.style.display = 'none'; // Hide the form immediately after submission
-
+        try {
             if (domain === 'x.com' || domain === 'twitter.com') {
-                // Process URLs from x.com or twitter.com
-                try {
-                    const response = await fetchTwitterEmbedCode(postUrl);
-                    if (response.html) {
-                        twitterEmbedContainer.innerHTML = response.html;
-                        twitterEmbedContainer.style.display = 'block';
-                        loadTwitterWidgets();
-                        const tweetText = extractTweetText(response.html);
-                        await analyseContentForToxicity(tweetText);
-                    }
-                } catch (error) {
-                    console.error('Error fetching Twitter embed code:', error);
-                    form.style.display = 'block'; // Show the form again if there was an error
+                const response = await fetchTwitterEmbedCode(postUrl);
+                if (response.html) {
+                    twitterEmbedContainer.innerHTML = response.html;
+                    loadTwitterWidgets();
+                    toggleDisplay([twitterEmbedContainer], 'block');
+                    const tweetText = extractTweetText(response.html);
+                    await analyseContentForToxicity(tweetText);
                 }
-            } else if (domain === 'youthvibe.000webhostapp.com') {
-                // Process URLs from youthvibe.000webhostapp.com
+            } else if (domain.includes('youthvibe.000webhostapp.com')) {
                 await fetchAndDisplayContent(postUrl, contentContainer);
+                toggleDisplay([contentContainer], 'block');
             } else {
                 console.error('URL domain not recognized for special handling.');
-                form.style.display = 'block'; // Show the form again if domain is not recognized
             }
-        } else {
-            console.error('Invalid URL');
-            form.style.display = 'block'; // Show the form again if URL is invalid
+        } catch (error) {
+            console.error(error);
+            toggleDisplay([form], 'block');
         }
     });
 });
@@ -64,19 +74,12 @@ async function fetchTwitterEmbedCode(twitterUrl) {
 }
 
 function loadTwitterWidgets() {
-    // Check if the widgets.js script is already loaded
     if (window.twttr && typeof twttr.widgets.load === 'function') {
-        // If it is, load the widgets within the container
         twttr.widgets.load(document.getElementById('twitterEmbedContainer'));
     } else {
-        // If it isn't, create a new script element for widgets.js
         const script = document.createElement('script');
         script.src = 'https://platform.twitter.com/widgets.js';
         script.async = true;
-        // When the script loads, load the widgets within the container
-        script.onload = () => {
-            twttr.widgets.load(document.getElementById('twitterEmbedContainer'));
-        };
         document.body.appendChild(script);
     }
 }
@@ -97,74 +100,50 @@ function isValidUrl(string) {
     }
 }
 
-async function fetchAndDisplayContent(postUrl, bar, form, contentContainer, submitted) {
-    showProgressBar(bar);
-    try {
-        const apiEndpoint = 'https://cyberguardians.onrender.com/scrape';
-        const response = await fetch(apiEndpoint, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({ url: postUrl }),
-        });
+async function fetchAndDisplayContent(postUrl, contentContainer) {
+    const apiEndpoint = 'https://cyberguardians.onrender.com/scrape';
+    const response = await fetch(apiEndpoint, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ url: postUrl }),
+    });
 
-        if (!response.ok) {
-            throw new Error(`Network response was not ok, status: ${response.status}`);
-        }
-
-        const jsonData = await response.json();
-        const postData = jsonData[0];
-
-        document.getElementById('profileImageUrl').src = postData.ProfilePictureURL || 'placeholder-image-url.png';
-        document.getElementById('posterName').textContent = `${postData.FirstName} ${postData.LastName}` || 'Name not available';
-        document.getElementById('posterDetails').textContent = `Age: ${postData.Age} | Education: ${postData.Education}` || 'Details not available';
-        document.getElementById('postContent').textContent = postData.Content || 'Content not available';
-        document.getElementById('container-s').style.display = 'block';
-        document.getElementById('content').style.display = 'block';
-
-        contentContainer.style.display = 'block';
-        form.style.display = 'none';
-
-        return postData.Content;
-    } catch (error) {
-        console.error('Fetch Error:', error);
-        contentContainer.style.display = 'none';
-        form.style.display = 'block';
-    } finally {
-        hideProgressBar(bar);
+    if (!response.ok) {
+        throw new Error(`Network response was not ok, status: ${response.status}`);
     }
-    return null;
+
+    const jsonData = await response.json();
+    const postData = jsonData[0];
+
+    document.getElementById('profileImageUrl').src = postData.ProfilePictureURL || 'placeholder-image-url.png';
+    document.getElementById('posterName').textContent = `${postData.FirstName} ${postData.LastName}` || 'Name not available';
+    document.getElementById('posterDetails').textContent = `Age: ${postData.Age} | Education: ${postData.Education}` || 'Details not available';
+    document.getElementById('postContent').textContent = postData.Content || 'Content not available';
 }
 
-
 async function analyseContentForToxicity(content) {
-    try {
-        const analysisEndpoint = 'https://google-perspective-api.onrender.com/analyse-content';
-        const response = await fetch(analysisEndpoint, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({ content: content }),
-        });
-        if (!response.ok) {
-            throw new Error(`Network response was not ok, status: ${response.status}`);
-        }
-        const analysisResult = await response.json();
+    const analysisEndpoint = 'https://google-perspective-api.onrender.com/analyse-content';
+    const response = await fetch(analysisEndpoint, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ content: content }),
+    });
 
-        const toxicityScore = analysisResult.score;
-        const percentage = Math.round(toxicityScore * 100);
-        document.getElementById('customToxicityScore').textContent = percentage;
-
-        document.querySelector('.custom-container').style.display = 'block';
-
-        setPercentage(percentage);
-        updateStrokeColor(toxicityScore);
-    } catch (error) {
-        console.error('Error analysing content:', error);
-        document.getElementById('customToxicityScore').textContent = "Error calculating toxicity score";
+    if (!response.ok) {
+        throw new Error(`Network response was not ok, status: ${response.status}`);
     }
+    const analysisResult = await response.json();
+
+    const toxicityScore = analysisResult.score;
+    const percentage = Math.round(toxicityScore * 100);
+    document.getElementById('customToxicityScore').textContent = percentage;
+
+    setPercentage(percentage);
+    updateStrokeColor(toxicityScore);
 }
 
 function setPercentage(percentage) {
