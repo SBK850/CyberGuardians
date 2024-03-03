@@ -1,35 +1,27 @@
 document.addEventListener('DOMContentLoaded', () => {
     const form = document.getElementById('reportForm');
-    const bar = document.querySelector('.progressbar .bar');
-    const contentContainer = document.getElementById('content');
     const postUrlInput = document.getElementById('postUrl');
-    const submitted = document.querySelector('.submitted');
 
     form.addEventListener('submit', async (e) => {
         e.preventDefault();
         const postUrl = postUrlInput.value;
-
         if (isValidUrl(postUrl)) {
-            const domain = getDomainFromUrl(postUrl);
-
-            if (domain === 'twitter.com' || domain === 'x.com') {
-                // Handle Twitter URL
-                const twitterPublishUrl = convertToTwitterPublishUrl(postUrl);
-                try {
-                    const embedCode = await fetchTwitterEmbedCode(twitterPublishUrl);
-                    displayTweetDetails(embedCode, postUrl); // Display tweet details using the embed code and URL
-                } catch (error) {
-                    console.error('Error fetching Twitter embed code:', error);
+            try {
+                const response = await fetchTwitterEmbedCode(postUrl); // Fetch the Twitter embed code
+                if (response.html) { // Check if the HTML content is available in the response
+                    document.getElementById('twitterEmbedContainer').innerHTML = response.html; // Insert the Twitter embed code
+                    // Load Twitter's widgets.js to render the tweet
+                    if (window.twttr && typeof twttr.widgets.load === 'function') {
+                        twttr.widgets.load();
+                    } else {
+                        const script = document.createElement('script');
+                        script.src = 'https://platform.twitter.com/widgets.js';
+                        script.async = true;
+                        document.body.appendChild(script);
+                    }
                 }
-            } else if (domain === 'youthvibe.000webhostapp.com') {
-                try {
-                    // Assuming fetchAndDisplayContent function is defined elsewhere to handle YouthVibe content
-                    await fetchAndDisplayContent(postUrl, bar, form, contentContainer, submitted);
-                } catch (error) {
-                    console.error('Error fetching and analyzing YouthVibe content:', error);
-                }
-            } else {
-                console.error('URL domain not recognized for special handling.');
+            } catch (error) {
+                console.error('Error fetching Twitter embed code:', error);
             }
         } else {
             console.error('Invalid URL');
@@ -37,18 +29,6 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 });
 
-// Adjusted to directly return the postUrl
-function convertToTwitterPublishUrl(postUrl) {
-    return postUrl;
-}
-
-function getDomainFromUrl(url) {
-    const matches = url.match(/^https?:\/\/([^\/]+)/i);
-    return matches && matches[1] ? matches[1].toLowerCase() : '';
-}
-
-
-// Fetches Twitter embed code
 async function fetchTwitterEmbedCode(twitterUrl) {
     const apiEndpoint = 'https://twitter-n01a.onrender.com/get-twitter-embed';
     const response = await fetch(apiEndpoint, {
@@ -64,31 +44,7 @@ async function fetchTwitterEmbedCode(twitterUrl) {
     }
 
     const data = await response.json();
-    return data; 
-}
-
-function displayTweetDetails(data, postUrl) {
-    const posterName = postUrl.split('/')[3]; 
-
-    const postDate = data.html.match(/&mdash; .+ \((.+)\)<\/a><\/blockquote>/) ? 
-                     data.html.match(/&mdash; .+ \((.+)\)<\/a><\/blockquote>/)[1] : 
-                     'Not found';
-
-    document.getElementById('posterName').textContent = posterName || 'Not found';
-    document.getElementById('posterDetails').textContent = postDate;
-    document.getElementById('postContent').innerHTML = data.html; 
-
-    if (window.twttr && typeof twttr.widgets.load === 'function') {
-        twttr.widgets.load();
-    } else {
-        const script = document.createElement('script');
-        script.src = 'https://platform.twitter.com/widgets.js';
-        script.charset = 'utf-8';
-        script.async = true;
-        document.body.appendChild(script);
-    }
-
-    document.getElementById('content').style.display = 'block';
+    return data; // Return the entire response object for further processing
 }
 
 function isValidUrl(string) {
@@ -99,6 +55,7 @@ function isValidUrl(string) {
         return false;
     }
 }
+
 
 async function fetchAndDisplayContent(postUrl, bar, form, contentContainer, submitted) {
     showProgressBar(bar);
