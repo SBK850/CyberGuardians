@@ -8,7 +8,7 @@ document.addEventListener('DOMContentLoaded', () => {
         e.preventDefault();
         const postUrl = postUrlInput.value.trim();
         if (isValidUrl(postUrl)) {
-            form.style.display = 'none'; // Hide the form immediately after submission
+            form.style.display = 'block'; // Hide the form immediately after submission
             try {
                 const response = await fetchTwitterEmbedCode(postUrl);
                 if (response.html) {
