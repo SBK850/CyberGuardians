@@ -95,7 +95,7 @@ async function fetchAndDisplayContent(postUrl, contentContainer) {
         // Set custom-container class elements to display block
         const customContainers = document.querySelectorAll('.custom-container');
         customContainers.forEach(element => {
-            element.style.display = 'block';
+            element.style.display = 'flex';
         });
 
         // Here we add the call to analyseContentForToxicity using postData.Content
