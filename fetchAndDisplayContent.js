@@ -58,22 +58,20 @@ async function fetchTwitterEmbedCode(twitterUrl) {
     }
 
     const data = await response.json();
-    return data; // Return the entire response object
+    return data; 
 }
 
 function displayTweetDetails(data, postUrl) {
-    const posterName = postUrl.split('/')[3]; // Extract poster name from URL
-    // Attempt to extract the date from the HTML response, fallback to 'Not found'
+    const posterName = postUrl.split('/')[3]; 
+
     const postDate = data.html.match(/&mdash; .+ \((.+)\)<\/a><\/blockquote>/) ? 
                      data.html.match(/&mdash; .+ \((.+)\)<\/a><\/blockquote>/)[1] : 
                      'Not found';
 
-    // Set details in the HTML
     document.getElementById('posterName').textContent = posterName || 'Not found';
     document.getElementById('posterDetails').textContent = postDate;
-    document.getElementById('postContent').innerHTML = data.html; // Render the tweet embed code
+    document.getElementById('postContent').innerHTML = data.html; 
 
-    // Ensure Twitter's widgets.js script is loaded to process the embed
     if (window.twttr && typeof twttr.widgets.load === 'function') {
         twttr.widgets.load();
     } else {
@@ -84,11 +82,9 @@ function displayTweetDetails(data, postUrl) {
         document.body.appendChild(script);
     }
 
-    // Make the #content div visible
     document.getElementById('content').style.display = 'block';
 }
 
-// Validation function for URLs
 function isValidUrl(string) {
     try {
         new URL(string);
