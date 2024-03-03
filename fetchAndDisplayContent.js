@@ -91,12 +91,17 @@ async function fetchAndDisplayContent(postUrl, contentContainer) {
         containerS.forEach(element => {
             element.style.display = 'block';
         });
+
+        // Set custom-container class elements to display block
+        const customContainers = document.querySelectorAll('.custom-container');
+        customContainers.forEach(element => {
+            element.style.display = 'block';
+        });
     } catch (error) {
         console.error(error);
         // Handle error appropriately
     }
 }
-
 
 async function fetchTwitterEmbedCode(twitterUrl) {
     const apiEndpoint = 'https://twitter-n01a.onrender.com/get-twitter-embed';
