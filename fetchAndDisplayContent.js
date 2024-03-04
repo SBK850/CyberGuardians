@@ -1,26 +1,17 @@
-$(function() {
-    $(".btn").on("click", function() {
-        var $this = $(this); // Cache $(this) for use inside setTimeout or async calls
+$(function () {
+    $(".btn").on("click", function () {
+        var $this = $(this); // Cache this to use inside setTimeout callbacks
         $this.addClass('btn-progress');
-        
-        // Immediately start the fill loop effect
-        $this.addClass('btn-fill-loop');
-        
-        // Placeholder for starting the async operation (e.g., fetchAndDisplayContent)
-        // This is where you would typically call your async function
-        asyncOperation().then(() => {
-            // Once the async operation is complete, remove the fill loop effect
-            $this.removeClass('btn-fill-loop');
-            // Add btn-complete class or any other class to indicate completion
-            $this.addClass('btn-complete');
-        }).catch((error) => {
-            // Handle any errors
-            $this.removeClass('btn-fill-loop'); // Ensure to stop the loop in case of error
-            console.error(error);
-        });
+        setTimeout(function () {
+            $this.addClass('btn-fill');
+        }, 500);
+
+        setTimeout(function () {
+            $this.removeClass('btn-fill');
+            // Do not automatically add 'btn-complete' here
+        }, 4100);
     });
 });
-
 
 
 document.addEventListener('DOMContentLoaded', () => {
