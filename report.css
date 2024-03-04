@@ -1,13 +1,5 @@
 form {
-	overflow: hidden;
 	width: 450px;
-	position: relative;
-	display: flex;
-	align-items: center;
-	border-radius: 7px;
-	box-shadow: 0 0 30px -10px;
-	background: #fff;
-	/* margin: auto; */
 }
 
 form input {
