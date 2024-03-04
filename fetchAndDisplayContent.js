@@ -115,17 +115,45 @@ document.addEventListener('DOMContentLoaded', () => {
     async function analyseContentForToxicity(content, customContainer) {
         const analysisEndpoint = 'https://google-perspective-api.onrender.com/analyse-content';
         try {
-            const analysisResult = await fetchJsonData(analysisEndpoint, { content: content });
+            const response = await fetch(analysisEndpoint, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ content: content }),
+            });
+    
+            if (!response.ok) {
+                throw new Error(`Network response was not ok, status: ${response.status}`);
+            }
+    
+            const analysisResult = await response.json();
             const toxicityScore = analysisResult.score;
             const percentage = Math.round(toxicityScore * 100);
-            document.getElementById('customToxicityScore').textContent = `Toxicity score: ${percentage}%`;
-            customContainer.style.display = 'block'; // Show analysis results
+    
+            // Update the toxicity score in the custom container
+            document.getElementById('customToxicityScore').textContent = `${percentage}%`;
+    
+            // Adjust the second circle to reflect the toxicity score
+            const circles = customContainer.querySelectorAll('.custom-percent svg circle:nth-child(2)');
+            if (circles.length > 0) {
+                const circle = circles[0];
+                const radius = circle.r.baseVal.value;
+                const circumference = radius * 2 * Math.PI;
+    
+                circle.style.strokeDasharray = `${circumference} ${circumference}`;
+                const offset = circumference - percentage / 100 * circumference;
+                circle.style.strokeDashoffset = offset;
+            }
+    
+            // Show the custom container with the toxicity score
+            customContainer.style.display = 'block';
         } catch (error) {
-            console.error('Analysis error:', error);
-            alert('Error analyzing content.'); // Example of user feedback, consider a more integrated UI approach
+            console.error('Error analyzing content:', error);
+            // Handle error state appropriately, e.g., show error message to user
         }
     }
-
+    
     function loadTwitterWidgets() {
         const script = document.createElement('script');
         script.src = 'https://platform.twitter.com/widgets.js';
