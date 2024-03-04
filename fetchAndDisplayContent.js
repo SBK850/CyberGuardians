@@ -205,7 +205,7 @@ var basicTimeline = anime.timeline({
     autoplay: false
 });
 
-var pathEls = $(".check");
+var pathEls = $(".check-xt");
 for (var i = 0; i < pathEls.length; i++) {
     var pathEl = pathEls[i];
     var offset = anime.setDashoffset(pathEl);
@@ -214,12 +214,12 @@ for (var i = 0; i < pathEls.length; i++) {
 
 basicTimeline
     .add({
-        targets: ".text",
+        targets: ".text-xt",
         duration: 1,
         opacity: "0"
     })
     .add({
-        targets: ".button",
+        targets: ".button-xt",
         duration: 1300,
         height: 10,
         width: 300,
@@ -228,18 +228,18 @@ basicTimeline
         borderRadius: 100
     })
     .add({
-        targets: ".progress-bar",
+        targets: ".progress-bar-xt",
         duration: 2000,
         width: 300,
         easing: "linear"
     })
     .add({
-        targets: ".button",
+        targets: ".button-xt",
         width: 0,
         duration: 1
     })
     .add({
-        targets: ".progress-bar",
+        targets: ".progress-bar-xt",
         width: 80,
         height: 80,
         delay: 500,
@@ -248,16 +248,16 @@ basicTimeline
         backgroundColor: "#71DFBE"
     })
     .add({
-        targets: pathEl,
+        targets: pathEls,
         strokeDashoffset: [offset, 0],
         duration: 200,
         easing: "easeInOutSine"
     });
 
-$(".button").click(function () {
+$(".button-xt").click(function () {
     basicTimeline.play();
 });
 
-$(".text").click(function () {
+$(".text-xt").click(function () {
     basicTimeline.play();
 });
