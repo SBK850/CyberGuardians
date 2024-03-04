@@ -1,5 +1,4 @@
 $(function () {
-    // Simplify the initial button animation setup.
     $(".btn").on("click", function () {
         animateButtonProgress($(this));
     });
@@ -7,30 +6,40 @@ $(function () {
 
 function animateButtonProgress(btn) {
     btn.addClass('btn-progress');
-    // Simulate loading to 90%, stopping there until we get a response.
     setTimeout(() => {
-        btn.addClass('btn-fill'); // Start filling animation
-        // Adjust the animation to simulate progress up to 90%.
+        btn.addClass('btn-fill'); // Start the fill animation, simulating progress.
     }, 500);
+    // Note: The animation completion will be triggered after data fetching.
 }
 
 function completeButtonAnimation() {
     var btn = $(".btn");
-    // Complete the animation based on the response
+    // Complete the animation based on the response.
     setTimeout(() => {
         btn.removeClass('btn-fill').addClass('btn-complete');
-    }, 100); // Adjust this timing based on when your response is actually received
+    }, 100); // Adjust timing as needed based on actual response time.
 }
 
 document.addEventListener('DOMContentLoaded', () => {
     const form = document.getElementById('reportForm');
+    const postUrlInput = document.getElementById('postUrl');
+    const twitterEmbedContainer = document.getElementById('twitterEmbedContainer');
+    const contentContainer = document.getElementById('content');
+    const customContainer = document.querySelector('.custom-container');
+
+    // Simplified and unified isValidUrl function
+    const isValidUrl = (string) => {
+        try {
+            new URL(string);
+            return true;
+        } catch (error) {
+            return false;
+        }
+    };
+
     form.addEventListener('submit', async (e) => {
         e.preventDefault();
-        const postUrlInput = document.getElementById('postUrl');
         const postUrl = postUrlInput.value.trim();
-        const twitterEmbedContainer = document.getElementById('twitterEmbedContainer');
-        const contentContainer = document.getElementById('content');
-        const customContainer = document.querySelector('.custom-container');
 
         if (!isValidUrl(postUrl)) {
             alert('Invalid URL');
@@ -48,11 +57,11 @@ document.addEventListener('DOMContentLoaded', () => {
             } else {
                 throw new Error('URL domain not recognized for special handling.');
             }
-            completeButtonAnimation(); // Complete the button animation on success.
+            completeButtonAnimation(); // Trigger button completion on successful data fetching.
         } catch (error) {
             console.error(error);
             alert('Error! ' + error.message);
-            completeButtonAnimation(); // Also complete the button animation on error.
+            completeButtonAnimation(); // Also complete the button animation on fetch error.
         }
     });
 
