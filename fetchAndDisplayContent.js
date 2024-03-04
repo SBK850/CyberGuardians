@@ -160,7 +160,6 @@ async function fetchTwitterEmbedCode(twitterUrl) {
     }
 }
 
-
 async function analyseContentForToxicity(content, customContainer) {
     const analysisEndpoint = 'https://google-perspective-api.onrender.com/analyse-content';
     try {
@@ -177,15 +176,13 @@ async function analyseContentForToxicity(content, customContainer) {
         }
 
         const analysisResult = await response.json();
-
         const toxicityScore = analysisResult.score;
         const percentage = Math.round(toxicityScore * 100);
         document.getElementById('customToxicityScore').textContent = `${percentage}%`;
 
-        setPercentage(percentage);
-        updateStrokeColor(toxicityScore);
-
-        customContainer.style.display = 'block'; // Adjusted to display customContainer after analysis
+        // Show customContainer and container-s after analysis
+        customContainer.style.display = 'block';
+        document.getElementById('container-s').style.display = 'block'; // Assuming the ID of the element is 'container-s'
     } catch (error) {
         console.error('Error analyzing content:', error);
         // Handle error state appropriately, e.g., show error message to user
@@ -199,12 +196,18 @@ function getDomainFromUrl(url) {
 }
 
 function loadTwitterWidgets() {
+    const twitterEmbedContainer = document.getElementById('twitterEmbedContainer');
     if (window.twttr && typeof twttr.widgets.load === 'function') {
-        twttr.widgets.load(document.getElementById('twitterEmbedContainer'));
+        twttr.widgets.load(twitterEmbedContainer);
+        twitterEmbedContainer.style.display = 'block'; // Show after loading widgets
     } else {
         const script = document.createElement('script');
         script.src = 'https://platform.twitter.com/widgets.js';
         script.async = true;
+        script.onload = () => { // Use onload to ensure the script has loaded
+            twttr.widgets.load(twitterEmbedContainer);
+            twitterEmbedContainer.style.display = 'block'; // Show after script is loaded and widgets are initialized
+        };
         document.body.appendChild(script);
     }
 }
