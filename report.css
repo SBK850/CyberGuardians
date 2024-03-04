@@ -10,21 +10,6 @@ form {
 	/* margin: auto; */
 }
 
-form button {
-	background: #f89267;
-	position: absolute;
-	border: none;
-	padding: 10px;
-	width: 25%;
-	color: #fff;
-	height: 100%;
-	font-size: 25px;
-	right: 0;
-	border-radius: 7px;
-	scale: 0.83;
-	transition: scale 0.3s ease;
-}
-
 form input {
 	width: 75%;
 	padding: 20px;
@@ -33,36 +18,6 @@ form input {
 	border: none;
 	background-color: white;
 	color: black;
-}
-
-.progressbar {
-	position: absolute;
-	width: 100%;
-	bottom: -5px;
-	height: 5px;
-	background: #ddd;
-	transition: bottom 0.2s ease;
-}
-
-.progressbar .bar {
-	width: 0%;
-	height: 100%;
-	background: #f86767;
-}
-
-.submitted {
-	width: 100%;
-	height: 100%;
-	background: #111;
-	top: 100%;
-	left: 0;
-	position: absolute;
-	display: flex;
-	align-items: center;
-	justify-content: center;
-	font-size: 30px;
-	color: #eee;
-	transition: top 0.3s ease;
 }
 
 @keyframes push {
