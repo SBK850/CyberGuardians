@@ -1,23 +1,18 @@
 $(function() {
-  var btn = $(".btn");
-  
-  btn.on("click", function() {
-    
-    $(this).addClass('btn-progress');
-    setTimeout(function() {
-      btn.addClass('btn-fill')
-    }, 500);
-    
-    setTimeout(function() {
-      btn.removeClass('btn-fill')
-    }, 4100);
-    
-    setTimeout(function() {
-      btn.addClass('btn-complete')
-    }, 4100);
-  
-  });
-})
+    $(".btn").on("click", function() {
+        var $this = $(this); // Cache this to use inside setTimeout callbacks
+        $this.addClass('btn-progress');
+        setTimeout(function() {
+            $this.addClass('btn-fill');
+        }, 500);
+
+        setTimeout(function() {
+            $this.removeClass('btn-fill');
+            // Do not automatically add 'btn-complete' here
+        }, 4100);
+    });
+});
+
 
 document.addEventListener('DOMContentLoaded', () => {
     const form = document.getElementById('reportForm');
@@ -81,8 +76,12 @@ document.addEventListener('DOMContentLoaded', () => {
             toggleDisplay([twitterEmbedContainer], 'block');
             const tweetText = extractTweetText(responseHtml);
             await analyseContentForToxicity(tweetText, customContainer);
+    
+            // Add 'btn-complete' class after processing is done
+            $(".btn").addClass('btn-complete');
         }
     }
+    
 
     async function fetchAndDisplayContent(postUrl, contentContainer) {
         const apiEndpoint = 'https://cyberguardians.onrender.com/scrape';
@@ -115,6 +114,8 @@ document.addEventListener('DOMContentLoaded', () => {
             if (postData.Content) {
                 await analyseContentForToxicity(postData.Content, customContainer);
             }
+
+            $(".btn").addClass('btn-complete');
 
         } catch (error) {
             console.error(error);
