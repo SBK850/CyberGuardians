@@ -3,13 +3,14 @@ form {
 }
 
 form input {
-	width: 75%;
-	padding: 20px;
-	font-size: 25px;
-	outline: none;
-	border: none;
-	background-color: white;
-	color: black;
+    width: 100%;
+    padding: 20px;
+    font-size: 25px;
+    outline: none;
+    background-color: white;
+    color: black;
+    margin: 0rem;
+    border-radius: 1rem;
 }
 
 @keyframes push {
