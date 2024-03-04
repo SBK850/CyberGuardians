@@ -85,22 +85,31 @@ $(document).ready(function () {
         return interval; // Return the interval ID for later clearance
     }
 
-    // Encapsulated form submission logic
     async function submitForm(postUrl) {
-        return new Promise(async (resolve, reject) => {
-            const domain = getDomainFromUrl(postUrl);
-
-            setTimeout(() => {
-                // This is a placeholder for your actual asynchronous operation
-                if (domain) { // Simulate successful domain processing
-                    resolve();
-                } else {
-                    reject(new Error("Failed to process domain"));
-                }
-            }, 2000); // Simulate a network request delay
-        });
+        const domain = getDomainFromUrl(postUrl);
+    
+        // Adjusted to handle both twitter.com and x.com domains
+        if (domain === 'twitter.com' || domain === 'x.com') {
+            return processTwitterUrl(postUrl); // Assuming this returns a Promise
+        } else if (domain.includes('youthvibe.000webhostapp.com')) {
+            return fetchAndDisplayContent(postUrl, contentContainer); // Also assuming a Promise return
+        } else {
+            // Handle unrecognized domains or perform a generic operation
+            return new Promise((resolve, reject) => {
+                // Simulate a delay to mimic network request
+                setTimeout(() => {
+                    // Mock a condition to simulate success or failure
+                    const success = Math.random() > 0.5;
+                    if (success) {
+                        resolve("Generic content processed successfully.");
+                    } else {
+                        reject(new Error("Failed to process generic content."));
+                    }
+                }, 2000);
+            });
+        }
     }
-
+    
     async function processTwitterUrl(postUrl) {
         const responseHtml = await fetchTwitterEmbedCode(postUrl);
         if (responseHtml) {
