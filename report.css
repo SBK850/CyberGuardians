@@ -10,6 +10,7 @@ form input {
 	background-color: white;
 	color: black;
 	margin: 0rem;
+	margin-bottom: 2rem;
 	border-radius: 1rem;
 }
 
@@ -209,14 +210,6 @@ form input {
 code {
 	background-color: #9aa3ac;
 	padding: 0 8px;
-}
-
-html,
-body {
-	background: #fff;
-	display: flex;
-	justify-content: center;
-	align-items: center;
 }
 
 /* Button */
