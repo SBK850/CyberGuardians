@@ -284,3 +284,16 @@ code {
 		transform: scaleX(1);
 	}
 }
+
+@keyframes fillEffect {
+	0% {
+		background-size: 0% 100%;
+	}
+	100% {
+		background-size: 100% 100%;
+	}
+}
+
+.btn-fill-loop {
+	animation: fillEffect 2s linear infinite;
+}
