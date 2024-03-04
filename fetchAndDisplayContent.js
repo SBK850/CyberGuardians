@@ -1,115 +1,78 @@
-$(document).ready(function () {
-    const form = $('#reportForm');
-    const btn = $(".btn");
-    const postUrlInput = $('#postUrl');
-    const twitterEmbedContainer = $('#twitterEmbedContainer');
-    const contentContainer = $('#content');
-    const customContainer = $('.custom-container');
+$(function() {
+  var btn = $(".btn");
+  
+  btn.on("click", function() {
+    
+    $(this).addClass('btn-progress');
+    setTimeout(function() {
+      btn.addClass('btn-fill')
+    }, 500);
+    
+    setTimeout(function() {
+      btn.removeClass('btn-fill')
+    }, 4100);
+    
+    setTimeout(function() {
+      btn.addClass('btn-complete')
+    }, 4100);
+  
+  });
+})
+
+document.addEventListener('DOMContentLoaded', () => {
+    const form = document.getElementById('reportForm');
+    const postUrlInput = document.getElementById('postUrl');
+    const twitterEmbedContainer = document.getElementById('twitterEmbedContainer');
+    const contentContainer = document.getElementById('content');
+    const customContainer = document.querySelector('.custom-container');
+
+    // Hide or show elements function
+    const toggleDisplay = (elements, displayStyle) => {
+        elements.forEach(element => {
+            if (typeof element === 'string') {
+                document.getElementById(element).style.display = displayStyle;
+            } else if (element instanceof HTMLElement) {
+                element.style.display = displayStyle;
+            }
+        });
+    };
 
     // Simplified and unified isValidUrl function
-    function isValidUrl(string) {
+    const isValidUrl = (string) => {
         try {
             new URL(string);
             return true;
         } catch (error) {
             return false;
         }
-    }
+    };
 
-    // Function to get domain from URL
-    function getDomainFromUrl(url) {
-        const matches = url.match(/^https?:\/\/([^\/]+)/i);
-        return matches && matches[1] ? matches[1].replace('www.', '').toLowerCase() : '';
-    }
-
-    // Hide or show elements function
-    function toggleDisplay(elements, displayStyle) {
-        elements.forEach(element => {
-            if (element instanceof jQuery) {
-                element.css('display', displayStyle);
-            } else {
-                $(element).css('display', displayStyle);
-            }
-        });
-    }
-
-    // Form submission handling
-    form.on("submit", async function (e) {
+    form.addEventListener('submit', async (e) => {
         e.preventDefault();
-        btn.find('.progress').remove(); // Remove any existing progress indicator
-        btn.prepend('<div class="progress" style="width: 0%; background-color: #4CAF50; height: 100%; position: absolute;"></div>'); // Add new progress indicator
-
-        const postUrl = postUrlInput.val().trim();
+        const postUrl = postUrlInput.value.trim();
 
         if (!isValidUrl(postUrl)) {
             alert('Invalid URL');
-            $('.progress').remove();
             return;
         }
 
-        const intervalId = simulateProgress(); // Start simulating progress
+        toggleDisplay([twitterEmbedContainer, contentContainer, customContainer], 'none');
 
+        const domain = getDomainFromUrl(postUrl);
         try {
-            // Reset display states
-            toggleDisplay([twitterEmbedContainer, contentContainer, customContainer], 'none');
-
-            await submitForm(postUrl);
-
-            clearInterval(intervalId); // Stop the simulation
-            $('.progress').css('width', '100%'); // Immediately complete the progress
-
-            setTimeout(() => {
-                btn.find('.progress').remove(); // Optionally remove the progress bar
-                btn.addClass('btn-complete'); // Indicate completion
-            }, 500); // Short delay to show completion
+            if (domain === 'x.com' || domain === 'twitter.com') {
+                await processTwitterUrl(postUrl);
+            } else if (domain.includes('youthvibe.000webhostapp.com')) {
+                await fetchAndDisplayContent(postUrl, contentContainer);
+            } else {
+                throw new Error('URL domain not recognized for special handling.');
+            }
         } catch (error) {
-            clearInterval(intervalId); // Ensure to stop the simulation on error
-            $('.progress').remove();
             console.error(error);
             alert('Error! ' + error.message);
         }
     });
 
-    // Function to simulate progress
-    function simulateProgress() {
-        let progress = 0;
-        const interval = setInterval(() => {
-            if (progress < 90) {
-                progress += 1; // Increment progress
-                $('.progress').css('width', progress + '%');
-            } else {
-                clearInterval(interval); // Stop the simulation at 90%
-            }
-        }, 100); // Adjust timing as needed
-
-        return interval; // Return the interval ID for later clearance
-    }
-
-    async function submitForm(postUrl) {
-        const domain = getDomainFromUrl(postUrl);
-    
-        // Adjusted to handle both twitter.com and x.com domains
-        if (domain === 'twitter.com' || domain === 'x.com') {
-            return processTwitterUrl(postUrl); // Assuming this returns a Promise
-        } else if (domain.includes('youthvibe.000webhostapp.com')) {
-            return fetchAndDisplayContent(postUrl, contentContainer); // Also assuming a Promise return
-        } else {
-            // Handle unrecognized domains or perform a generic operation
-            return new Promise((resolve, reject) => {
-                // Simulate a delay to mimic network request
-                setTimeout(() => {
-                    // Mock a condition to simulate success or failure
-                    const success = Math.random() > 0.5;
-                    if (success) {
-                        resolve("Generic content processed successfully.");
-                    } else {
-                        reject(new Error("Failed to process generic content."));
-                    }
-                }, 2000);
-            });
-        }
-    }
-    
     async function processTwitterUrl(postUrl) {
         const responseHtml = await fetchTwitterEmbedCode(postUrl);
         if (responseHtml) {
