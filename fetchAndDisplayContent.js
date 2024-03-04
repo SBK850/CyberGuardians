@@ -4,7 +4,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const twitterEmbedContainer = document.getElementById('twitterEmbedContainer');
     const contentContainer = document.getElementById('content');
     const customContainer = document.querySelector('.custom-container');
-    const progressBar = document.querySelector('.progressbar');
     const submittedIndicator = document.querySelector('.submitted');
 
     // Hide or show elements function
@@ -22,17 +21,17 @@ document.addEventListener('DOMContentLoaded', () => {
         e.preventDefault();
         const postUrl = postUrlInput.value.trim();
 
-        progressBar.style.display = 'block';
+        // Directly hide the form and clear the submittedIndicator without using progress bars
+        form.style.display = 'none';
         submittedIndicator.textContent = ''; // Clear any previous submitted message
-        toggleDisplay([twitterEmbedContainer, contentContainer, customContainer], 'none'); // Initially hide all content containers
+        toggleDisplay([twitterEmbedContainer, contentContainer, customContainer], 'none');
 
         if (!isValidUrl(postUrl)) {
             console.error('Invalid URL');
-            progressBar.style.display = 'none'; // Hide progress bar if URL is invalid
+            // Show error message or handle invalid URL case here
+            form.style.display = 'block'; // Show the form again for correction
             return;
         }
-
-        toggleDisplay([form], 'none'); // Hide the form to indicate processing
 
         const domain = getDomainFromUrl(postUrl);
         try {
@@ -43,7 +42,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     loadTwitterWidgets();
                     toggleDisplay([twitterEmbedContainer], 'block');
                     const tweetText = extractTweetText(response.html);
-                    await analyseContentForToxicity(tweetText, customContainer); // Pass customContainer to function
+                    await analyseContentForToxicity(tweetText, customContainer);
                 }
             } else if (domain.includes('youthvibe.000webhostapp.com')) {
                 await fetchAndDisplayContent(postUrl, contentContainer);
@@ -54,8 +53,9 @@ document.addEventListener('DOMContentLoaded', () => {
         } catch (error) {
             console.error(error);
         } finally {
-            progressBar.style.display = 'none';
+            // Indicate submission has been processed
             submittedIndicator.textContent = 'Submitted!';
+            form.style.display = 'block'; // Optionally show the form again
         }
     });
 });
@@ -287,65 +287,4 @@ function isValidUrl(url) {
         '(\\?[;&a-z\\d%_.~+=-]*)?' +
         '(\\#[-a-z\\d_]*)?$', 'i');
     return pattern.test(url);
-}
-
-function showProgressBar(bar) {
-    bar.parentElement.style.display = 'flex';
-    bar.style.width = '0%';
-}
-
-function hideProgressBar(bar) {
-    bar.parentElement.style.display = 'none';
-    bar.style.width = '0%';
-}
-
-function animateFormSubmission(submitBtn, bar, submitted, form) {
-    // Animation for form submission
-    form.style.animation = 'linear .3s push';
-    setTimeout(() => {
-        submitBtn.style.scale = '1';
-    }, 300);
-    setTimeout(() => {
-        submitBtn.style.animation = 'ease .5s scaleWidth';
-    }, 900);
-    setTimeout(() => {
-        bar.style.bottom = '0px';
-    }, 1200);
-    setTimeout(() => {
-        submitBtn.style.width = '100%';
-        bar.style.animation = 'ease .7s scaleBar';
-    }, 1390);
-    setTimeout(() => {
-        bar.style.width = '100%';
-    }, 2090);
-    setTimeout(() => {
-        submitBtn.textContent = 'Submitted!';
-        submitted.style.display = 'block';
-    }, 2090);
-    setTimeout(() => {
-        submitted.textContent = 'Submitted!!';
-        submitted.style.display = 'block';
-
-    }, 3000);
-    setTimeout(() => {
-        submitted.style.display = 'none';
-        submitBtn.textContent = 'Loading...';
-        simulateLoadingProcess(bar, () => {
-        });
-    }, 6000);
-}
-
-function simulateLoadingProcess(bar, onComplete) {
-    // Simulation of loading process
-    let loadPercentage = 0;
-    const loadingInterval = setInterval(() => {
-        loadPercentage++;
-        bar.style.width = `${loadPercentage}%`;
-        if (loadPercentage >= 100) {
-            clearInterval(loadingInterval);
-            if (onComplete && typeof onComplete === 'function') {
-                onComplete();
-            }
-        }
-    }, 100);
 }
