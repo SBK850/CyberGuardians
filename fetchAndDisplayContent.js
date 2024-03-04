@@ -202,11 +202,14 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 $(function () {
-    var btn = $("a.btn");
+    var form = $("#reportForm");
 
-    btn.on("click", function () {
+    form.on("submit", async function (e) {
+        e.preventDefault(); // Prevent the default form submission
 
-        $(this).addClass('btn-progress');
+        var btn = $(this).find('.btn');
+
+        btn.addClass('btn-progress');
         setTimeout(function () {
             btn.addClass('btn-fill')
         }, 500);
@@ -219,5 +222,6 @@ $(function () {
             btn.addClass('btn-complete')
         }, 4100);
 
+        // Now you can handle form submission logic here, or call form.submit() to submit the form programmatically.
     });
-})
+});
