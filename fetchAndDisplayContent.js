@@ -69,13 +69,39 @@ document.addEventListener('DOMContentLoaded', () => {
 
     async function fetchAndDisplayContent(postUrl, contentContainer) {
         const apiEndpoint = 'https://cyberguardians.onrender.com/scrape';
-        const postData = await fetchJsonData(apiEndpoint, { url: postUrl });
+        try {
+            const response = await fetch(apiEndpoint, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ url: postUrl }),
+            });
 
-        if (postData) {
-            updateContentDisplay(postData, contentContainer);
+            if (!response.ok) {
+                throw new Error(`Network response was not ok, status: ${response.status}`);
+            }
+
+            const jsonData = await response.json();
+            const postData = jsonData[0];
+
+            // Update the content on the page
+            document.getElementById('profileImageUrl').src = postData.ProfilePictureURL || 'placeholder-image-url.png';
+            document.getElementById('posterName').textContent = `${postData.FirstName} ${postData.LastName}` || 'Name not available';
+            document.getElementById('posterDetails').textContent = `Age: ${postData.Age} | Education: ${postData.Education}` || 'Details not available';
+            document.getElementById('postContent').textContent = postData.Content || 'Content not available';
+
+            // Display the content container
+            contentContainer.style.display = 'block';
+
+            // Analyse the toxicity of the loaded post content if it exists
             if (postData.Content) {
                 await analyseContentForToxicity(postData.Content, customContainer);
             }
+
+        } catch (error) {
+            console.error(error);
+            // Handle error appropriately
         }
     }
 
@@ -122,30 +148,30 @@ document.addEventListener('DOMContentLoaded', () => {
                 },
                 body: JSON.stringify({ content: content }),
             });
-    
+
             if (!response.ok) {
                 throw new Error(`Network response was not ok, status: ${response.status}`);
             }
-    
+
             const analysisResult = await response.json();
             const toxicityScore = analysisResult.score;
             const percentage = Math.round(toxicityScore * 100);
-    
+
             // Update the toxicity score in the custom container
             document.getElementById('customToxicityScore').textContent = `${percentage}%`;
-    
+
             // Adjust the second circle to reflect the toxicity score
             const circles = customContainer.querySelectorAll('.custom-percent svg circle:nth-child(2)');
             if (circles.length > 0) {
                 const circle = circles[0];
                 const radius = circle.r.baseVal.value;
                 const circumference = radius * 2 * Math.PI;
-    
+
                 circle.style.strokeDasharray = `${circumference} ${circumference}`;
                 const offset = circumference - percentage / 100 * circumference;
                 circle.style.strokeDashoffset = offset;
             }
-    
+
             // Show the custom container with the toxicity score
             customContainer.style.display = 'block';
         } catch (error) {
@@ -153,7 +179,7 @@ document.addEventListener('DOMContentLoaded', () => {
             // Handle error state appropriately, e.g., show error message to user
         }
     }
-    
+
     function loadTwitterWidgets() {
         const script = document.createElement('script');
         script.src = 'https://platform.twitter.com/widgets.js';
