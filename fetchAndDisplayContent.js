@@ -37,32 +37,35 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     };
 
-    form.addEventListener('submit', async (e) => {
-        e.preventDefault();
-        const postUrl = postUrlInput.value.trim();
+    $(function () {
+        $("#reportForm").on("submit", async function (e) {
+            e.preventDefault(); // Prevent the default form submission
 
-        if (!isValidUrl(postUrl)) {
-            alert('Invalid URL');
-            return;
-        }
+            animateButtonProgress($(".btn")); // Start the button animation
 
-        toggleDisplay([twitterEmbedContainer, contentContainer, customContainer], 'none');
-
-        const domain = getDomainFromUrl(postUrl);
-        try {
-            if (domain === 'x.com' || domain === 'twitter.com') {
-                await processTwitterUrl(postUrl);
-            } else if (domain.includes('youthvibe.000webhostapp.com')) {
-                await fetchAndDisplayContent(postUrl, contentContainer);
-            } else {
-                throw new Error('URL domain not recognized for special handling.');
+            const postUrl = $("#postUrl").val().trim();
+            if (!isValidUrl(postUrl)) {
+                alert('Invalid URL');
+                return;
             }
-            completeButtonAnimation(); // Trigger button completion on successful data fetching.
-        } catch (error) {
-            console.error(error);
-            alert('Error! ' + error.message);
-            completeButtonAnimation(); // Also complete the button animation on fetch error.
-        }
+
+            // Determine which function to call based on the URL domain
+            try {
+                const domain = getDomainFromUrl(postUrl);
+                if (domain === 'x.com' || domain === 'twitter.com') {
+                    await processTwitterUrl(postUrl);
+                } else if (domain.includes('youthvibe.000webhostapp.com')) {
+                    await fetchAndDisplayContent(postUrl);
+                } else {
+                    throw new Error('URL domain not recognized for special handling.');
+                }
+            } catch (error) {
+                console.error(error);
+                alert('Error! ' + error.message);
+            } finally {
+                completeButtonAnimation(); // Complete the animation regardless of success/failure
+            }
+        });
     });
 
     async function processTwitterUrl(postUrl) {
