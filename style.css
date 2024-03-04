@@ -325,12 +325,10 @@ body {
   display: flex;
   justify-content: center;
   align-items: center;
-  height: 300px;
   border-radius: 4px;
   text-align: center;
   overflow: hidden;
   transition: 0.5s;
-  margin-top: -6rem;
 }
 
 /* .custom-container .custom-card:hover {
