@@ -1,35 +1,12 @@
 $(document).ready(function () {
     const form = $('#reportForm');
-    const btn = $(".btn"); // Assuming there's only one button
+    const btn = $(".btn");
+    const postUrlInput = $('#postUrl');
+    const twitterEmbedContainer = $('#twitterEmbedContainer');
+    const contentContainer = $('#content');
+    const customContainer = $('.custom-container');
 
-    form.on("submit", async function (e) {
-        e.preventDefault();
-        btn.addClass('btn-progress').removeClass('btn-complete');
-
-        const postUrl = $('#postUrl').val().trim();
-        if (!isValidUrl(postUrl)) {
-            alert('Invalid URL');
-            btn.removeClass('btn-progress');
-            return;
-        }
-
-        try {
-            // Assuming this function sends the request and returns a Promise
-            await submitForm(postUrl);
-            // On success
-            btn.addClass('btn-fill');
-            setTimeout(() => {
-                btn.removeClass('btn-progress btn-fill').addClass('btn-complete');
-            }, 500); // Short delay to show fill effect
-
-        } catch (error) {
-            console.error(error);
-            alert('Error! ' + error.message);
-            btn.removeClass('btn-progress btn-fill');
-            // Optionally, add an error class to indicate failure
-        }
-    });
-
+    // Simplified and unified isValidUrl function
     function isValidUrl(string) {
         try {
             new URL(string);
@@ -39,89 +16,72 @@ $(document).ready(function () {
         }
     }
 
-    async function submitForm(postUrl) {
-        return new Promise(async (resolve, reject) => {
-            const domain = getDomainFromUrl(postUrl);
-            
-            try {
-                // Reset display states
-                toggleDisplay([twitterEmbedContainer, contentContainer, customContainer], 'none');
-                
-                if (domain === 'x.com' || domain === 'twitter.com') {
-                    const responseHtml = await fetchTwitterEmbedCode(postUrl);
-                    if (responseHtml) {
-                        twitterEmbedContainer.innerHTML = responseHtml;
-                        loadTwitterWidgets();
-                        toggleDisplay([twitterEmbedContainer], 'block');
-                        const tweetText = extractTweetText(responseHtml);
-                        await analyseContentForToxicity(tweetText, customContainer);
-                    }
-                } else if (domain.includes('youthvibe.000webhostapp.com')) {
-                    await fetchAndDisplayContent(postUrl, contentContainer);
-                } else {
-                    throw new Error('URL domain not recognized for special handling.');
-                }
-    
-                resolve(); // Resolve the promise when the process completes successfully
-            } catch (error) {
-                console.error('Error in submitForm:', error);
-                reject(error); // Reject the promise if an error occurs
-            }
+    // Hide or show elements function
+    function toggleDisplay(elements, displayStyle) {
+        elements.forEach(element => {
+            element.css('display', displayStyle);
         });
-    }    
+    }
 
-    form.addEventListener('submit', async (e) => {
-        e.preventDefault();
-        const postUrl = postUrlInput.value.trim();
+    // Function to get domain from URL
+    function getDomainFromUrl(url) {
+        const matches = url.match(/^https?:\/\/([^\/]+)/i);
+        return matches && matches[1] ? matches[1].replace('www.', '').toLowerCase() : '';
+    }
 
-        if (!isValidUrl(postUrl)) {
-            alert('Invalid URL');
-            return;
-        }
-
-        toggleDisplay([twitterEmbedContainer, contentContainer, customContainer], 'none');
-
-        const domain = getDomainFromUrl(postUrl);
-        try {
-            if (domain === 'x.com' || domain === 'twitter.com') {
-                await processTwitterUrl(postUrl);
-            } else if (domain.includes('youthvibe.000webhostapp.com')) {
-                await fetchAndDisplayContent(postUrl, contentContainer);
-            } else {
-                throw new Error('URL domain not recognized for special handling.');
-            }
-        } catch (error) {
-            console.error(error);
-            alert('Error! ' + error.message);
-        }
-    });
-
+    // Form submission handling
     form.on("submit", async function (e) {
         e.preventDefault();
-        const postUrl = $('#postUrl').val().trim();
-    
-        btn.addClass('btn-progress').removeClass('btn-complete');
-    
+        btn.addClass('btn-progress').removeClass('btn-complete btn-fill');
+
+        const postUrl = postUrlInput.val().trim();
+
         if (!isValidUrl(postUrl)) {
             alert('Invalid URL');
             btn.removeClass('btn-progress');
             return;
         }
-    
+
         try {
+            // Process form submission
             await submitForm(postUrl);
-            // On success
+            // Success path
             btn.addClass('btn-fill');
             setTimeout(() => {
                 btn.removeClass('btn-progress btn-fill').addClass('btn-complete');
             }, 500); // Short delay to show fill effect
         } catch (error) {
-            // Handle error
-            alert(`Error: ${error.message}`);
+            // Error path
+            console.error(error);
+            alert('Error! ' + error.message);
             btn.removeClass('btn-progress btn-fill');
-            // Optionally, handle the error state of the button here
         }
     });
+
+    // Encapsulated form submission logic
+    async function submitForm(postUrl) {
+        const domain = getDomainFromUrl(postUrl);
+        
+        return new Promise(async (resolve, reject) => {
+            toggleDisplay([twitterEmbedContainer, contentContainer, customContainer], 'none');
+
+            try {
+                if (domain === 'x.com' || domain === 'twitter.com') {
+                    // Process for Twitter or X.com
+                    await processTwitterUrl(postUrl);
+                } else if (domain.includes('youthvibe.000webhostapp.com')) {
+                    // Process for YouthVibe
+                    await fetchAndDisplayContent(postUrl);
+                } else {
+                    throw new Error('URL domain not recognized for special handling.');
+                }
+                resolve(); // Resolve on success
+            } catch (error) {
+                console.error('Error in submitForm:', error);
+                reject(error); // Reject on error
+            }
+        });
+    }
 
     async function processTwitterUrl(postUrl) {
         const responseHtml = await fetchTwitterEmbedCode(postUrl);
