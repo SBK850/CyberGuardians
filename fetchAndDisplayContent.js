@@ -217,8 +217,11 @@ function extractTweetText(html) {
     const div = document.createElement('div');
     div.innerHTML = html;
     const tweetParagraph = div.querySelector('p');
-    return tweetParagraph ? tweetParagraph.textContent : "";
+    const extractedText = tweetParagraph ? tweetParagraph.textContent : "";
+    console.log("Extracted tweet text:", extractedText); // Log the extracted text to the console
+    return extractedText;
 }
+
 
 function isValidUrl(string) {
     try {
