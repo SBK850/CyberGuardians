@@ -4,7 +4,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const twitterEmbedContainer = document.getElementById('twitterEmbedContainer');
     const contentContainer = document.getElementById('content');
     const customContainer = document.querySelector('.custom-container');
-    const submittedIndicator = document.querySelector('.submit');
+    const btntedIndicator = document.querySelector('.btnted');
 
     // Hide or show elements function
     const toggleDisplay = (elements, displayStyle) => {
@@ -27,7 +27,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     };
 
-    form.addEventListener('submit', async (e) => {
+    form.addEventListener('btn', async (e) => {
         e.preventDefault();
         const postUrl = postUrlInput.value.trim();
 
@@ -37,7 +37,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         toggleDisplay([twitterEmbedContainer, contentContainer, customContainer], 'none');
-        submittedIndicator.textContent = 'Processing...';
+        btntedIndicator.textContent = 'Processing...';
 
         const domain = getDomainFromUrl(postUrl);
         try {
@@ -50,9 +50,9 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         } catch (error) {
             console.error(error);
-            submittedIndicator.textContent = 'Error! ' + error.message; // User feedback
+            btntedIndicator.textContent = 'Error! ' + error.message; // User feedback
         } finally {
-            submittedIndicator.textContent = ''; // Clear processing message
+            btntedIndicator.textContent = ''; // Clear processing message
         }
     });
 
@@ -202,14 +202,11 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 $(function () {
-    var form = $("#reportForm");
+    var btn = $(".btn");
 
-    form.on("submit", async function (e) {
-        e.preventDefault(); // Prevent the default form submission
+    btn.on("click", function () {
 
-        var btn = $(this).find('.btn');
-
-        btn.addClass('btn-progress');
+        $(this).addClass('btn-progress');
         setTimeout(function () {
             btn.addClass('btn-fill')
         }, 500);
@@ -222,6 +219,5 @@ $(function () {
             btn.addClass('btn-complete')
         }, 4100);
 
-        // Now you can handle form submission logic here, or call form.submit() to submit the form programmatically.
     });
-});
+})
