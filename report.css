@@ -1,9 +1,9 @@
 form {
-	width: 450px;
+	display: contents;
 }
 
 form input {
-	width: 100%;
+	width: 70%;
 	padding: 20px;
 	font-size: 25px;
 	outline: none;
