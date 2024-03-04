@@ -202,7 +202,7 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 $(function () {
-    var btn = $(".btn");
+    var btn = $("a.btn");
 
     btn.on("click", function () {
 
