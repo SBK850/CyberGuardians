@@ -16,70 +16,88 @@ $(document).ready(function () {
         }
     }
 
-    // Hide or show elements function
-    function toggleDisplay(elements, displayStyle) {
-        elements.forEach(element => {
-            element.css('display', displayStyle);
-        });
-    }
-
     // Function to get domain from URL
     function getDomainFromUrl(url) {
         const matches = url.match(/^https?:\/\/([^\/]+)/i);
         return matches && matches[1] ? matches[1].replace('www.', '').toLowerCase() : '';
     }
 
+    // Hide or show elements function
+    function toggleDisplay(elements, displayStyle) {
+        elements.forEach(element => {
+            if (element instanceof jQuery) {
+                element.css('display', displayStyle);
+            } else {
+                $(element).css('display', displayStyle);
+            }
+        });
+    }
+
     // Form submission handling
     form.on("submit", async function (e) {
         e.preventDefault();
-        btn.addClass('btn-progress').removeClass('btn-complete btn-fill');
+        btn.find('.progress').remove(); // Remove any existing progress indicator
+        btn.prepend('<div class="progress" style="width: 0%; background-color: #4CAF50; height: 100%; position: absolute;"></div>'); // Add new progress indicator
 
         const postUrl = postUrlInput.val().trim();
 
         if (!isValidUrl(postUrl)) {
             alert('Invalid URL');
-            btn.removeClass('btn-progress');
+            $('.progress').remove();
             return;
         }
 
+        const intervalId = simulateProgress(); // Start simulating progress
+
         try {
-            // Process form submission
+            // Reset display states
+            toggleDisplay([twitterEmbedContainer, contentContainer, customContainer], 'none');
+
             await submitForm(postUrl);
-            // Success path
-            btn.addClass('btn-fill');
+
+            clearInterval(intervalId); // Stop the simulation
+            $('.progress').css('width', '100%'); // Immediately complete the progress
+
             setTimeout(() => {
-                btn.removeClass('btn-progress btn-fill').addClass('btn-complete');
-            }, 500); // Short delay to show fill effect
+                btn.find('.progress').remove(); // Optionally remove the progress bar
+                btn.addClass('btn-complete'); // Indicate completion
+            }, 500); // Short delay to show completion
         } catch (error) {
-            // Error path
+            clearInterval(intervalId); // Ensure to stop the simulation on error
+            $('.progress').remove();
             console.error(error);
             alert('Error! ' + error.message);
-            btn.removeClass('btn-progress btn-fill');
         }
     });
 
+    // Function to simulate progress
+    function simulateProgress() {
+        let progress = 0;
+        const interval = setInterval(() => {
+            if (progress < 90) {
+                progress += 1; // Increment progress
+                $('.progress').css('width', progress + '%');
+            } else {
+                clearInterval(interval); // Stop the simulation at 90%
+            }
+        }, 100); // Adjust timing as needed
+
+        return interval; // Return the interval ID for later clearance
+    }
+
     // Encapsulated form submission logic
     async function submitForm(postUrl) {
-        const domain = getDomainFromUrl(postUrl);
-        
         return new Promise(async (resolve, reject) => {
-            toggleDisplay([twitterEmbedContainer, contentContainer, customContainer], 'none');
+            const domain = getDomainFromUrl(postUrl);
 
-            try {
-                if (domain === 'x.com' || domain === 'twitter.com') {
-                    // Process for Twitter or X.com
-                    await processTwitterUrl(postUrl);
-                } else if (domain.includes('youthvibe.000webhostapp.com')) {
-                    // Process for YouthVibe
-                    await fetchAndDisplayContent(postUrl);
+            setTimeout(() => {
+                // This is a placeholder for your actual asynchronous operation
+                if (domain) { // Simulate successful domain processing
+                    resolve();
                 } else {
-                    throw new Error('URL domain not recognized for special handling.');
+                    reject(new Error("Failed to process domain"));
                 }
-                resolve(); // Resolve on success
-            } catch (error) {
-                console.error('Error in submitForm:', error);
-                reject(error); // Reject on error
-            }
+            }, 2000); // Simulate a network request delay
         });
     }
 
