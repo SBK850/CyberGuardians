@@ -39,6 +39,37 @@ $(document).ready(function () {
         }
     }
 
+    async function submitForm(postUrl) {
+        return new Promise(async (resolve, reject) => {
+            const domain = getDomainFromUrl(postUrl);
+            
+            try {
+                // Reset display states
+                toggleDisplay([twitterEmbedContainer, contentContainer, customContainer], 'none');
+                
+                if (domain === 'x.com' || domain === 'twitter.com') {
+                    const responseHtml = await fetchTwitterEmbedCode(postUrl);
+                    if (responseHtml) {
+                        twitterEmbedContainer.innerHTML = responseHtml;
+                        loadTwitterWidgets();
+                        toggleDisplay([twitterEmbedContainer], 'block');
+                        const tweetText = extractTweetText(responseHtml);
+                        await analyseContentForToxicity(tweetText, customContainer);
+                    }
+                } else if (domain.includes('youthvibe.000webhostapp.com')) {
+                    await fetchAndDisplayContent(postUrl, contentContainer);
+                } else {
+                    throw new Error('URL domain not recognized for special handling.');
+                }
+    
+                resolve(); // Resolve the promise when the process completes successfully
+            } catch (error) {
+                console.error('Error in submitForm:', error);
+                reject(error); // Reject the promise if an error occurs
+            }
+        });
+    }    
+
     form.addEventListener('submit', async (e) => {
         e.preventDefault();
         const postUrl = postUrlInput.value.trim();
@@ -62,6 +93,33 @@ $(document).ready(function () {
         } catch (error) {
             console.error(error);
             alert('Error! ' + error.message);
+        }
+    });
+
+    form.on("submit", async function (e) {
+        e.preventDefault();
+        const postUrl = $('#postUrl').val().trim();
+    
+        btn.addClass('btn-progress').removeClass('btn-complete');
+    
+        if (!isValidUrl(postUrl)) {
+            alert('Invalid URL');
+            btn.removeClass('btn-progress');
+            return;
+        }
+    
+        try {
+            await submitForm(postUrl);
+            // On success
+            btn.addClass('btn-fill');
+            setTimeout(() => {
+                btn.removeClass('btn-progress btn-fill').addClass('btn-complete');
+            }, 500); // Short delay to show fill effect
+        } catch (error) {
+            // Handle error
+            alert(`Error: ${error.message}`);
+            btn.removeClass('btn-progress btn-fill');
+            // Optionally, handle the error state of the button here
         }
     });
 
