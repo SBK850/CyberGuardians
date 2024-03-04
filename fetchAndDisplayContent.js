@@ -1,23 +1,36 @@
 $(function () {
     var btn = $(".btn");
 
-    btn.on("click", function () {
+    btn.on("click", function (e) {
+        e.preventDefault();
 
-        $(this).addClass('btn-progress');
+        var $this = $(this); 
+
+        $this.addClass('btn-progress');
         setTimeout(function () {
-            btn.addClass('btn-fill')
+            $this.addClass('btn-fill');
         }, 500);
 
-        setTimeout(function () {
-            btn.removeClass('btn-fill')
-        }, 4100);
+        asyncOperation().then(function () {
 
-        setTimeout(function () {
-            btn.addClass('btn-complete')
-        }, 4100);
-
+            setTimeout(function () {
+                $this.removeClass('btn-fill');
+                setTimeout(function () {
+                    $this.addClass('btn-complete');
+                }, 500); 
+            }, 500); 
+        }).catch(function (error) {
+            console.error("Operation failed", error);
+        });
     });
-})
+});
+
+function asyncOperation() {
+    return new Promise((resolve, reject) => {
+
+        setTimeout(resolve, 3000); 
+    });
+}
 
 document.addEventListener('DOMContentLoaded', () => {
     const form = document.getElementById('reportForm');
