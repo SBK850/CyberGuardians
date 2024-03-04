@@ -4,7 +4,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const twitterEmbedContainer = document.getElementById('twitterEmbedContainer');
     const contentContainer = document.getElementById('content');
     const customContainer = document.querySelector('.custom-container');
-    const btntedIndicator = document.querySelector('.btnted');
 
     // Hide or show elements function
     const toggleDisplay = (elements, displayStyle) => {
@@ -27,17 +26,16 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     };
 
-    form.addEventListener('btn', async (e) => {
+    form.addEventListener('submit', async (e) => {
         e.preventDefault();
         const postUrl = postUrlInput.value.trim();
 
         if (!isValidUrl(postUrl)) {
-            alert('Invalid URL'); // Example of user feedback, consider a more integrated UI approach
+            alert('Invalid URL');
             return;
         }
 
         toggleDisplay([twitterEmbedContainer, contentContainer, customContainer], 'none');
-        btntedIndicator.textContent = 'Processing...';
 
         const domain = getDomainFromUrl(postUrl);
         try {
@@ -50,9 +48,7 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         } catch (error) {
             console.error(error);
-            btntedIndicator.textContent = 'Error! ' + error.message; // User feedback
-        } finally {
-            btntedIndicator.textContent = ''; // Clear processing message
+            alert('Error! ' + error.message);
         }
     });
 
