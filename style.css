@@ -330,6 +330,7 @@ body {
   text-align: center;
   overflow: hidden;
   transition: 0.5s;
+  margin-top: -6rem;
 }
 
 /* .custom-container .custom-card:hover {
