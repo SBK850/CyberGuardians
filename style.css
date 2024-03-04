@@ -309,7 +309,7 @@ body {
 }
 
 .container-s {
-  display: none;
+  /* display: none; */
   align-items: center;
 }
 
