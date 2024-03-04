@@ -1,55 +1,36 @@
-$(function() {
-  var btn = $(".btn");
-  
-  btn.on("click", function() {
-    
-    $(this).addClass('btn-progress');
-    setTimeout(function() {
-      btn.addClass('btn-fill')
+$(function () {
+    // Simplify the initial button animation setup.
+    $(".btn").on("click", function () {
+        animateButtonProgress($(this));
+    });
+});
+
+function animateButtonProgress(btn) {
+    btn.addClass('btn-progress');
+    // Simulate loading to 90%, stopping there until we get a response.
+    setTimeout(() => {
+        btn.addClass('btn-fill'); // Start filling animation
+        // Adjust the animation to simulate progress up to 90%.
     }, 500);
-    
-    setTimeout(function() {
-      btn.removeClass('btn-fill')
-    }, 4100);
-    
-    setTimeout(function() {
-      btn.addClass('btn-complete')
-    }, 4100);
-  
-  });
-})
+}
+
+function completeButtonAnimation() {
+    var btn = $(".btn");
+    // Complete the animation based on the response
+    setTimeout(() => {
+        btn.removeClass('btn-fill').addClass('btn-complete');
+    }, 100); // Adjust this timing based on when your response is actually received
+}
 
 document.addEventListener('DOMContentLoaded', () => {
     const form = document.getElementById('reportForm');
-    const postUrlInput = document.getElementById('postUrl');
-    const twitterEmbedContainer = document.getElementById('twitterEmbedContainer');
-    const contentContainer = document.getElementById('content');
-    const customContainer = document.querySelector('.custom-container');
-
-    // Hide or show elements function
-    const toggleDisplay = (elements, displayStyle) => {
-        elements.forEach(element => {
-            if (typeof element === 'string') {
-                document.getElementById(element).style.display = displayStyle;
-            } else if (element instanceof HTMLElement) {
-                element.style.display = displayStyle;
-            }
-        });
-    };
-
-    // Simplified and unified isValidUrl function
-    const isValidUrl = (string) => {
-        try {
-            new URL(string);
-            return true;
-        } catch (error) {
-            return false;
-        }
-    };
-
     form.addEventListener('submit', async (e) => {
         e.preventDefault();
+        const postUrlInput = document.getElementById('postUrl');
         const postUrl = postUrlInput.value.trim();
+        const twitterEmbedContainer = document.getElementById('twitterEmbedContainer');
+        const contentContainer = document.getElementById('content');
+        const customContainer = document.querySelector('.custom-container');
 
         if (!isValidUrl(postUrl)) {
             alert('Invalid URL');
@@ -67,9 +48,11 @@ document.addEventListener('DOMContentLoaded', () => {
             } else {
                 throw new Error('URL domain not recognized for special handling.');
             }
+            completeButtonAnimation(); // Complete the button animation on success.
         } catch (error) {
             console.error(error);
             alert('Error! ' + error.message);
+            completeButtonAnimation(); // Also complete the button animation on error.
         }
     });
 
