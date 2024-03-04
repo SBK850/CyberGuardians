@@ -1,12 +1,12 @@
-$(function() {
-    $(".btn").on("click", function() {
+$(function () {
+    $(".btn").on("click", function () {
         var $this = $(this); // Cache this to use inside setTimeout callbacks
         $this.addClass('btn-progress');
-        setTimeout(function() {
+        setTimeout(function () {
             $this.addClass('btn-fill');
         }, 500);
 
-        setTimeout(function() {
+        setTimeout(function () {
             $this.removeClass('btn-fill');
             // Do not automatically add 'btn-complete' here
         }, 4100);
@@ -76,12 +76,18 @@ document.addEventListener('DOMContentLoaded', () => {
             toggleDisplay([twitterEmbedContainer], 'block');
             const tweetText = extractTweetText(responseHtml);
             await analyseContentForToxicity(tweetText, customContainer);
-    
+
             // Add 'btn-complete' class after processing is done
             $(".btn").addClass('btn-complete');
+
+            // Hide inputs 3 seconds after loading the response
+            setTimeout(() => {
+                $(".input").hide(); // Assuming you are using jQuery
+            }, 3000);
         }
     }
-    
+
+
 
     async function fetchAndDisplayContent(postUrl, contentContainer) {
         const apiEndpoint = 'https://cyberguardians.onrender.com/scrape';
@@ -116,6 +122,10 @@ document.addEventListener('DOMContentLoaded', () => {
             }
 
             $(".btn").addClass('btn-complete');
+
+            setTimeout(() => {
+                $(".input").hide(); // jQuery for hiding elements with class 'input'
+            }, 3000);
 
         } catch (error) {
             console.error(error);
