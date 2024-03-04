@@ -195,6 +195,10 @@ document.addEventListener('DOMContentLoaded', () => {
         const matches = url.match(/^https?:\/\/([^\/]+)/i);
         return matches && matches[1] ? matches[1].replace('www.', '').toLowerCase() : '';
     }
+});
+
+$(document).ready(function () {
+    var btn = $(".btn");
 
     btn.on("click", function () {
         $(this).addClass('btn-progress');
