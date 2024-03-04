@@ -1,64 +1,43 @@
-$(function () {
-    var btn = $(".btn");
+$(document).ready(function () {
+    const form = $('#reportForm');
+    const btn = $(".btn"); // Assuming there's only one button
 
-    btn.on("click", function (e) {
+    form.on("submit", async function (e) {
         e.preventDefault();
+        btn.addClass('btn-progress').removeClass('btn-complete');
 
-        var $this = $(this); 
+        const postUrl = $('#postUrl').val().trim();
+        if (!isValidUrl(postUrl)) {
+            alert('Invalid URL');
+            btn.removeClass('btn-progress');
+            return;
+        }
 
-        $this.addClass('btn-progress');
-        setTimeout(function () {
-            $this.addClass('btn-fill');
-        }, 500);
+        try {
+            // Assuming this function sends the request and returns a Promise
+            await submitForm(postUrl);
+            // On success
+            btn.addClass('btn-fill');
+            setTimeout(() => {
+                btn.removeClass('btn-progress btn-fill').addClass('btn-complete');
+            }, 500); // Short delay to show fill effect
 
-        asyncOperation().then(function () {
-
-            setTimeout(function () {
-                $this.removeClass('btn-fill');
-                setTimeout(function () {
-                    $this.addClass('btn-complete');
-                }, 500); 
-            }, 500); 
-        }).catch(function (error) {
-            console.error("Operation failed", error);
-        });
+        } catch (error) {
+            console.error(error);
+            alert('Error! ' + error.message);
+            btn.removeClass('btn-progress btn-fill');
+            // Optionally, add an error class to indicate failure
+        }
     });
-});
 
-function asyncOperation() {
-    return new Promise((resolve, reject) => {
-
-        setTimeout(resolve, 3000); 
-    });
-}
-
-document.addEventListener('DOMContentLoaded', () => {
-    const form = document.getElementById('reportForm');
-    const postUrlInput = document.getElementById('postUrl');
-    const twitterEmbedContainer = document.getElementById('twitterEmbedContainer');
-    const contentContainer = document.getElementById('content');
-    const customContainer = document.querySelector('.custom-container');
-
-    // Hide or show elements function
-    const toggleDisplay = (elements, displayStyle) => {
-        elements.forEach(element => {
-            if (typeof element === 'string') {
-                document.getElementById(element).style.display = displayStyle;
-            } else if (element instanceof HTMLElement) {
-                element.style.display = displayStyle;
-            }
-        });
-    };
-
-    // Simplified and unified isValidUrl function
-    const isValidUrl = (string) => {
+    function isValidUrl(string) {
         try {
             new URL(string);
             return true;
         } catch (error) {
             return false;
         }
-    };
+    }
 
     form.addEventListener('submit', async (e) => {
         e.preventDefault();
