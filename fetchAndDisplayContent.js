@@ -4,7 +4,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const twitterEmbedContainer = document.getElementById('twitterEmbedContainer');
     const contentContainer = document.getElementById('content');
     const customContainer = document.querySelector('.custom-container');
-    const submittedIndicator = document.querySelector('.submitted');
+    const submittedIndicator = document.querySelector('.submit');
 
     // Hide or show elements function
     const toggleDisplay = (elements, displayStyle) => {
