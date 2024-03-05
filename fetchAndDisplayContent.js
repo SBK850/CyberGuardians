@@ -125,11 +125,16 @@ document.addEventListener('DOMContentLoaded', () => {
                 $(".input").hide(); // jQuery for hiding elements with class 'input'
             }, 3000);
 
+            console.log("Not in the if statemenet")
+
             // Analyse the toxicity of the loaded post content if it exists
             if (postData.Content) {
+                console.log("In the if statemenet 1")
+
                 const toxicityScore = await analyseContentForToxicity(postData.Content);
                 if (toxicityScore >= 85) {
                     // Display the warning card
+                    console.log("In the if statemenet 2")
                     displayWarningCard();
 
                     // Handle user actions
