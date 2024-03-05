@@ -155,7 +155,7 @@ document.addEventListener('DOMContentLoaded', () => {
             throw error; // Re-throw to be handled by caller
         }
     }
-    
+
     async function analyseContentForToxicity(content, customContainer) {
         const analysisEndpoint = 'https://google-perspective-api.onrender.com/analyse-content';
         try {
@@ -243,26 +243,26 @@ document.addEventListener('DOMContentLoaded', () => {
         const matches = url.match(/^https?:\/\/([^\/]+)/i);
         return matches && matches[1] ? matches[1].replace('www.', '').toLowerCase() : '';
     }
-
-    function displayWarningCard() {
-        document.getElementById("warning-section").style.display = "block";
-    }
-
-    function rejectToxicContent() {
-        // Handle rejection action here
-        var message = document.createElement('p');
-        message.textContent = "You have chosen to reject the removal of this content. It will remain visible unless reported by another user as cyberbullying.";
-        document.getElementById("message-section").appendChild(message);
-        document.getElementById("warning-section").style.display = "none";
-        document.getElementById("message-section").style.display = "block";
-    }
-
-    function confirmToxicContent() {
-        // Handle confirmation action here
-        var message = document.createElement('p');
-        message.textContent = "You have confirmed the removal of this content. It will be removed immediately from YouthVibe. Thank you for helping us maintain a safe environment.";
-        document.getElementById("message-section").appendChild(message);
-        document.getElementById("warning-section").style.display = "none";
-        document.getElementById("message-section").style.display = "block";
-    }
 });
+
+function displayWarningCard() {
+    document.getElementById("warning-section").style.display = "block";
+}
+
+function rejectToxicContent() {
+    // Handle rejection action here
+    var message = document.createElement('p');
+    message.textContent = "You have chosen to reject the removal of this content. It will remain visible unless reported by another user as cyberbullying.";
+    document.getElementById("message-section").appendChild(message);
+    document.getElementById("warning-section").style.display = "none";
+    document.getElementById("message-section").style.display = "block";
+}
+
+function confirmToxicContent() {
+    // Handle confirmation action here
+    var message = document.createElement('p');
+    message.textContent = "You have confirmed the removal of this content. It will be removed immediately from YouthVibe. Thank you for helping us maintain a safe environment.";
+    document.getElementById("message-section").appendChild(message);
+    document.getElementById("warning-section").style.display = "none";
+    document.getElementById("message-section").style.display = "block";
+}
