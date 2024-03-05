@@ -121,7 +121,7 @@ document.addEventListener('DOMContentLoaded', () => {
             setTimeout(() => {
                 $(".input").hide(); // Assuming you are using jQuery
             }, 3000);
-            
+
             // Analyse the toxicity of the loaded post content if it exists
             if (postData.Content) {
                 const toxicityPercentage = await analyseContentForToxicity(postData.Content, document.querySelector('.custom-container'));
@@ -252,6 +252,14 @@ document.addEventListener('DOMContentLoaded', () => {
         return matches && matches[1] ? matches[1].replace('www.', '').toLowerCase() : '';
     }
 });
+
+document.addEventListener('DOMContentLoaded', () => {
+    document.getElementById('rejectButton').addEventListener('click', rejectToxicContent);
+
+    const carouselItemId = 'yourCarouselItemIdHere';
+    document.getElementById('confirmButton').addEventListener('click', () => confirmToxicContent(carouselItemId));
+});
+
 
 function displayWarningCard() {
     document.getElementById("warning-section").style.display = "block";
