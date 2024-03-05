@@ -431,6 +431,9 @@ code {
 }
 
 .card-x {
-	display: none;
 	padding: 10px;
+}
+
+.warning-section {
+	display: none;
 }

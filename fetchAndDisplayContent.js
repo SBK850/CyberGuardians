@@ -266,7 +266,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function displayWarningCard() {
-        document.getElementById("card-x").style.display = "block";
+        document.getElementById("warning-section").style.display = "block";
     }
 
     function rejectToxicContent() {
