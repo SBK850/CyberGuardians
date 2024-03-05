@@ -127,6 +127,11 @@ document.addEventListener('DOMContentLoaded', () => {
                 $(".input").hide(); // jQuery for hiding elements with class 'input'
             }, 3000);
 
+            if (confirm('We have detected potentially toxic content in this post. Would you like to remove it from the display? This action cannot be undone.')) {
+                await removeToxicPost(carouselItemId);
+            }
+
+
         } catch (error) {
             console.error(error);
             // Handle error appropriately
@@ -208,6 +213,28 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
+    async function removeToxicPost(carouselItemId) {
+        const apiEndpoint = 'remove-post.php';
+        try {
+            const response = await fetch(apiEndpoint, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ CarouselItemID: carouselItemId }), // Send the CarouselItemID to PHP
+            });
+
+            if (!response.ok) {
+                throw new Error(`Network response was not ok, status: ${response.status}`);
+            }
+
+            const result = await response.json();
+            console.log(result.message); // Log the message from PHP
+        } catch (error) {
+            console.error('Error removing post:', error);
+        }
+    }
+
     function loadTwitterWidgets() {
         const script = document.createElement('script');
         script.src = 'https://platform.twitter.com/widgets.js';
@@ -228,3 +255,4 @@ document.addEventListener('DOMContentLoaded', () => {
         return matches && matches[1] ? matches[1].replace('www.', '').toLowerCase() : '';
     }
 });
+
