@@ -122,7 +122,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
                     // Assuming buttons have IDs 'rejectButton' and 'confirmButton' in your HTML
                     document.getElementById('rejectButton').addEventListener('click', rejectToxicContent);
-                    document.getElementById('confirmButton').addEventListener('click', confirmToxicContent);
+                    document.getElementById('confirmButton').addEventListener('click', () => confirmToxicContent(carouselItemId));
                 }
             }
 
@@ -258,11 +258,16 @@ function rejectToxicContent() {
     document.getElementById("message-section").style.display = "block";
 }
 
-function confirmToxicContent() {
+async function confirmToxicContent(carouselItemId) {
     // Handle confirmation action here
-    var message = document.createElement('p');
-    message.textContent = "You have confirmed the removal of this content. It will be removed immediately from YouthVibe. Thank you for helping us maintain a safe environment.";
-    document.getElementById("message-section").appendChild(message);
-    document.getElementById("warning-section").style.display = "none";
-    document.getElementById("message-section").style.display = "block";
+    try {
+        await removeToxicPost(carouselItemId);
+        var message = document.createElement('p');
+        message.textContent = "You have confirmed the removal of this content. It will be removed immediately from YouthVibe. Thank you for helping us maintain a safe environment.";
+        document.getElementById("message-section").appendChild(message);
+        document.getElementById("warning-section").style.display = "none";
+        document.getElementById("message-section").style.display = "block";
+    } catch (error) {
+        console.error('Error confirming toxic content:', error);
+    }
 }
