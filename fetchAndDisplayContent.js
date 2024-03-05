@@ -1,130 +1,3 @@
-gsap.registerPlugin(Draggable, MorphSVGPlugin);
-
-document.addEventListener('DOMContentLoaded', () => {
-    // Add event listener for custom button action
-    document.querySelectorAll('.button-tx').forEach(button => {
-        button.addEventListener('click', async () => {
-            if (button.classList.contains('active')) {
-                return;
-            }
-
-            button.classList.add('active');
-
-            gsap.to(button, {
-                '--handle-drop-opacity': 1,
-                '--default-opacity': 0,
-                '--default-scale': .8,
-                duration: .2
-            });
-            gsap.to(button, {
-                '--progress-opacity': .5,
-                '--progress-scale': 1,
-                duration: .2,
-                delay: .15
-            });
-
-            // Once confirmed, call removeToxicPost
-            await removeToxicPost(postData.CarouselItemID);
-        });
-    });
-});
-
-// Draggable initialization function
-function initializeDraggable(button) {
-    let handle = button.querySelector('.handle-tx'),
-        handlePath = handle.querySelector('.background-tx path'),
-        drop = button.querySelector('.drop-tx'),
-        dropPath = drop.querySelector('.background-tx path');
-
-    let handleTween = gsap.to(handlePath, {
-        paused: true,
-        morphSVG: 'M5 16C5 9.92487 9.92487 5 16 5H24C30.0751 5 34 9.92487 36 16C36 16 37 18.4379 37 20C37 21.5621 36 24 36 24C34 30.0751 30.0751 35 24 35H16C9.92487 35 5 30.0751 5 24C5 24 5 21.5621 5 20C5 18.4379 5 16 5 16Z'
-    });
-
-    let dropTween = gsap.to(dropPath, {
-        paused: true,
-        morphSVG: 'M4 16C6 9.92487 9.92487 5 16 5H24C30.0751 5 35 9.92487 35 16C35 16 35 18.4379 35 20C35 21.5621 35 24 35 24C35 30.0751 30.0751 35 24 35H16C9.92487 35 6 30.0751 4 24C4 24 3 21.5621 3 20C3 18.4379 4 16 4 16Z'
-    });
-
-    gsap.set(handle, {
-        x: 0
-    });
-
-    Draggable.create(handle, {
-        type: 'x',
-        bounds: button,
-        onDrag(e) {
-            dragging(this.x, button, handle, drop, handleTween, dropTween);
-        },
-        onRelease(e) {
-            if (!this.hitTest(drop)) {
-                gsap.to(handle, {
-                    x: 0,
-                    duration: .6,
-                    ease: 'elastic.out(1, .75)',
-                    onUpdate(e) {
-                        dragging(gsap.getProperty(handle, 'x'), button, handle, drop, handleTween, dropTween);
-                    }
-                });
-                if (gsap.getProperty(handle, 'x') > 0) {
-                    gsap.to(handlePath, {
-                        keyframes: [{
-                            morphSVG: 'M5 16C5 9.92487 9.92487 5 16 5H24C30.0751 5 37 9.92487 35 16C35 16 34 18.4379 34 20C34 21.5621 35 24 35 24C37 30.0751 30.0751 35 24 35H16C9.92487 35 5 30.0751 5 24C5 24 5 21.5621 5 20C5 18.4379 5 16 5 16Z',
-                            duration: .2
-                        }, {
-                            morphSVG: 'M5 16C5 9.92487 9.92487 5 16 5H24C30.0751 5 35 9.92487 35 16C35 16 35 18.4379 35 20C35 21.5621 35 24 35 24C35 30.0751 30.0751 35 24 35H16C9.92487 35 5 30.0751 5 24C5 24 5 21.5621 5 20C5 18.4379 5 16 5 16Z',
-                            duration: .3
-                        }]
-                    });
-                }
-            } else {
-                this.disable();
-                gsap.to(handle, {
-                    keyframes: [{
-                        x: drop.offsetLeft - 8,
-                        duration: .6,
-                        ease: 'elastic.out(1, .8)'
-                    }, {
-                        x: button.offsetWidth / 2 - handle.offsetWidth - 20,
-                        duration: .3
-                    }]
-                });
-                gsap.to(handlePath, {
-                    keyframes: [{
-                        morphSVG: 'M5 16C3 9.92487 9.92487 5 16 5H24C30.0751 5 35 9.92487 35 16C35 16 35 18.4379 35 20C35 21.5621 35 24 35 24C35 30.0751 30.0751 35 24 35H16C9.92487 35 3 30.0751 5 24C5 24 6 21.5621 6 20C6 18.4379 5 16 5 16Z',
-                        duration: .2
-                    }, {
-                        morphSVG: 'M5 16C5 9.92487 9.92487 5 16 5H24C30.0751 5 35 9.92487 35 16C35 16 35 18.4379 35 20C35 21.5621 35 24 35 24C35 30.0751 30.0751 35 24 35H16C9.92487 35 5 30.0751 5 24C5 24 5 21.5621 5 20C5 18.4379 5 16 5 16Z',
-                        duration: .15
-                    }]
-                });
-                gsap.to(button, {
-                    '--background-opacity': 0,
-                    '--progress-opacity': 0,
-                    '--handle-blur': 0,
-                    '--icon-y': .5,
-                    duration: .3,
-                    delay: .2
-                });
-                gsap.to(button, {
-                    '--icon-rotate': 87,
-                    '--icon-offset': 15.5,
-                    '--icon-scale': 1.5,
-                    duration: .25,
-                    delay: .3
-                });
-                gsap.to(button, {
-                    '--success-opacity': 1,
-                    '--success-scale': 1,
-                    '--success-x': 8,
-                    duration: .2,
-                    delay: .8
-                });
-            }
-        }
-    });
-}
-
 $(function () {
     $(".btn").on("click", function () {
         var $this = $(this); // Cache this to use inside setTimeout callbacks
@@ -224,53 +97,44 @@ document.addEventListener('DOMContentLoaded', () => {
                 },
                 body: JSON.stringify({ url: postUrl }),
             });
-    
+
             if (!response.ok) {
                 throw new Error(`Network response was not ok, status: ${response.status}`);
             }
-    
+
             const jsonData = await response.json();
-            if(jsonData.length === 0) {
-                throw new Error("No data returned from the scrape");
-            }
             const postData = jsonData[0];
-    
+
             // Update the content on the page
             document.getElementById('profileImageUrl').src = postData.ProfilePictureURL || 'placeholder-image-url.png';
             document.getElementById('posterName').textContent = `${postData.FirstName} ${postData.LastName}` || 'Name not available';
             document.getElementById('posterDetails').textContent = `Age: ${postData.Age} | Education: ${postData.Education}` || 'Details not available';
             document.getElementById('postContent').textContent = postData.Content || 'Content not available';
-    
+
             // Display the content container
             contentContainer.style.display = 'block';
-    
+
             // Analyse the toxicity of the loaded post content if it exists
-            const toxicityScore = await analyseContentForToxicity(postData.Content);
-            document.getElementById('customToxicityScore').textContent = `${toxicityScore}%`;
-    
-            if (toxicityScore > 85) {
-                const removalButton = document.querySelector('.button-tx');
-                removalButton.style.display = 'block'; // Show the button
-    
-                // Initialize Draggable for the button
-                initializeDraggable(removalButton, async () => {
-                    // This function is called after the drag-to-confirm action is completed.
-                    // Here, you would call your function to handle the post removal.
-                    await removeToxicPost(postData.CarouselItemID);
-                });
+            if (postData.Content) {
+                await analyseContentForToxicity(postData.Content, customContainer);
             }
-    
+
             $(".btn").addClass('btn-complete');
+
             setTimeout(() => {
-                $(".input").hide(); // Hide the input form after a delay
+                $(".input").hide(); // jQuery for hiding elements with class 'input'
             }, 3000);
-    
+
+            if (confirm('We have detected potentially toxic content in this post. Would you like to remove it from the display? This action cannot be undone.')) {
+                await removeToxicPost(carouselItemId);
+            }
+
+
         } catch (error) {
-            console.error('Error fetching and displaying content:', error);
-            alert('An error occurred while fetching the post content.');
+            console.error(error);
+            // Handle error appropriately
         }
     }
-
 
     async function fetchTwitterEmbedCode(twitterUrl) {
         const apiEndpoint = 'https://twitter-n01a.onrender.com/get-twitter-embed';
@@ -297,13 +161,13 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    // function updateContentDisplay(postData, contentContainer) {
-    //     document.getElementById('profileImageUrl').src = postData.ProfilePictureURL || 'placeholder-image-url.png';
-    //     document.getElementById('posterName').textContent = `${postData.FirstName} ${postData.LastName}` || 'Name not available';
-    //     document.getElementById('posterDetails').textContent = `Age: ${postData.Age} | Education: ${postData.Education}` || 'Details not available';
-    //     document.getElementById('postContent').textContent = postData.Content || 'Content not available';
-    //     toggleDisplay([contentContainer, '.container-s', '.custom-container'], 'block');
-    // }
+    function updateContentDisplay(postData, contentContainer) {
+        document.getElementById('profileImageUrl').src = postData.ProfilePictureURL || 'placeholder-image-url.png';
+        document.getElementById('posterName').textContent = `${postData.FirstName} ${postData.LastName}` || 'Name not available';
+        document.getElementById('posterDetails').textContent = `Age: ${postData.Age} | Education: ${postData.Education}` || 'Details not available';
+        document.getElementById('postContent').textContent = postData.Content || 'Content not available';
+        toggleDisplay([contentContainer, '.container-s', '.custom-container'], 'block');
+    }
 
     async function analyseContentForToxicity(content, customContainer) {
         const analysisEndpoint = 'https://google-perspective-api.onrender.com/analyse-content';
@@ -389,3 +253,135 @@ document.addEventListener('DOMContentLoaded', () => {
         return matches && matches[1] ? matches[1].replace('www.', '').toLowerCase() : '';
     }
 });
+
+gsap.registerPlugin(Draggable, MorphSVGPlugin);
+
+document.querySelectorAll('.button-tx').forEach(button => {
+
+    let handle = button.querySelector('.handle-tx'),
+        handlePath = handle.querySelector('.background-tx path'),
+        drop = button.querySelector('.drop-tx'),
+        dropPath = drop.querySelector('.background-tx path');
+
+    let handleTween = gsap.to(handlePath, {
+        paused: true,
+        morphSVG: 'M5 16C5 9.92487 9.92487 5 16 5H24C30.0751 5 34 9.92487 36 16C36 16 37 18.4379 37 20C37 21.5621 36 24 36 24C34 30.0751 30.0751 35 24 35H16C9.92487 35 5 30.0751 5 24C5 24 5 21.5621 5 20C5 18.4379 5 16 5 16Z'
+    });
+
+    let dropTween = gsap.to(dropPath, {
+        paused: true,
+        morphSVG: 'M4 16C6 9.92487 9.92487 5 16 5H24C30.0751 5 35 9.92487 35 16C35 16 35 18.4379 35 20C35 21.5621 35 24 35 24C35 30.0751 30.0751 35 24 35H16C9.92487 35 6 30.0751 4 24C4 24 3 21.5621 3 20C3 18.4379 4 16 4 16Z'
+    });
+
+    gsap.set(handle, {
+        x: 0
+    });
+
+    Draggable.create(handle, {
+        type: 'x',
+        bounds: button,
+        onDrag(e) {
+            dragging(this.x, button, handle, drop, handleTween, dropTween);
+        },
+        onRelease(e) {
+            if (!this.hitTest(drop)) {
+                gsap.to(handle, {
+                    x: 0,
+                    duration: .6,
+                    ease: 'elastic.out(1, .75)',
+                    onUpdate(e) {
+                        dragging(gsap.getProperty(handle, 'x'), button, handle, drop, handleTween, dropTween);
+                    }
+                });
+                if (gsap.getProperty(handle, 'x') > 0) {
+                    gsap.to(handlePath, {
+                        keyframes: [{
+                            morphSVG: 'M5 16C5 9.92487 9.92487 5 16 5H24C30.0751 5 37 9.92487 35 16C35 16 34 18.4379 34 20C34 21.5621 35 24 35 24C37 30.0751 30.0751 35 24 35H16C9.92487 35 5 30.0751 5 24C5 24 5 21.5621 5 20C5 18.4379 5 16 5 16Z',
+                            duration: .2
+                        }, {
+                            morphSVG: 'M5 16C5 9.92487 9.92487 5 16 5H24C30.0751 5 35 9.92487 35 16C35 16 35 18.4379 35 20C35 21.5621 35 24 35 24C35 30.0751 30.0751 35 24 35H16C9.92487 35 5 30.0751 5 24C5 24 5 21.5621 5 20C5 18.4379 5 16 5 16Z',
+                            duration: .3
+                        }]
+                    });
+                }
+            } else {
+                this.disable()
+                gsap.to(handle, {
+                    keyframes: [{
+                        x: drop.offsetLeft - 8,
+                        duration: .6,
+                        ease: 'elastic.out(1, .8)'
+                    }, {
+                        x: button.offsetWidth / 2 - handle.offsetWidth - 20,
+                        duration: .3
+                    }]
+                });
+                gsap.to(handlePath, {
+                    keyframes: [{
+                        morphSVG: 'M5 16C3 9.92487 9.92487 5 16 5H24C30.0751 5 35 9.92487 35 16C35 16 35 18.4379 35 20C35 21.5621 35 24 35 24C35 30.0751 30.0751 35 24 35H16C9.92487 35 3 30.0751 5 24C5 24 6 21.5621 6 20C6 18.4379 5 16 5 16Z',
+                        duration: .2
+                    }, {
+                        morphSVG: 'M5 16C5 9.92487 9.92487 5 16 5H24C30.0751 5 35 9.92487 35 16C35 16 35 18.4379 35 20C35 21.5621 35 24 35 24C35 30.0751 30.0751 35 24 35H16C9.92487 35 5 30.0751 5 24C5 24 5 21.5621 5 20C5 18.4379 5 16 5 16Z',
+                        duration: .15
+                    }]
+                });
+                gsap.to(button, {
+                    '--background-opacity': 0,
+                    '--progress-opacity': 0,
+                    '--handle-blur': 0,
+                    '--icon-y': .5,
+                    duration: .3,
+                    delay: .2
+                });
+                gsap.to(button, {
+                    '--icon-rotate': 87,
+                    '--icon-offset': 15.5,
+                    '--icon-scale': 1.5,
+                    duration: .25,
+                    delay: .3
+                });
+                gsap.to(button, {
+                    '--success-opacity': 1,
+                    '--success-scale': 1,
+                    '--success-x': 8,
+                    duration: .2,
+                    delay: .8
+                });
+            }
+        }
+    });
+
+    button.addEventListener('click', e => {
+
+        if (button.classList.contains('active')) {
+            return
+        }
+
+        button.classList.add('active');
+
+        gsap.to(button, {
+            '--handle-drop-opacity': 1,
+            '--default-opacity': 0,
+            '--default-scale': .8,
+            duration: .2
+        })
+        gsap.to(button, {
+            '--progress-opacity': .5,
+            '--progress-scale': 1,
+            duration: .2,
+            delay: .15
+        })
+
+    });
+
+});
+
+function dragging(x, button, handle, drop, handleTween, dropTween) {
+    let progress = button.offsetWidth - 16 - handle.offsetWidth - drop.offsetWidth - x - 8;
+
+    progress = (12 - (progress > 12 ? 12 : progress < -12 ? -12 : progress)) / 12;
+    progress = progress > 1 ? 2 - progress : progress;
+
+    handleTween.progress(progress);
+    dropTween.progress(progress);
+}
