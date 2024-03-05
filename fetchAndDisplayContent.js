@@ -111,46 +111,31 @@ document.addEventListener('DOMContentLoaded', () => {
             document.getElementById('posterDetails').textContent = `Age: ${postData.Age} | Education: ${postData.Education}` || 'Details not available';
             document.getElementById('postContent').textContent = postData.Content || 'Content not available';
 
+            $(".btn").addClass('btn-complete');
+            setTimeout(() => {
+                $(".input").hide(); // jQuery for hiding elements with class 'input'
+            }, 3000);
+
             // Display the content container
             contentContainer.style.display = 'block';
 
             // Analyse the toxicity of the loaded post content if it exists
             if (postData.Content) {
-                await analyseContentForToxicity(postData.Content, document.querySelector('.custom-container'));
-            }
-
-            $(".btn").addClass('btn-complete');
-
-            setTimeout(() => {
-                $(".input").hide(); // jQuery for hiding elements with class 'input'
-            }, 3000);
-
-            console.log("Not in the if statemenet")
-
-            // Analyse the toxicity of the loaded post content if it exists
-            if (postData.Content) {
-                console.log("In the if statemenet 1")
-
-                const toxicityScore = await analyseContentForToxicity(postData.Content);
-                if (toxicityScore >= 85) {
-                    // Display the warning card
-                    console.log("In the if statemenet 2")
+                const toxicityPercentage = await analyseContentForToxicity(postData.Content, document.querySelector('.custom-container'));
+                if (toxicityPercentage && toxicityPercentage >= 85) {
                     displayWarningCard();
 
-                    // Handle user actions
-                    document.getElementById('rejectButton').addEventListener('click', () => {
-                        rejectToxicContent();
-                    });
-
-                    document.getElementById('confirmButton').addEventListener('click', () => {
-                        confirmToxicContent();
-                    });
+                    // Assuming buttons have IDs 'rejectButton' and 'confirmButton' in your HTML
+                    document.getElementById('rejectButton').addEventListener('click', rejectToxicContent);
+                    document.getElementById('confirmButton').addEventListener('click', confirmToxicContent);
                 }
             }
+
         } catch (error) {
             console.error(error);
         }
     }
+
 
 
     async function fetchTwitterEmbedCode(twitterUrl) {
@@ -222,9 +207,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
             // Show the custom container with the toxicity score
             customContainer.style.display = 'block';
+
+            // Return the percentage of toxicity for further use
+            return percentage;
         } catch (error) {
             console.error('Error analyzing content:', error);
-            // Handle error state appropriately, e.g., show error message to user
         }
     }
 
