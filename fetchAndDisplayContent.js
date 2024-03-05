@@ -155,15 +155,7 @@ document.addEventListener('DOMContentLoaded', () => {
             throw error; // Re-throw to be handled by caller
         }
     }
-
-    function updateContentDisplay(postData, contentContainer) {
-        document.getElementById('profileImageUrl').src = postData.ProfilePictureURL || 'placeholder-image-url.png';
-        document.getElementById('posterName').textContent = `${postData.FirstName} ${postData.LastName}` || 'Name not available';
-        document.getElementById('posterDetails').textContent = `Age: ${postData.Age} | Education: ${postData.Education}` || 'Details not available';
-        document.getElementById('postContent').textContent = postData.Content || 'Content not available';
-        toggleDisplay([contentContainer, '.container-s', '.custom-container'], 'block');
-    }
-
+    
     async function analyseContentForToxicity(content, customContainer) {
         const analysisEndpoint = 'https://google-perspective-api.onrender.com/analyse-content';
         try {
