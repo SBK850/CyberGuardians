@@ -434,6 +434,6 @@ code {
 	padding: 10px;
 }
 
-.warning-section {
+#warning-section {
 	display: none;
 }
