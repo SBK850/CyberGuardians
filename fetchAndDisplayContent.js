@@ -111,11 +111,6 @@ document.addEventListener('DOMContentLoaded', () => {
             document.getElementById('posterDetails').textContent = `Age: ${postData.Age} | Education: ${postData.Education}` || 'Details not available';
             document.getElementById('postContent').textContent = postData.Content || 'Content not available';
 
-            $(".btn").addClass('btn-complete');
-            setTimeout(() => {
-                $(".input").hide(); // jQuery for hiding elements with class 'input'
-            }, 3000);
-
             // Display the content container
             contentContainer.style.display = 'block';
 
@@ -135,8 +130,6 @@ document.addEventListener('DOMContentLoaded', () => {
             console.error(error);
         }
     }
-
-
 
     async function fetchTwitterEmbedCode(twitterUrl) {
         const apiEndpoint = 'https://twitter-n01a.onrender.com/get-twitter-embed';
@@ -212,6 +205,8 @@ document.addEventListener('DOMContentLoaded', () => {
             return percentage;
         } catch (error) {
             console.error('Error analyzing content:', error);
+            // Handle error state appropriately, e.g., display an error message to the user
+            return null; // Return null if an error occurs during toxicity analysis
         }
     }
 
@@ -277,8 +272,5 @@ document.addEventListener('DOMContentLoaded', () => {
         document.getElementById("message-section").appendChild(message);
         document.getElementById("warning-section").style.display = "none";
         document.getElementById("message-section").style.display = "block";
-
-        // Call the function to remove the toxic content
-        removeToxicPost(carouselItemId);
     }
 });
