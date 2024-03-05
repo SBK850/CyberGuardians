@@ -103,38 +103,41 @@ document.addEventListener('DOMContentLoaded', () => {
             }
 
             const jsonData = await response.json();
+            if (jsonData.length === 0) {
+                throw new Error("No data returned from the scrape");
+            }
             const postData = jsonData[0];
 
-            // Update the content on the page
             document.getElementById('profileImageUrl').src = postData.ProfilePictureURL || 'placeholder-image-url.png';
             document.getElementById('posterName').textContent = `${postData.FirstName} ${postData.LastName}` || 'Name not available';
             document.getElementById('posterDetails').textContent = `Age: ${postData.Age} | Education: ${postData.Education}` || 'Details not available';
             document.getElementById('postContent').textContent = postData.Content || 'Content not available';
 
-            // Display the content container
             contentContainer.style.display = 'block';
 
-            // Analyse the toxicity of the loaded post content if it exists
-            if (postData.Content) {
-                await analyseContentForToxicity(postData.Content, customContainer);
-            }
+            const toxicityScore = await analyseContentForToxicity(postData.Content);
+            document.getElementById('customToxicityScore').textContent = `${toxicityScore}%`;
+
+            // if (toxicityScore > 85) {
+            //     const removalButton = document.querySelector('.button-tx');
+            //     removalButton.style.display = 'block'; // Show the button
+
+            //     initializeDraggable(removalButton, async () => {
+            //         await removeToxicPost(postData.CarouselItemID);
+            //     });
+            // }
 
             $(".btn").addClass('btn-complete');
-
             setTimeout(() => {
-                $(".input").hide(); // jQuery for hiding elements with class 'input'
+                $(".input").hide(); // Hide the input form after a delay
             }, 3000);
 
-            if (confirm('We have detected potentially toxic content in this post. Would you like to remove it from the display? This action cannot be undone.')) {
-                await removeToxicPost(carouselItemId);
-            }
-
-
         } catch (error) {
-            console.error(error);
-            // Handle error appropriately
+            console.error('Error fetching and displaying content:', error);
+            alert('An error occurred while fetching the post content.');
         }
     }
+
 
     async function fetchTwitterEmbedCode(twitterUrl) {
         const apiEndpoint = 'https://twitter-n01a.onrender.com/get-twitter-embed';
@@ -161,13 +164,13 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    function updateContentDisplay(postData, contentContainer) {
-        document.getElementById('profileImageUrl').src = postData.ProfilePictureURL || 'placeholder-image-url.png';
-        document.getElementById('posterName').textContent = `${postData.FirstName} ${postData.LastName}` || 'Name not available';
-        document.getElementById('posterDetails').textContent = `Age: ${postData.Age} | Education: ${postData.Education}` || 'Details not available';
-        document.getElementById('postContent').textContent = postData.Content || 'Content not available';
-        toggleDisplay([contentContainer, '.container-s', '.custom-container'], 'block');
-    }
+    // function updateContentDisplay(postData, contentContainer) {
+    //     document.getElementById('profileImageUrl').src = postData.ProfilePictureURL || 'placeholder-image-url.png';
+    //     document.getElementById('posterName').textContent = `${postData.FirstName} ${postData.LastName}` || 'Name not available';
+    //     document.getElementById('posterDetails').textContent = `Age: ${postData.Age} | Education: ${postData.Education}` || 'Details not available';
+    //     document.getElementById('postContent').textContent = postData.Content || 'Content not available';
+    //     toggleDisplay([contentContainer, '.container-s', '.custom-container'], 'block');
+    // }
 
     async function analyseContentForToxicity(content, customContainer) {
         const analysisEndpoint = 'https://google-perspective-api.onrender.com/analyse-content';
@@ -222,6 +225,9 @@ document.addEventListener('DOMContentLoaded', () => {
                 body: JSON.stringify({ CarouselItemID: carouselItemId }), // Send the CarouselItemID to PHP
             });
 
+            console.log("Removing post with ID:", carouselItemId);
+            x
+
             if (!response.ok) {
                 throw new Error(`Network response was not ok, status: ${response.status}`);
             }
@@ -256,8 +262,37 @@ document.addEventListener('DOMContentLoaded', () => {
 
 gsap.registerPlugin(Draggable, MorphSVGPlugin);
 
-document.querySelectorAll('.button-tx').forEach(button => {
+document.addEventListener('DOMContentLoaded', () => {
+    // Add event listener for custom button action
+    document.querySelectorAll('.button-tx').forEach(button => {
+        button.addEventListener('click', async () => {
+            if (button.classList.contains('active')) {
+                return;
+            }
 
+            button.classList.add('active');
+
+            gsap.to(button, {
+                '--handle-drop-opacity': 1,
+                '--default-opacity': 0,
+                '--default-scale': .8,
+                duration: .2
+            });
+            gsap.to(button, {
+                '--progress-opacity': .5,
+                '--progress-scale': 1,
+                duration: .2,
+                delay: .15
+            });
+
+            // Once confirmed, call removeToxicPost
+            await removeToxicPost(postData.CarouselItemID);
+        });
+    });
+});
+
+// Draggable initialization function
+function initializeDraggable(button) {
     let handle = button.querySelector('.handle-tx'),
         handlePath = handle.querySelector('.background-tx path'),
         drop = button.querySelector('.drop-tx'),
@@ -305,7 +340,7 @@ document.querySelectorAll('.button-tx').forEach(button => {
                     });
                 }
             } else {
-                this.disable()
+                this.disable();
                 gsap.to(handle, {
                     keyframes: [{
                         x: drop.offsetLeft - 8,
@@ -350,38 +385,4 @@ document.querySelectorAll('.button-tx').forEach(button => {
             }
         }
     });
-
-    button.addEventListener('click', e => {
-
-        if (button.classList.contains('active')) {
-            return
-        }
-
-        button.classList.add('active');
-
-        gsap.to(button, {
-            '--handle-drop-opacity': 1,
-            '--default-opacity': 0,
-            '--default-scale': .8,
-            duration: .2
-        })
-        gsap.to(button, {
-            '--progress-opacity': .5,
-            '--progress-scale': 1,
-            duration: .2,
-            delay: .15
-        })
-
-    });
-
-});
-
-function dragging(x, button, handle, drop, handleTween, dropTween) {
-    let progress = button.offsetWidth - 16 - handle.offsetWidth - drop.offsetWidth - x - 8;
-
-    progress = (12 - (progress > 12 ? 12 : progress < -12 ? -12 : progress)) / 12;
-    progress = progress > 1 ? 2 - progress : progress;
-
-    handleTween.progress(progress);
-    dropTween.progress(progress);
 }
