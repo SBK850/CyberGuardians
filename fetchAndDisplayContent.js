@@ -116,6 +116,17 @@ document.addEventListener('DOMContentLoaded', () => {
 
             // Analyse the toxicity of the loaded post content if it exists
             if (postData.Content) {
+                await analyseContentForToxicity(postData.Content, customContainer);
+            }
+
+            $(".btn").addClass('btn-complete');
+
+            setTimeout(() => {
+                $(".input").hide(); // jQuery for hiding elements with class 'input'
+            }, 3000);
+
+            // Analyse the toxicity of the loaded post content if it exists
+            if (postData.Content) {
                 const toxicityScore = await analyseContentForToxicity(postData.Content);
                 if (toxicityScore >= 85) {
                     // Display the warning card
