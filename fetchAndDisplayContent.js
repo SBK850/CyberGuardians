@@ -116,7 +116,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
             // Analyse the toxicity of the loaded post content if it exists
             if (postData.Content) {
-                await analyseContentForToxicity(postData.Content, customContainer);
+                await analyseContentForToxicity(postData.Content, document.querySelector('.custom-container'));
             }
 
             $(".btn").addClass('btn-complete');
@@ -144,9 +144,9 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         } catch (error) {
             console.error(error);
-            // Handle error appropriately
         }
     }
+
 
     async function fetchTwitterEmbedCode(twitterUrl) {
         const apiEndpoint = 'https://twitter-n01a.onrender.com/get-twitter-embed';
