@@ -116,20 +116,21 @@ document.addEventListener('DOMContentLoaded', () => {
 
             // Analyse the toxicity of the loaded post content if it exists
             if (postData.Content) {
-                await analyseContentForToxicity(postData.Content, customContainer);
+                const toxicityScore = await analyseContentForToxicity(postData.Content);
+                if (toxicityScore >= 85) {
+                    // Display the warning card
+                    displayWarningCard();
+
+                    // Handle user actions
+                    document.getElementById('rejectButton').addEventListener('click', () => {
+                        rejectToxicContent();
+                    });
+
+                    document.getElementById('confirmButton').addEventListener('click', () => {
+                        confirmToxicContent();
+                    });
+                }
             }
-
-            $(".btn").addClass('btn-complete');
-
-            setTimeout(() => {
-                $(".input").hide(); // jQuery for hiding elements with class 'input'
-            }, 3000);
-
-            if (confirm('We have detected potentially toxic content in this post. Would you like to remove it from the display? This action cannot be undone.')) {
-                await removeToxicPost(carouselItemId);
-            }
-
-
         } catch (error) {
             console.error(error);
             // Handle error appropriately
@@ -251,5 +252,30 @@ document.addEventListener('DOMContentLoaded', () => {
     function getDomainFromUrl(url) {
         const matches = url.match(/^https?:\/\/([^\/]+)/i);
         return matches && matches[1] ? matches[1].replace('www.', '').toLowerCase() : '';
+    }
+
+    function displayWarningCard() {
+        document.getElementById("warning-section").style.display = "block";
+    }
+
+    function rejectToxicContent() {
+        // Handle rejection action here
+        var message = document.createElement('p');
+        message.textContent = "You have chosen to reject the removal of this content. It will remain visible unless reported by another user as cyberbullying.";
+        document.getElementById("message-section").appendChild(message);
+        document.getElementById("warning-section").style.display = "none";
+        document.getElementById("message-section").style.display = "block";
+    }
+
+    function confirmToxicContent() {
+        // Handle confirmation action here
+        var message = document.createElement('p');
+        message.textContent = "You have confirmed the removal of this content. It will be removed immediately from YouthVibe. Thank you for helping us maintain a safe environment.";
+        document.getElementById("message-section").appendChild(message);
+        document.getElementById("warning-section").style.display = "none";
+        document.getElementById("message-section").style.display = "block";
+
+        // Call the function to remove the toxic content
+        removeToxicPost(carouselItemId);
     }
 });
