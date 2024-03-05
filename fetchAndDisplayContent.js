@@ -114,6 +114,11 @@ document.addEventListener('DOMContentLoaded', () => {
             // Display the content container
             contentContainer.style.display = 'block';
 
+            // Hide inputs 3 seconds after loading the response
+            setTimeout(() => {
+                $(".input").hide(); // Assuming you are using jQuery
+            }, 3000);
+
             // Analyse the toxicity of the loaded post content if it exists
             if (postData.Content) {
                 const toxicityPercentage = await analyseContentForToxicity(postData.Content, document.querySelector('.custom-container'));
