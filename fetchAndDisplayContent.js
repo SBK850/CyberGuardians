@@ -104,6 +104,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
             const jsonData = await response.json();
             const postData = jsonData[0];
+            const carouselItemId = postData.carouselItemId; // Ensure this matches the actual property name
+
 
             // Update the content on the page
             document.getElementById('profileImageUrl').src = postData.ProfilePictureURL || 'placeholder-image-url.png';
@@ -124,13 +126,16 @@ document.addEventListener('DOMContentLoaded', () => {
 
             // Analyse the toxicity of the loaded post content if it exists
             if (postData.Content) {
-                const toxicityPercentage = await analyseContentForToxicity(postData.Content, document.querySelector('.custom-container'));
+                const toxicityPercentage = await analyseContentForToxicity(postData.Content, customContainer);
                 if (toxicityPercentage && toxicityPercentage >= 85) {
                     displayWarningCard();
 
-                    // Assuming buttons have IDs 'rejectButton' and 'confirmButton' in your HTML
                     document.getElementById('rejectButton').addEventListener('click', rejectToxicContent);
-                    document.getElementById('confirmButton').addEventListener('click', () => confirmToxicContent(carouselItemId));
+                    // Now dynamically set the event listener for confirmButton with the correct carouselItemId
+                    const confirmButton = document.getElementById('confirmButton');
+                    if (confirmButton) {
+                        confirmButton.addEventListener('click', () => confirmToxicContent(carouselItemId));
+                    }
                 }
             }
 
@@ -251,39 +256,31 @@ document.addEventListener('DOMContentLoaded', () => {
         const matches = url.match(/^https?:\/\/([^\/]+)/i);
         return matches && matches[1] ? matches[1].replace('www.', '').toLowerCase() : '';
     }
-});
 
-document.addEventListener('DOMContentLoaded', () => {
-    document.getElementById('rejectButton').addEventListener('click', rejectToxicContent);
+    function displayWarningCard() {
+        document.getElementById("warning-section").style.display = "block";
+    }
 
-    const carouselItemId = 'yourCarouselItemIdHere';
-    document.getElementById('confirmButton').addEventListener('click', () => confirmToxicContent(carouselItemId));
-});
-
-
-function displayWarningCard() {
-    document.getElementById("warning-section").style.display = "block";
-}
-
-function rejectToxicContent() {
-    // Handle rejection action here
-    var message = document.createElement('p');
-    message.textContent = "You have chosen to reject the removal of this content. It will remain visible unless reported by another user as cyberbullying.";
-    document.getElementById("message-section").appendChild(message);
-    document.getElementById("warning-section").style.display = "none";
-    document.getElementById("message-section").style.display = "block";
-}
-
-async function confirmToxicContent(carouselItemId) {
-    // Handle confirmation action here
-    try {
-        await removeToxicPost(carouselItemId);
+    function rejectToxicContent() {
+        // Handle rejection action here
         var message = document.createElement('p');
-        message.textContent = "You have confirmed the removal of this content. It will be removed immediately from YouthVibe. Thank you for helping us maintain a safe environment.";
+        message.textContent = "You have chosen to reject the removal of this content. It will remain visible unless reported by another user as cyberbullying.";
         document.getElementById("message-section").appendChild(message);
         document.getElementById("warning-section").style.display = "none";
         document.getElementById("message-section").style.display = "block";
-    } catch (error) {
-        console.error('Error confirming toxic content:', error);
     }
-}
+
+    async function confirmToxicContent(carouselItemId) {
+        // Handle confirmation action here
+        try {
+            await removeToxicPost(carouselItemId);
+            var message = document.createElement('p');
+            message.textContent = "You have confirmed the removal of this content. It will be removed immediately from YouthVibe. Thank you for helping us maintain a safe environment.";
+            document.getElementById("message-section").appendChild(message);
+            document.getElementById("warning-section").style.display = "none";
+            document.getElementById("message-section").style.display = "block";
+        } catch (error) {
+            console.error('Error confirming toxic content:', error);
+        }
+    }
+});
