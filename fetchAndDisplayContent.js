@@ -104,8 +104,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
             const jsonData = await response.json();
             const postData = jsonData[0];
-            const carouselItemId = postData.carouselItemId; // Ensure this matches the actual property name
-
+            const carouselItemId = postData.CarouselItemID; 
 
             // Update the content on the page
             document.getElementById('profileImageUrl').src = postData.ProfilePictureURL || 'placeholder-image-url.png';
