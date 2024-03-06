@@ -219,23 +219,32 @@ document.addEventListener('DOMContentLoaded', () => {
 
     async function removeToxicPost(carouselItemId) {
         const apiEndpoint = 'remove-post.php';
+        console.log("Removing post with ID:", carouselItemId); // Log the ID to check if it's passed correctly
+
         try {
             const response = await fetch(apiEndpoint, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify({ CarouselItemID: carouselItemId }), // Send the CarouselItemID to PHP
+                body: JSON.stringify({ CarouselItemID: carouselItemId }),
             });
 
-            if (!response.ok) {
-                throw new Error(`Network response was not ok, status: ${response.status}`);
+            const result = await response.json();
+
+            // Check the network response and the result of the operation
+            if (response.ok && result.message === 'Post removed successfully.') {
+                console.log(result.message); // Log the success message from PHP
+                return result; // Return the result for further processing if needed
+            } else {
+                // Handle any messages that might indicate the post was not found or already removed
+                console.error('Error message from server:', result.message);
+                return result; // Return the result to handle it accordingly in the calling function
             }
 
-            const result = await response.json();
-            console.log(result.message); // Log the message from PHP
         } catch (error) {
             console.error('Error removing post:', error);
+            throw error; // Rethrow the error to handle it in the calling function
         }
     }
 
