@@ -205,21 +205,19 @@ document.addEventListener('DOMContentLoaded', () => {
                 circle.style.strokeDashoffset = offset;
             }
 
-            // Show the custom container with the toxicity score
             customContainer.style.display = 'block';
 
-            // Return the percentage of toxicity for further use
             return percentage;
         } catch (error) {
             console.error('Error analyzing content:', error);
-            // Handle error state appropriately, e.g., display an error message to the user
-            return null; // Return null if an error occurs during toxicity analysis
+
+            return null; 
         }
     }
 
     async function removeToxicPost(carouselItemId) {
         const apiEndpoint = 'remove-post.php';
-        console.log("Removing post with ID:", carouselItemId); // Log the ID to check if it's passed correctly
+        console.log("Removing post with ID:", carouselItemId);
 
         try {
             const response = await fetch(apiEndpoint, {
@@ -232,19 +230,17 @@ document.addEventListener('DOMContentLoaded', () => {
 
             const result = await response.json();
 
-            // Check the network response and the result of the operation
             if (response.ok && result.message === 'Post removed successfully.') {
-                console.log(result.message); // Log the success message from PHP
-                return result; // Return the result for further processing if needed
+                console.log(result.message); 
+                return result;
             } else {
-                // Handle any messages that might indicate the post was not found or already removed
                 console.error('Error message from server:', result.message);
-                return result; // Return the result to handle it accordingly in the calling function
+                return result; 
             }
 
         } catch (error) {
             console.error('Error removing post:', error);
-            throw error; // Rethrow the error to handle it in the calling function
+            throw error; 
         }
     }
 
