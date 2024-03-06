@@ -104,7 +104,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
             const jsonData = await response.json();
             const postData = jsonData[0];
-            const carouselItemId = postData.CarouselItemID; 
+            const carouselItemId = postData.CarouselItemID;
 
             // Update the content on the page
             document.getElementById('profileImageUrl').src = postData.ProfilePictureURL || 'placeholder-image-url.png';
@@ -130,10 +130,13 @@ document.addEventListener('DOMContentLoaded', () => {
                     displayWarningCard();
 
                     document.getElementById('rejectButton').addEventListener('click', rejectToxicContent);
-                    // Now dynamically set the event listener for confirmButton with the correct carouselItemId
+
                     const confirmButton = document.getElementById('confirmButton');
                     if (confirmButton) {
-                        confirmButton.addEventListener('click', () => confirmToxicContent(carouselItemId));
+                        // Removed anonymous function to directly call the function with the correct parameter
+                        confirmButton.onclick = function () {
+                            confirmToxicContent(carouselItemId);
+                        };
                     }
                 }
             }
@@ -287,5 +290,5 @@ document.addEventListener('DOMContentLoaded', () => {
             console.error('Error confirming toxic content:', error);
         }
     }
-    
+
 });
