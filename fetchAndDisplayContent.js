@@ -271,16 +271,22 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     async function confirmToxicContent(carouselItemId) {
-        // Handle confirmation action here
         try {
-            await removeToxicPost(carouselItemId);
-            var message = document.createElement('p');
-            message.textContent = "You have confirmed the removal of this content. It will be removed immediately from YouthVibe. Thank you for helping us maintain a safe environment.";
-            document.getElementById("message-section").appendChild(message);
-            document.getElementById("warning-section").style.display = "none";
-            document.getElementById("message-section").style.display = "block";
+            console.log("Attempting to remove post with ID:", carouselItemId); // Log the ID to the console
+            const result = await removeToxicPost(carouselItemId);
+            console.log("Server response:", result); // Log the actual response from the server
+            if (result && result.message === 'Post removed successfully.') {
+                var message = document.createElement('p');
+                message.textContent = "You have confirmed the removal of this content. It will be removed immediately from YouthVibe. Thank you for helping us maintain a safe environment.";
+                document.getElementById("message-section").appendChild(message);
+                document.getElementById("warning-section").style.display = "none";
+                document.getElementById("message-section").style.display = "block";
+            } else {
+                console.error("Failed to remove post:", result);
+            }
         } catch (error) {
             console.error('Error confirming toxic content:', error);
         }
     }
+    
 });
