@@ -1,11 +1,15 @@
 <?php
 
+// Indicate that the content type of the response is JSON
+header('Content-Type: application/json');
+
+// Enable error reporting for debugging
 error_reporting(E_ALL);
 ini_set('display_errors', 1);
 
 $host = 'localhost';
 $username = 'id21908789_seikou';
-$password = 'Manchester2023)'; 
+$password = 'Manchester2023)'; // Note: Be cautious with passwords in scripts.
 $database = 'id21908789_youthvibe';
 
 // Create a new database connection
@@ -16,6 +20,7 @@ if ($conn->connect_error) {
     die("Connection failed: " . $conn->connect_error);
 }
 
+// Read the input from the request body
 $postData = json_decode(file_get_contents('php://input'), true);
 $carouselItemId = $postData['CarouselItemID'];
 
@@ -29,6 +34,7 @@ if (!$deleteStmt) {
     exit;
 }
 
+// Bind the carousel item ID parameter and execute the statement
 $deleteStmt->bind_param("i", $carouselItemId);
 $deleteStmt->execute();
 
@@ -41,5 +47,7 @@ if ($deleteStmt->error) {
     echo json_encode(['message' => 'No post found or already removed.']);
 }
 
+// Close the database connection
+$deleteStmt->close();
 $conn->close();
 ?>
