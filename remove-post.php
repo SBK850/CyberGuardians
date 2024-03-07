@@ -7,7 +7,7 @@ header('Content-Type: application/json');
 error_reporting(E_ALL);
 ini_set('display_errors', 1);
 
-$host = 'http://sql8.freemysqlhosting.net';
+$host = 'sql8.freemysqlhosting.net';
 $username = 'sql8689226';
 $password = 'SlU4NVg6gD'; // Note: Be cautious with passwords in scripts.
 $database = 'sql8689226';
