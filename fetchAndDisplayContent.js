@@ -211,7 +211,7 @@ document.addEventListener('DOMContentLoaded', () => {
         } catch (error) {
             console.error('Error analyzing content:', error);
 
-            return null; 
+            return null;
         }
     }
 
@@ -228,19 +228,29 @@ document.addEventListener('DOMContentLoaded', () => {
                 body: JSON.stringify({ CarouselItemID: carouselItemId }),
             });
 
-            const result = await response.json();
+            // First, check if the HTTP response status indicates success
+            if (!response.ok) {
+                // The server responded with a status other than 2xx, handle it as an error
+                console.error(`HTTP error! Status: ${response.status}`);
+                return { error: `HTTP error! Status: ${response.status}` };
+            }
 
-            if (response.ok && result.message === 'Post removed successfully.') {
-                console.log(result.message); 
+            // Try parsing the response as JSON
+            let result = await response.json();
+
+            // Process result here if JSON was successfully parsed
+            if (result.message === 'Post removed successfully.') {
+                console.log(result.message);
                 return result;
             } else {
-                console.error('Error message from server:', result.message);
-                return result; 
+                console.error('Error message from server:', result.error || result.message);
+                return { error: result.error || 'Unknown error occurred' };
             }
 
         } catch (error) {
+            // This catch block will handle errors during fetching or JSON parsing
             console.error('Error removing post:', error);
-            throw error; 
+            return { error: error.message };
         }
     }
 
