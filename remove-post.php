@@ -9,7 +9,7 @@ ini_set('display_errors', 1);
 
 $host = 'sql8.freemysqlhosting.net';
 $username = 'sql8689226';
-$password = 'SlU4NVg6gD'; // Note: Be cautious with passwords in scripts.
+$password = 'SIU4NVg9gD';
 $database = 'sql8689226';
 
 // Create a new database connection
