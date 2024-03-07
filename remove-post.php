@@ -7,10 +7,10 @@ header('Content-Type: application/json');
 error_reporting(E_ALL);
 ini_set('display_errors', 1);
 
-$host = 'localhost';
-$username = 'id21908789_seikou';
-$password = 'Manchester2023)'; // Note: Be cautious with passwords in scripts.
-$database = 'id21908789_youthvibe';
+$host = 'http://sql8.freemysqlhosting.net/';
+$username = 'sql8689226';
+$password = 'SlU4NVg6gD'; // Note: Be cautious with passwords in scripts.
+$database = 'sql8689226';
 
 // Create a new database connection
 $conn = new mysqli($host, $username, $password, $database);
