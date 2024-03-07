@@ -211,14 +211,15 @@ document.addEventListener('DOMContentLoaded', () => {
         } catch (error) {
             console.error('Error analyzing content:', error);
 
-            return null;
+            return null; 
         }
     }
 
     async function removeToxicPost(carouselItemId) {
-        const apiEndpoint = 'remove-post.php';
+        const apiEndpoint = 'https://youthvibe-remove.onrender.com/remove-post';
+    
         console.log("Removing post with ID:", carouselItemId);
-
+    
         try {
             const response = await fetch(apiEndpoint, {
                 method: 'POST',
@@ -227,32 +228,21 @@ document.addEventListener('DOMContentLoaded', () => {
                 },
                 body: JSON.stringify({ CarouselItemID: carouselItemId }),
             });
-
-            // First, check if the HTTP response status indicates success
-            if (!response.ok) {
-                // The server responded with a status other than 2xx, handle it as an error
-                console.error(`HTTP error! Status: ${response.status}`);
-                return { error: `HTTP error! Status: ${response.status}` };
-            }
-
-            // Try parsing the response as JSON
-            let result = await response.json();
-
-            // Process result here if JSON was successfully parsed
-            if (result.message === 'Post removed successfully.') {
+    
+            const result = await response.json();
+    
+            if (response.ok && result.message === 'Post removed successfully.') {
                 console.log(result.message);
                 return result;
             } else {
-                console.error('Error message from server:', result.error || result.message);
-                return { error: result.error || 'Unknown error occurred' };
+                console.error('Error message from server:', result.message);
+                return result;
             }
-
         } catch (error) {
-            // This catch block will handle errors during fetching or JSON parsing
             console.error('Error removing post:', error);
-            return { error: error.message };
+            throw error;
         }
-    }
+    }    
 
     function loadTwitterWidgets() {
         const script = document.createElement('script');
