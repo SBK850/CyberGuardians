@@ -112,6 +112,17 @@ document.addEventListener('DOMContentLoaded', () => {
             document.getElementById('posterDetails').textContent = `Age: ${postData.Age} | Education: ${postData.Education}` || 'Details not available';
             document.getElementById('postContent').textContent = postData.Content || 'Content not available';
 
+            // Display the uploaded image if it exists
+            if (postData.UploadedImageData) {
+                // Assuming the uploadedImageData is a base64 encoded image data URL
+                let uploadedImageElement = document.createElement('img');
+                uploadedImageElement.src = postData.UploadedImageData;
+                uploadedImageElement.style.width = '100%'; // Set image width to 100% of its container
+                uploadedImageElement.style.marginTop = '20px'; // Add some space above the image
+                uploadedImageElement.style.border = '1px solid black'; // Add a black border around the image
+                contentContainer.appendChild(uploadedImageElement); // Append the image to the content container
+            }
+
             // Display the content container
             contentContainer.style.display = 'block';
 
@@ -122,29 +133,11 @@ document.addEventListener('DOMContentLoaded', () => {
             setTimeout(() => {
                 $(".input").hide(); // Assuming you are using jQuery
             }, 3000);
-
-            // Analyse the toxicity of the loaded post content if it exists
-            if (postData.Content) {
-                const toxicityPercentage = await analyseContentForToxicity(postData.Content, customContainer);
-                if (toxicityPercentage && toxicityPercentage >= 85) {
-                    displayWarningCard();
-
-                    document.getElementById('rejectButton').addEventListener('click', rejectToxicContent);
-
-                    const confirmButton = document.getElementById('confirmButton');
-                    if (confirmButton) {
-                        // Removed anonymous function to directly call the function with the correct parameter
-                        confirmButton.onclick = function () {
-                            confirmToxicContent(carouselItemId);
-                        };
-                    }
-                }
-            }
-
         } catch (error) {
             console.error(error);
         }
     }
+
 
     async function fetchTwitterEmbedCode(twitterUrl) {
         const apiEndpoint = 'https://twitter-n01a.onrender.com/get-twitter-embed';
@@ -169,7 +162,7 @@ document.addEventListener('DOMContentLoaded', () => {
             console.error('Fetch error:', error);
             throw error; // Re-throw to be handled by caller
         }
-    } 
+    }
 
     async function analyseContentForToxicity(content, customContainer) {
         const analysisEndpoint = 'https://google-perspective-api.onrender.com/analyse-content';
@@ -181,29 +174,29 @@ document.addEventListener('DOMContentLoaded', () => {
                 },
                 body: JSON.stringify({ content: content }),
             });
-    
+
             if (!response.ok) {
                 throw new Error(`Network response was not ok, status: ${response.status}`);
             }
-    
+
             const analysisResult = await response.json();
             const toxicityScore = analysisResult.score;
             const percentage = Math.round(toxicityScore * 100);
-    
+
             // Update the toxicity score in the custom container
             document.getElementById('customToxicityScore').textContent = `${percentage}%`;
-    
+
             // Adjust the second circle to reflect the toxicity score and color based on the score
             const circles = customContainer.querySelectorAll('.custom-percent svg circle:nth-child(2)');
             if (circles.length > 0) {
                 const circle = circles[0];
                 const radius = circle.r.baseVal.value;
                 const circumference = radius * 2 * Math.PI;
-    
+
                 circle.style.strokeDasharray = `${circumference} ${circumference}`;
                 const offset = circumference - percentage / 100 * circumference;
                 circle.style.strokeDashoffset = offset;
-    
+
                 // Determine the color based on the toxicity score
                 let color = 'red'; // High toxicity
                 if (percentage < 60) {
@@ -213,17 +206,17 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
                 circle.style.stroke = color; // Apply the color
             }
-    
+
             customContainer.style.display = 'block';
-    
+
             return percentage;
         } catch (error) {
             console.error('Error analyzing content:', error);
-    
-            return null; 
+
+            return null;
         }
     }
-    
+
 
     function loadTwitterWidgets() {
         const script = document.createElement('script');
