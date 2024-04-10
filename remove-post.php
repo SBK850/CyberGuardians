@@ -7,10 +7,10 @@ header('Content-Type: application/json');
 error_reporting(E_ALL);
 ini_set('display_errors', 1);
 
-$host = 'sql8.freemysqlhosting.net';
-$username = 'sql8689226';
-$password = 'SIU4NVg6gD'; 
-$database = 'sql8689226';
+$host = 'mudfoot.doc.stu.mmu.ac.uk';
+$username = 'bahkaras';
+$password = 'hirsponD3'; 
+$database = 'bahkaras';
 
 // Create a new database connection
 $conn = new mysqli($host, $username, $password, $database);
