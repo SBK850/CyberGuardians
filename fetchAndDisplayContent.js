@@ -224,34 +224,59 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }    
 
-    async function removeToxicPost(carouselItemId) {
-        const apiEndpoint = 'https://youthvibe-remove.onrender.com/remove-post';
-    
-        console.log("Removing post with ID:", carouselItemId);
-    
+    async function analyseContentForToxicity(content, customContainer) {
+        const analysisEndpoint = 'https://google-perspective-api.onrender.com/analyse-content';
         try {
-            const response = await fetch(apiEndpoint, {
+            const response = await fetch(analysisEndpoint, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify({ CarouselItemID: carouselItemId }),
+                body: JSON.stringify({ content: content }),
             });
     
-            const result = await response.json();
-    
-            if (response.ok && result.message === 'Post removed successfully.') {
-                console.log(result.message);
-                return result;
-            } else {
-                console.error('Error message from server:', result.message);
-                return result;
+            if (!response.ok) {
+                throw new Error(`Network response was not ok, status: ${response.status}`);
             }
+    
+            const analysisResult = await response.json();
+            const toxicityScore = analysisResult.score;
+            const percentage = Math.round(toxicityScore * 100);
+    
+            // Update the toxicity score in the custom container
+            document.getElementById('customToxicityScore').textContent = `${percentage}%`;
+    
+            // Adjust the second circle to reflect the toxicity score and color based on the score
+            const circles = customContainer.querySelectorAll('.custom-percent svg circle:nth-child(2)');
+            if (circles.length > 0) {
+                const circle = circles[0];
+                const radius = circle.r.baseVal.value;
+                const circumference = radius * 2 * Math.PI;
+    
+                circle.style.strokeDasharray = `${circumference} ${circumference}`;
+                const offset = circumference - percentage / 100 * circumference;
+                circle.style.strokeDashoffset = offset;
+    
+                // Determine the color based on the toxicity score
+                let color = 'red'; // High toxicity
+                if (percentage < 60) {
+                    color = 'green'; // Low toxicity
+                } else if (percentage < 85) {
+                    color = 'orange'; // Medium toxicity
+                }
+                circle.style.stroke = color; // Apply the color
+            }
+    
+            customContainer.style.display = 'block';
+    
+            return percentage;
         } catch (error) {
-            console.error('Error removing post:', error);
-            throw error;
+            console.error('Error analyzing content:', error);
+    
+            return null; 
         }
-    }    
+    }
+    
 
     function loadTwitterWidgets() {
         const script = document.createElement('script');
