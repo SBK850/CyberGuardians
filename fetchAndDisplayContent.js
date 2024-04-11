@@ -97,21 +97,21 @@ document.addEventListener('DOMContentLoaded', () => {
                 },
                 body: JSON.stringify({ url: postUrl }),
             });
-    
+
             if (!response.ok) {
                 throw new Error(`Network response was not ok, status: ${response.status}`);
             }
-    
+
             const jsonData = await response.json();
             const postData = jsonData[0];
             const carouselItemId = postData.CarouselItemID;
-    
+
             // Update the content on the page
             document.getElementById('profileImageUrl').src = postData.ProfilePictureURL || 'placeholder-image-url.png';
             document.getElementById('posterName').textContent = `${postData.FirstName} ${postData.LastName}` || 'Name not available';
             document.getElementById('posterDetails').textContent = `Age: ${postData.Age} | Education: ${postData.Education}` || 'Details not available';
             document.getElementById('postContent').textContent = postData.Content || 'Content not available';
-    
+
             // Display the uploaded image if it exists
             if (postData.UploadedImageData) {
                 // Assuming the uploadedImageData is already a base64 encoded image data URL
@@ -123,46 +123,80 @@ document.addEventListener('DOMContentLoaded', () => {
                 uploadedImageElement.style.marginRight = 'auto'; // Auto margin for center alignment
                 uploadedImageElement.style.border = '1px solid black'; // Add a black border around the image
                 uploadedImageElement.style.marginTop = '20px'; // Add some space above the image
-                
+
                 // Create a wrapper div for the image to control the layout more effectively
                 let imageWrapper = document.createElement('div');
                 imageWrapper.appendChild(uploadedImageElement);
                 contentContainer.appendChild(imageWrapper); // Append the wrapper div to the content container
             }
-    
+
             // Display the content container
             contentContainer.style.display = 'block';
-    
+
             // Add 'btn-complete' class after processing is done
             $(".btn").addClass('btn-complete');
-    
             // Hide inputs 3 seconds after loading the response
-            setTimeout(() => {
-                $(".input").hide(); // Assuming you are using jQuery
-            }, 3000);    
+            setTimeout(() => { $(".input").hide(); }, 3000);
 
             // Analyse the toxicity of the loaded post content if it exists
-            if (postData.Content) {
-                const toxicityPercentage = await analyseContentForToxicity(postData.Content, customContainer);
-                if (toxicityPercentage && toxicityPercentage >= 85) {
-                    displayWarningCard();
+            let toxicityPercentage = postData.Content ? await analyseContentForToxicity(postData.Content, customContainer) : 0;
 
-                    document.getElementById('rejectButton').addEventListener('click', rejectToxicContent);
-
-                    const confirmButton = document.getElementById('confirmButton');
-                    if (confirmButton) {
-                        // Removed anonymous function to directly call the function with the correct parameter
-                        confirmButton.onclick = function () {
-                            confirmToxicContent(carouselItemId);
-                        };
-                    }
+            // If there's an uploaded image, extract text from it and analyze for toxicity
+            if (postData.UploadedImageData) {
+                const extractedText = await extractTextFromImage(postData.UploadedImageData);
+                if (extractedText) {
+                    const imageTextToxicityPercentage = await analyseContentForToxicity(extractedText, customContainer);
+                    // Use the higher toxicity percentage for deciding on the warning
+                    toxicityPercentage = Math.max(toxicityPercentage, imageTextToxicityPercentage);
                 }
             }
 
+            // Display warning if necessary based on combined analysis
+            if (toxicityPercentage >= 85) {
+                displayWarningCard();
+                document.getElementById('rejectButton').addEventListener('click', rejectToxicContent);
+                const confirmButton = document.getElementById('confirmButton');
+                if (confirmButton) {
+                    confirmButton.onclick = function () { confirmToxicContent(carouselItemId); };
+                }
+            }
         } catch (error) {
             console.error(error);
         }
     }
+
+    async function extractTextFromImage(imageData) {
+        const apiEndpoint = 'https://vision.googleapis.com/v1/images:annotate?key=AIzaSyAuzo1Gi9xUOJJ790SkMh-wveNqS0DoFUQ';
+        const requestBody = {
+            "requests": [
+                {
+                    "image": {
+                        "content": imageData // The image data needs to be base64 encoded
+                    },
+                    "features": [
+                        {
+                            "type": "TEXT_DETECTION"
+                        }
+                    ]
+                }
+            ]
+        };
+
+        try {
+            const response = await fetch(apiEndpoint, {
+                method: 'POST',
+                body: JSON.stringify(requestBody),
+                headers: { 'Content-Type': 'application/json' },
+            });
+
+            const responseData = await response.json();
+            return responseData.responses[0].fullTextAnnotation.text;
+        } catch (error) {
+            console.error('Error extracting text:', error);
+            throw error; // Re-throw to be handled by caller
+        }
+    }
+
 
     async function fetchTwitterEmbedCode(twitterUrl) {
         const apiEndpoint = 'https://twitter-n01a.onrender.com/get-twitter-embed';
@@ -187,7 +221,7 @@ document.addEventListener('DOMContentLoaded', () => {
             console.error('Fetch error:', error);
             throw error; // Re-throw to be handled by caller
         }
-    } 
+    }
 
     async function analyseContentForToxicity(content, customContainer) {
         const analysisEndpoint = 'https://google-perspective-api.onrender.com/analyse-content';
@@ -199,29 +233,29 @@ document.addEventListener('DOMContentLoaded', () => {
                 },
                 body: JSON.stringify({ content: content }),
             });
-    
+
             if (!response.ok) {
                 throw new Error(`Network response was not ok, status: ${response.status}`);
             }
-    
+
             const analysisResult = await response.json();
             const toxicityScore = analysisResult.score;
             const percentage = Math.round(toxicityScore * 100);
-    
+
             // Update the toxicity score in the custom container
             document.getElementById('customToxicityScore').textContent = `${percentage}%`;
-    
+
             // Adjust the second circle to reflect the toxicity score and color based on the score
             const circles = customContainer.querySelectorAll('.custom-percent svg circle:nth-child(2)');
             if (circles.length > 0) {
                 const circle = circles[0];
                 const radius = circle.r.baseVal.value;
                 const circumference = radius * 2 * Math.PI;
-    
+
                 circle.style.strokeDasharray = `${circumference} ${circumference}`;
                 const offset = circumference - percentage / 100 * circumference;
                 circle.style.strokeDashoffset = offset;
-    
+
                 // Determine the color based on the toxicity score
                 let color = 'red'; // High toxicity
                 if (percentage < 60) {
@@ -231,17 +265,17 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
                 circle.style.stroke = color; // Apply the color
             }
-    
+
             customContainer.style.display = 'block';
-    
+
             return percentage;
         } catch (error) {
             console.error('Error analyzing content:', error);
-    
-            return null; 
+
+            return null;
         }
     }
-    
+
 
     function loadTwitterWidgets() {
         const script = document.createElement('script');
