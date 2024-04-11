@@ -151,7 +151,6 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     
     async function callBackendForImageProcessing(imageData) {
-        // Replace with your actual backend endpoint URL
         const backendEndpoint = 'https://process-image.onrender.com/api/process-image';
         try {
             const response = await fetch(backendEndpoint, {
@@ -168,11 +167,15 @@ document.addEventListener('DOMContentLoaded', () => {
     
             const data = await response.json();
     
-            // Assuming the backend returns the image toxicity percentage directly
+            if (data.error) {
+                throw new Error(data.message || 'Error processing image on the server.');
+            }
+    
             return data.imageToxicityPercentage;
         } catch (error) {
             console.error('Error processing image:', error);
-            return 0; // Return a default value in case of error
+            alert(`Error occurred during image processing: ${error.message}`); // Provide a more specific error message to the user
+            return 0; // Optionally handle this case in a way that the UI can gracefully degrade
         }
     }
     
