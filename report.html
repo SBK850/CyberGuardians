@@ -81,23 +81,38 @@
         </div>
     </div>
 
-    <!-- Custom Container for Toxicity Score -->
-    <div class="custom-container" id="custom-container" style="display: none;"> <!-- Initially hidden -->
+    <!-- Custom Container for Toxicity Scores -->
+    <div class="custom-container" id="custom-container" style="display: none;">
         <div class="custom-card">
-            <div class="custom-box">
-                <div class="custom-percent">
-                    <svg>
-                        <circle cx="70" cy="70" r="70"></circle>
-                        <circle cx="70" cy="70" r="70"></circle>
-                    </svg>
-                    <div class="custom-num">
-                        <h2><span id="customToxicityScore"></span><span></span></h2>
+            <div class="custom-box" style="display: flex; justify-content: space-around; width: 100%;">
+                <div>
+                    <div class="custom-percent">
+                        <svg>
+                            <circle cx="70" cy="70" r="70"></circle>
+                            <circle cx="70" cy="70" r="70"></circle>
+                        </svg>
+                        <div class="custom-num">
+                            <h2><span id="textToxicityScore">0%</span></h2>
+                        </div>
                     </div>
+                    <h2 class="custom-text">Text Toxicity</h2>
                 </div>
-                <h2 class="custom-text">Toxicity Score</h2>
+                <div>
+                    <div class="custom-percent">
+                        <svg>
+                            <circle cx="70" cy="70" r="70"></circle>
+                            <circle cx="70" cy="70" r="70"></circle>
+                        </svg>
+                        <div class="custom-num">
+                            <h2><span id="imageToxicityScore">0%</span></h2>
+                        </div>
+                    </div>
+                    <h2 class="custom-text">Image Toxicity</h2>
+                </div>
             </div>
         </div>
     </div>
+
 
     <div class="card-x" id="warning-section">
         <div class="card bg-white rounded-2xl p-8 w-96">
@@ -105,15 +120,19 @@
                 <p class="text-base font-semibold" style="margin: 0;">Warning: Potentially Toxic Content Detected!</p>
             </header>
             <br>
-            <p class="my-8 text-sm text-gray-600 leading-6" style="margin: 0;">Our algorithm and machine learning system has detected
+            <p class="my-8 text-sm text-gray-600 leading-6" style="margin: 0;">Our algorithm and machine learning system
+                has detected
                 that this post has a high toxicity, and it may contain offensive words. Would you like to remove it
-                from the social media YouthVibe, so no one else can see this offensive post? This action cannot be undone.</p>
+                from the social media YouthVibe, so no one else can see this offensive post? This action cannot be
+                undone.</p>
             <br>
-            <button id="rejectButton" onclick="rejectToxicContent()" class="py-3.5 block w-full text-primary text-center text-sm font-medium rounded-lg mb-2 bg-blue-100 hover:bg-blue-50">Reject</button>
-            <button id="confirmButton" class="py-3.5 block w-full text-center text-sm font-medium rounded-lg bg-primary text-white hover:bg-blue-500">Confirm</button>            
+            <button id="rejectButton" onclick="rejectToxicContent()"
+                class="py-3.5 block w-full text-primary text-center text-sm font-medium rounded-lg mb-2 bg-blue-100 hover:bg-blue-50">Reject</button>
+            <button id="confirmButton"
+                class="py-3.5 block w-full text-center text-sm font-medium rounded-lg bg-primary text-white hover:bg-blue-500">Confirm</button>
         </div>
     </div>
-    
+
     <div id="message-section" class="mt-4 mx-auto w-96"></div>
 
     <footer>
