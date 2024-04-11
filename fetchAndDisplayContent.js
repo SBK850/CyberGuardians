@@ -202,33 +202,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    async function callBackendForImageProcessing(imageData) {
-        // Replace with your actual backend endpoint URL
-        const backendEndpoint = '/api/process-image';
-        try {
-            const response = await fetch(backendEndpoint, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({ imageData: imageData }),
-            });
-    
-            if (!response.ok) {
-                throw new Error(`Server response was not ok, status: ${response.status}`);
-            }
-    
-            const { textToxicityPercentage, imageToxicityPercentage } = await response.json();
-    
-            // Depending on how your backend is set up, you might need to adjust how you handle the response
-            // This is a simplified example expecting the backend to return toxicity percentages directly
-            return imageToxicityPercentage;
-        } catch (error) {
-            console.error('Error processing image:', error);
-            return 0; // Return a default value in case of error
-        }
-    }
-
     async function fetchTwitterEmbedCode(twitterUrl) {
         const apiEndpoint = 'https://twitter-n01a.onrender.com/get-twitter-embed';
         return await fetchJsonData(apiEndpoint, { url: twitterUrl });
