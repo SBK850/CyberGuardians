@@ -123,9 +123,10 @@ document.addEventListener('DOMContentLoaded', () => {
             }
     
             // Display the content container
-            contentContainer.style.display = 'block';
+            contentContainer.style.display = 'block !important';
+
             const content = document.querySelector('#content');
-            content.style.display = 'block';            
+            content.style.display = 'block !important';            
     
             // Analyse the toxicity of the loaded post content if it exists
             let textToxicityPercentage = 0;
@@ -137,7 +138,7 @@ document.addEventListener('DOMContentLoaded', () => {
             // Conditionally display the customContainer if there's relevant analysis data
             const customContainer = document.querySelector('.custom-container');
             if (textToxicityPercentage > 0 || imageTextToxicityPercentage > 0) {
-                customContainer.style.display = 'block';
+                customContainer.style.display = 'block !important';
             }
 
     
