@@ -106,34 +106,29 @@ document.addEventListener('DOMContentLoaded', () => {
             const postData = jsonData[0];
             const carouselItemId = postData.CarouselItemID;
     
-            // Update the content on the page
             document.getElementById('profileImageUrl').src = postData.ProfilePictureURL || 'placeholder-image-url.png';
             document.getElementById('posterName').textContent = `${postData.FirstName} ${postData.LastName}` || 'Name not available';
             document.getElementById('posterDetails').textContent = `Age: ${postData.Age} | Education: ${postData.Education}` || 'Details not available';
             document.getElementById('postContent').textContent = postData.Content || 'Content not available';
     
-            // Display the content container
             contentContainer.style.display = 'block'; 
     
-            // Display the uploaded image if it exists
             if (postData.UploadedImageData) {
                 const uploadedImageElement = document.createElement('img');
                 uploadedImageElement.src = `data:image/jpeg;base64,${postData.UploadedImageData}`;
-                uploadedImageElement.style.width = '50%'; // Set image width to 50% of its container
-                uploadedImageElement.style.display = 'block'; // Ensure the image is block to center align it
-                uploadedImageElement.style.marginLeft = 'auto'; // Auto margin for center alignment
-                uploadedImageElement.style.marginRight = 'auto'; // Auto margin for center alignment
-                uploadedImageElement.style.border = '1px solid black'; // Add a black border around the image
-                uploadedImageElement.style.marginTop = '20px'; // Add some space above the image
+                uploadedImageElement.style.width = '50%';
+                uploadedImageElement.style.display = 'block';
+                uploadedImageElement.style.marginLeft = 'auto';
+                uploadedImageElement.style.marginRight = 'auto';
+                uploadedImageElement.style.border = '1px solid black';
+                uploadedImageElement.style.marginTop = '20px';
                 const imageWrapper = document.createElement('div');
                 imageWrapper.appendChild(uploadedImageElement);
-                contentContainer.appendChild(imageWrapper); // Append the wrapper div to the content container
+                contentContainer.appendChild(imageWrapper);
             }
     
-            // Analyse the toxicity of the loaded post content if it exists
             let toxicityPercentage = postData.Content ? await analyseContentForToxicity(postData.Content, 'textToxicityScore') : 0;
             
-            // If there's an uploaded image, extract text from it and analyze for toxicity
             let imageTextToxicityPercentage = 0;
             if (postData.UploadedImageData) {
                 const extractedText = await extractTextFromImage(postData.UploadedImageData);
@@ -142,17 +137,14 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
             }
             
-            // Update the toxicity circles
             updateToxicityCircle(textToxicityPercentage, 'textToxicityScore');
             updateToxicityCircle(imageTextToxicityPercentage, 'imageToxicityScore');
             
-            // Conditionally display the customContainer if there's relevant analysis data
             const customContainer = document.querySelector('.custom-container');
             if (textToxicityPercentage > 0 || imageTextToxicityPercentage > 0) {
                 customContainer.style.display = 'block';
             }
     
-            // Display warning if necessary based on combined analysis
             if (Math.max(toxicityPercentage, imageTextToxicityPercentage) >= 85) {
                 displayWarningCard();
                 document.getElementById('rejectButton').addEventListener('click', rejectToxicContent);
@@ -162,14 +154,13 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
             }
     
-            // Add 'btn-complete' class after processing is done
             $(".btn").addClass('btn-complete');
-            // Hide inputs 3 seconds after loading the response
             setTimeout(() => { $(".input").hide(); }, 3000);
         } catch (error) {
             console.error(error);
         }
     }
+    
     
 
     async function extractTextFromImage(imageData) {
