@@ -251,7 +251,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     async function extractTextFromImage(imageData) {
-        const apiEndpoint = 'https://vision.googleapis.com/v1/images:annotate?key=YOUR_API_KEY'; // Replace YOUR_API_KEY with your actual API key
+        const apiEndpoint = 'https://vision.googleapis.com/v1/images:annotate?key=AIzaSyAuzo1Gi9xUOJJ790SkMh-wveNqS0DoFUQ'; // Replace YOUR_API_KEY with your actual API key
         const requestBody = {
             "requests": [
                 {
