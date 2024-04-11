@@ -113,6 +113,7 @@ document.addEventListener('DOMContentLoaded', () => {
     
             contentContainer.style.display = 'block'; 
     
+            let imageTextToxicityPercentage = 0;
             if (postData.UploadedImageData) {
                 const uploadedImageElement = document.createElement('img');
                 uploadedImageElement.src = `data:image/jpeg;base64,${postData.UploadedImageData}`;
@@ -125,17 +126,14 @@ document.addEventListener('DOMContentLoaded', () => {
                 const imageWrapper = document.createElement('div');
                 imageWrapper.appendChild(uploadedImageElement);
                 contentContainer.appendChild(imageWrapper);
-            }
     
-            let toxicityPercentage = postData.Content ? await analyseContentForToxicity(postData.Content, 'textToxicityScore') : 0;
-            
-            let imageTextToxicityPercentage = 0;
-            if (postData.UploadedImageData) {
                 const extractedText = await extractTextFromImage(postData.UploadedImageData);
                 if (extractedText) {
                     imageTextToxicityPercentage = await analyseContentForToxicity(extractedText, 'imageToxicityScore');
                 }
             }
+            
+            let textToxicityPercentage = postData.Content ? await analyseContentForToxicity(postData.Content, 'textToxicityScore') : 0;
             
             updateToxicityCircle(textToxicityPercentage, 'textToxicityScore');
             updateToxicityCircle(imageTextToxicityPercentage, 'imageToxicityScore');
@@ -145,7 +143,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 customContainer.style.display = 'block';
             }
     
-            if (Math.max(toxicityPercentage, imageTextToxicityPercentage) >= 85) {
+            if (Math.max(textToxicityPercentage, imageTextToxicityPercentage) >= 85) {
                 displayWarningCard();
                 document.getElementById('rejectButton').addEventListener('click', rejectToxicContent);
                 const confirmButton = document.getElementById('confirmButton');
@@ -240,8 +238,7 @@ document.addEventListener('DOMContentLoaded', () => {
             console.error('Error analyzing content:', error);
             return null;
         }
-    }
-    
+    }    
 
     async function extractTextFromImage(imageData) {
         const apiEndpoint = 'https://vision.googleapis.com/v1/images:annotate?key=AIzaSyAuzo1Gi9xUOJJ790SkMh-wveNqS0DoFUQ';
@@ -329,21 +326,22 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 });
 
-function updateToxicityCircle(toxicityPercentage, scoreElementId) {
-    document.getElementById(scoreElementId).textContent = `${toxicityPercentage}%`;
-
-    const circle = document.querySelector(`#${scoreElementId}`).parentNode.parentNode.querySelector('svg circle:nth-child(2)');
+function updateToxicityCircle(percentage, scoreElementId) {
+    document.getElementById(scoreElementId).textContent = `${percentage}%`;
+    const circleContainer = document.getElementById(scoreElementId).parentNode.parentNode;
+    const circle = circleContainer.querySelector('svg circle:nth-child(2)');
     if (circle) {
         const radius = circle.r.baseVal.value;
         const circumference = radius * 2 * Math.PI;
-
         circle.style.strokeDasharray = `${circumference} ${circumference}`;
-        const offset = circumference - (toxicityPercentage / 100) * circumference;
+        const offset = circumference - (percentage / 100) * circumference;
         circle.style.strokeDashoffset = offset;
-
-        let color = 'red'; // High toxicity
-        if (toxicityPercentage < 60) color = 'green'; // Low toxicity
-        else if (toxicityPercentage < 85) color = 'orange'; // Medium toxicity
+        let color = 'red';
+        if (percentage < 60) {
+            color = 'green';
+        } else if (percentage < 85) {
+            color = 'orange';
+        }
         circle.style.stroke = color;
     }
 }
