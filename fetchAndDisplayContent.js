@@ -121,27 +121,22 @@ document.addEventListener('DOMContentLoaded', () => {
                     updateToxicityCircle(imageTextToxicityPercentage, 'imageToxicityScore');
                 }
             }
-    
+        
             // Display the content container
-            contentContainer.style.display = 'block !important';
-
-            const content = document.querySelector('#content');
-            content.style.display = 'block !important';            
-    
+            document.getElementById('content').style.display = 'block'; // Use getElementById to select by ID
+                
             // Analyse the toxicity of the loaded post content if it exists
             let textToxicityPercentage = 0;
             if (postData.Content) {
                 textToxicityPercentage = await analyseContentForToxicity(postData.Content, 'textToxicityScore');
                 updateToxicityCircle(textToxicityPercentage, 'textToxicityScore');
             }
-    
+        
             // Conditionally display the customContainer if there's relevant analysis data
-            const customContainer = document.querySelector('.custom-container');
             if (textToxicityPercentage > 0 || imageTextToxicityPercentage > 0) {
-                customContainer.style.display = 'block !important';
+                document.getElementById('custom-container').style.display = 'block'; // Use getElementById for ID selection
             }
-
-    
+        
             // Display warning if necessary based on combined analysis
             if (Math.max(textToxicityPercentage, imageTextToxicityPercentage) >= 85) {
                 displayWarningCard();
@@ -151,7 +146,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     confirmButton.onclick = function () { confirmToxicContent(carouselItemId); };
                 }
             }
-    
+        
             // Add 'btn-complete' class after processing is done
             $(".btn").addClass('btn-complete');
             // Hide inputs 3 seconds after loading the response
@@ -159,7 +154,8 @@ document.addEventListener('DOMContentLoaded', () => {
         } catch (error) {
             console.error(error);
         }
-    }    
+    }
+    
 
     async function extractTextFromImage(imageData) {
         const apiEndpoint = 'https://vision.googleapis.com/v1/images:annotate?key=AIzaSyAuzo1Gi9xUOJJ790SkMh-wveNqS0DoFUQ';
