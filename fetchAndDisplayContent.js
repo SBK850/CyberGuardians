@@ -139,7 +139,7 @@ document.addEventListener('DOMContentLoaded', () => {
             // Hide inputs 3 seconds after loading the response
             setTimeout(() => {
                 $(".input").hide(); // Assuming you are using jQuery
-            }, 3000);
+            }, 3000);    
 
             // Analyse the toxicity of the loaded post content if it exists
             if (postData.Content) {
