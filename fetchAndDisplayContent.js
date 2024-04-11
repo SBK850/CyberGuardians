@@ -251,7 +251,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     async function extractTextFromImage(imageData) {
-        const apiEndpoint = 'https://vision.googleapis.com/v1/images:annotate?key=AIzaSyAuzo1Gi9xUOJJ790SkMh-wveNqS0DoFUQ';
+        const apiEndpoint = 'https://vision.googleapis.com/v1/images:annotate?key=YOUR_API_KEY'; // Replace YOUR_API_KEY with your actual API key
         const requestBody = {
             "requests": [
                 {
@@ -266,21 +266,30 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
             ]
         };
-
+    
         try {
             const response = await fetch(apiEndpoint, {
                 method: 'POST',
                 body: JSON.stringify(requestBody),
                 headers: { 'Content-Type': 'application/json' },
             });
-
+    
+            if (!response.ok) {
+                throw new Error(`HTTP error! Status: ${response.status}`);
+            }
+    
             const responseData = await response.json();
+            if (responseData.error) {
+                throw new Error(`Google Cloud Vision API error: ${responseData.error.message}`);
+            }
+    
             return responseData.responses[0].fullTextAnnotation.text;
         } catch (error) {
             console.error('Error extracting text:', error);
             throw error; // Re-throw to be handled by caller
         }
     }
+    
 
 
     function loadTwitterWidgets() {
