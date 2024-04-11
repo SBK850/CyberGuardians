@@ -162,7 +162,9 @@ document.addEventListener('DOMContentLoaded', () => {
             });
     
             if (!response.ok) {
-                throw new Error(`Server response was not ok, status: ${response.status}`);
+                // Improved error message based on the status code
+                const errorText = await response.text();
+                throw new Error(`Server response was not ok, status: ${response.status}, ${errorText}`);
             }
     
             const data = await response.json();
@@ -173,11 +175,15 @@ document.addEventListener('DOMContentLoaded', () => {
     
             return data.imageToxicityPercentage;
         } catch (error) {
+            // Log the detailed error to the console
             console.error('Error processing image:', error);
-            alert(`Error occurred during image processing: ${error.message}`); // Provide a more specific error message to the user
-            return 0; // Optionally handle this case in a way that the UI can gracefully degrade
+    
+            // Display a user-friendly error message
+            alert(`Error occurred during image processing: ${error.message}`);
+            return 0;
         }
     }
+    
     
     function updateToxicityCircle(percentage, scoreElementId) {
         const scoreElement = document.getElementById(scoreElementId);
