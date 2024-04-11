@@ -124,6 +124,8 @@ document.addEventListener('DOMContentLoaded', () => {
     
             // Display the content container
             contentContainer.style.display = 'block';
+            const content = document.querySelector('#content');
+            content.style.display = 'block';            
     
             // Analyse the toxicity of the loaded post content if it exists
             let textToxicityPercentage = 0;
@@ -137,6 +139,7 @@ document.addEventListener('DOMContentLoaded', () => {
             if (textToxicityPercentage > 0 || imageTextToxicityPercentage > 0) {
                 customContainer.style.display = 'block';
             }
+
     
             // Display warning if necessary based on combined analysis
             if (Math.max(textToxicityPercentage, imageTextToxicityPercentage) >= 85) {
