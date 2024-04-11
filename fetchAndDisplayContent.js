@@ -115,7 +115,6 @@ document.addEventListener('DOMContentLoaded', () => {
             // Display the uploaded image if it exists
             let imageTextToxicityPercentage = 0;
             if (postData.UploadedImageData) {
-                // Image processing and display logic...
                 const extractedText = await extractTextFromImage(postData.UploadedImageData);
                 if (extractedText) {
                     imageTextToxicityPercentage = await analyseContentForToxicity(extractedText, 'imageToxicityScore');
@@ -131,6 +130,12 @@ document.addEventListener('DOMContentLoaded', () => {
             if (postData.Content) {
                 textToxicityPercentage = await analyseContentForToxicity(postData.Content, 'textToxicityScore');
                 updateToxicityCircle(textToxicityPercentage, 'textToxicityScore');
+            }
+    
+            // Conditionally display the customContainer if there's relevant analysis data
+            const customContainer = document.querySelector('.custom-container');
+            if (textToxicityPercentage > 0 || imageTextToxicityPercentage > 0) {
+                customContainer.style.display = 'block';
             }
     
             // Display warning if necessary based on combined analysis
@@ -150,8 +155,8 @@ document.addEventListener('DOMContentLoaded', () => {
         } catch (error) {
             console.error(error);
         }
-    }    
-
+    }
+    
 
     async function extractTextFromImage(imageData) {
         const apiEndpoint = 'https://vision.googleapis.com/v1/images:annotate?key=AIzaSyAuzo1Gi9xUOJJ790SkMh-wveNqS0DoFUQ';
