@@ -97,23 +97,29 @@ document.addEventListener('DOMContentLoaded', () => {
                 },
                 body: JSON.stringify({ url: postUrl }),
             });
-    
+
             if (!response.ok) {
                 throw new Error(`Network response was not ok, status: ${response.status}`);
             }
-    
+
             const jsonData = await response.json();
             const postData = jsonData[0];
             const carouselItemId = postData.CarouselItemID;
-    
+
+            // Update the content on the page
             document.getElementById('profileImageUrl').src = postData.ProfilePictureURL || 'placeholder-image-url.png';
-            document.getElementById('posterName').textContent = `${postData.FirstName} ${postData.LastName}` || 'Name not available';
+            document.getElementById('posterName').textContent = postData.FirstName + " " + postData.LastName || 'Name not available';
             document.getElementById('posterDetails').textContent = `Age: ${postData.Age} | Education: ${postData.Education}` || 'Details not available';
             document.getElementById('postContent').textContent = postData.Content || 'Content not available';
-    
-            contentContainer.style.display = 'block'; 
-    
-            let imageTextToxicityPercentage = 0;
+
+            // Display the content container
+            contentContainer.style.display = 'block';
+
+            // Start toxicity analysis for text and image
+            let textToxicityPromise = postData.Content ? analyseContentForToxicity(postData.Content, 'textToxicityScore') : Promise.resolve(0);
+            let imageToxicityPromise = Promise.resolve(0); // Default promise resolves to 0
+
+            // Process image data if available
             if (postData.UploadedImageData) {
                 const uploadedImageElement = document.createElement('img');
                 uploadedImageElement.src = `data:image/jpeg;base64,${postData.UploadedImageData}`;
@@ -126,23 +132,26 @@ document.addEventListener('DOMContentLoaded', () => {
                 const imageWrapper = document.createElement('div');
                 imageWrapper.appendChild(uploadedImageElement);
                 contentContainer.appendChild(imageWrapper);
-    
+
+                // Extract text and analyse for toxicity
                 const extractedText = await extractTextFromImage(postData.UploadedImageData);
                 if (extractedText) {
-                    imageTextToxicityPercentage = await analyseContentForToxicity(extractedText, 'imageToxicityScore');
+                    imageToxicityPromise = analyseContentForToxicity(extractedText, 'imageToxicityScore');
                 }
             }
-            
-            let textToxicityPercentage = postData.Content ? await analyseContentForToxicity(postData.Content, 'textToxicityScore') : 0;
-            
+
+            // Wait for both analyses to complete
+            const [textToxicityPercentage, imageToxicityPercentage] = await Promise.all([textToxicityPromise, imageToxicityPromise]);
+
+            // Update UI with toxicity analysis results
             updateToxicityCircle(textToxicityPercentage, 'textToxicityScore');
-            updateToxicityCircle(imageTextToxicityPercentage, 'imageToxicityScore');
-            
+            updateToxicityCircle(imageToxicityPercentage, 'imageToxicityScore')
+
             const customContainer = document.querySelector('.custom-container');
             if (textToxicityPercentage > 0 || imageTextToxicityPercentage > 0) {
                 customContainer.style.display = 'block';
             }
-    
+
             if (Math.max(textToxicityPercentage, imageTextToxicityPercentage) >= 85) {
                 displayWarningCard();
                 document.getElementById('rejectButton').addEventListener('click', rejectToxicContent);
@@ -151,9 +160,10 @@ document.addEventListener('DOMContentLoaded', () => {
                     confirmButton.onclick = function () { confirmToxicContent(carouselItemId); };
                 }
             }
-    
+
+            // Complete the button loading process
             $(".btn").addClass('btn-complete');
-            setTimeout(() => { $(".input").hide(); }, 3000);
+            setTimeout(() => $(".input").hide(), 3000);
         } catch (error) {
             console.error(error);
         }
@@ -194,29 +204,29 @@ document.addEventListener('DOMContentLoaded', () => {
                 },
                 body: JSON.stringify({ content: content }),
             });
-    
+
             if (!response.ok) {
                 throw new Error(`Network response was not ok, status: ${response.status}`);
             }
-    
+
             const analysisResult = await response.json();
             const toxicityScore = analysisResult.score;
             const percentage = Math.round(toxicityScore * 100);
-    
+
             // Update the toxicity score in the appropriate container
             document.getElementById(scoreElementId).textContent = `${percentage}%`;
-    
+
             // Adjust the corresponding circle to reflect the toxicity score and color based on the score
             const circleContainer = document.getElementById(scoreElementId).parentNode.parentNode;
             const circle = circleContainer.querySelector('svg circle:nth-child(2)');
             if (circle) {
                 const radius = circle.r.baseVal.value;
                 const circumference = radius * 2 * Math.PI;
-    
+
                 circle.style.strokeDasharray = `${circumference} ${circumference}`;
                 const offset = circumference - (percentage / 100) * circumference;
                 circle.style.strokeDashoffset = offset;
-    
+
                 // Determine the color based on the toxicity score
                 let color = 'red'; // High toxicity
                 if (percentage < 60) {
@@ -226,19 +236,19 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
                 circle.style.stroke = color;
             }
-    
+
             // Show the entire custom container if it's not already visible
             const customContainer = document.querySelector('.custom-container');
             if (customContainer.style.display === 'none') {
                 customContainer.style.display = 'block';
             }
-    
+
             return percentage;
         } catch (error) {
             console.error('Error analyzing content:', error);
             return null;
         }
-    }    
+    }
 
     async function extractTextFromImage(imageData) {
         const apiEndpoint = 'https://vision.googleapis.com/v1/images:annotate?key=AIzaSyAuzo1Gi9xUOJJ790SkMh-wveNqS0DoFUQ';
