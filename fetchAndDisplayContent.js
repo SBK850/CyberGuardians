@@ -97,62 +97,43 @@ document.addEventListener('DOMContentLoaded', () => {
                 },
                 body: JSON.stringify({ url: postUrl }),
             });
-
+    
             if (!response.ok) {
                 throw new Error(`Network response was not ok, status: ${response.status}`);
             }
-
+    
             const jsonData = await response.json();
             const postData = jsonData[0];
             const carouselItemId = postData.CarouselItemID;
-
+    
             // Update the content on the page
             document.getElementById('profileImageUrl').src = postData.ProfilePictureURL || 'placeholder-image-url.png';
             document.getElementById('posterName').textContent = postData.FirstName + " " + postData.LastName || 'Name not available';
             document.getElementById('posterDetails').textContent = `Age: ${postData.Age} | Education: ${postData.Education}` || 'Details not available';
             document.getElementById('postContent').textContent = postData.Content || 'Content not available';
-
+    
             // Display the content container
             contentContainer.style.display = 'block';
-
-            // Start toxicity analysis for text and image
+    
+            // Start toxicity analysis for text
             let textToxicityPromise = postData.Content ? analyseContentForToxicity(postData.Content, 'textToxicityScore') : Promise.resolve(0);
-            let imageToxicityPromise = Promise.resolve(0); // Default promise resolves to 0
-
-            // Process image data if available
-            if (postData.UploadedImageData) {
-                const uploadedImageElement = document.createElement('img');
-                uploadedImageElement.src = `data:image/jpeg;base64,${postData.UploadedImageData}`;
-                uploadedImageElement.style.width = '50%';
-                uploadedImageElement.style.display = 'block';
-                uploadedImageElement.style.marginLeft = 'auto';
-                uploadedImageElement.style.marginRight = 'auto';
-                uploadedImageElement.style.border = '1px solid black';
-                uploadedImageElement.style.marginTop = '20px';
-                const imageWrapper = document.createElement('div');
-                imageWrapper.appendChild(uploadedImageElement);
-                contentContainer.appendChild(imageWrapper);
-
-                // Extract text and analyse for toxicity
-                const extractedText = await extractTextFromImage(postData.UploadedImageData);
-                if (extractedText) {
-                    imageToxicityPromise = analyseContentForToxicity(extractedText, 'imageToxicityScore');
-                }
-            }
-
+    
+            // Process image data by calling the backend
+            let imageToxicityPromise = postData.UploadedImageData ? callBackendForImageProcessing(postData.UploadedImageData) : Promise.resolve(0);
+    
             // Wait for both analyses to complete
             const [textToxicityPercentage, imageToxicityPercentage] = await Promise.all([textToxicityPromise, imageToxicityPromise]);
-
+    
             // Update UI with toxicity analysis results
             updateToxicityCircle(textToxicityPercentage, 'textToxicityScore');
-            updateToxicityCircle(imageToxicityPercentage, 'imageToxicityScore')
-
+            updateToxicityCircle(imageToxicityPercentage, 'imageToxicityScore');
+    
             const customContainer = document.querySelector('.custom-container');
-            if (textToxicityPercentage > 0 || imageTextToxicityPercentage > 0) {
+            if (textToxicityPercentage > 0 || imageToxicityPercentage > 0) {
                 customContainer.style.display = 'block';
             }
-
-            if (Math.max(textToxicityPercentage, imageTextToxicityPercentage) >= 85) {
+    
+            if (Math.max(textToxicityPercentage, imageToxicityPercentage) >= 85) {
                 displayWarningCard();
                 document.getElementById('rejectButton').addEventListener('click', rejectToxicContent);
                 const confirmButton = document.getElementById('confirmButton');
@@ -160,12 +141,88 @@ document.addEventListener('DOMContentLoaded', () => {
                     confirmButton.onclick = function () { confirmToxicContent(carouselItemId); };
                 }
             }
-
+    
             // Complete the button loading process
             $(".btn").addClass('btn-complete');
             setTimeout(() => $(".input").hide(), 3000);
         } catch (error) {
             console.error(error);
+        }
+    }
+    
+    async function callBackendForImageProcessing(imageData) {
+        // Replace with your actual backend endpoint URL
+        const backendEndpoint = 'https://process-image.onrender.com/api/process-image';
+        try {
+            const response = await fetch(backendEndpoint, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ imageData: imageData }),
+            });
+    
+            if (!response.ok) {
+                throw new Error(`Server response was not ok, status: ${response.status}`);
+            }
+    
+            const data = await response.json();
+    
+            // Assuming the backend returns the image toxicity percentage directly
+            return data.imageToxicityPercentage;
+        } catch (error) {
+            console.error('Error processing image:', error);
+            return 0; // Return a default value in case of error
+        }
+    }
+    
+    function updateToxicityCircle(percentage, scoreElementId) {
+        const scoreElement = document.getElementById(scoreElementId);
+        scoreElement.textContent = `${percentage}%`;
+    
+        const circle = scoreElement.closest('.toxicity-circle').querySelector('circle:nth-child(2)');
+        if (circle) {
+            const radius = circle.r.baseVal.value;
+            const circumference = radius * 2 * Math.PI;
+            circle.style.strokeDasharray = `${circumference} ${circumference}`;
+            const offset = circumference - (percentage / 100) * circumference;
+            circle.style.strokeDashoffset = offset;
+    
+            // Adjust circle color based on toxicity score
+            let color = 'red'; // High toxicity
+            if (percentage < 60) {
+                color = 'green'; // Low toxicity
+            } else if (percentage < 85) {
+                color = 'orange'; // Medium toxicity
+            }
+            circle.style.stroke = color;
+        }
+    }
+
+    async function callBackendForImageProcessing(imageData) {
+        // Replace with your actual backend endpoint URL
+        const backendEndpoint = '/api/process-image';
+        try {
+            const response = await fetch(backendEndpoint, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ imageData: imageData }),
+            });
+    
+            if (!response.ok) {
+                throw new Error(`Server response was not ok, status: ${response.status}`);
+            }
+    
+            const { textToxicityPercentage, imageToxicityPercentage } = await response.json();
+    
+            // Depending on how your backend is set up, you might need to adjust how you handle the response
+            // This is a simplified example expecting the backend to return toxicity percentages directly
+            return imageToxicityPercentage;
+        } catch (error) {
+            console.error('Error processing image:', error);
+            return 0; // Return a default value in case of error
         }
     }
 
@@ -249,48 +306,6 @@ document.addEventListener('DOMContentLoaded', () => {
             return null;
         }
     }
-
-    async function extractTextFromImage(imageData) {
-        const apiEndpoint = 'https://vision.googleapis.com/v1/images:annotate?key=AIzaSyAuzo1Gi9xUOJJ790SkMh-wveNqS0DoFUQ'; // Replace YOUR_API_KEY with your actual API key
-        const requestBody = {
-            "requests": [
-                {
-                    "image": {
-                        "content": imageData // The image data needs to be base64 encoded
-                    },
-                    "features": [
-                        {
-                            "type": "TEXT_DETECTION"
-                        }
-                    ]
-                }
-            ]
-        };
-    
-        try {
-            const response = await fetch(apiEndpoint, {
-                method: 'POST',
-                body: JSON.stringify(requestBody),
-                headers: { 'Content-Type': 'application/json' },
-            });
-    
-            if (!response.ok) {
-                throw new Error(`HTTP error! Status: ${response.status}`);
-            }
-    
-            const responseData = await response.json();
-            if (responseData.error) {
-                throw new Error(`Google Cloud Vision API error: ${responseData.error.message}`);
-            }
-    
-            return responseData.responses[0].fullTextAnnotation.text;
-        } catch (error) {
-            console.error('Error extracting text:', error);
-            throw error; // Re-throw to be handled by caller
-        }
-    }
-    
-
 
     function loadTwitterWidgets() {
         const script = document.createElement('script');
