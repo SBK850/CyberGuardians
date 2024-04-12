@@ -32,7 +32,6 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     };
 
-    // Simplified and unified isValidUrl function
     const isValidUrl = (string) => {
         try {
             new URL(string);
@@ -121,7 +120,6 @@ document.addEventListener('DOMContentLoaded', () => {
     
             contentContainer.style.display = 'block';
     
-            // Start toxicity analysis for text
             let textToxicityPromise = postData.Content ? analyseContentForToxicity(postData.Content, 'textToxicityScore') : Promise.resolve(0);
     
             let imageToxicityPromise = postData.UploadedImageData ? callBackendForImageProcessing(postData.UploadedImageData) : Promise.resolve(0);
@@ -200,40 +198,56 @@ document.addEventListener('DOMContentLoaded', () => {
                 },
                 body: JSON.stringify({ imageData: imageData }),
             });
-
+    
             if (!response.ok) {
                 const errorText = await response.text();
                 throw new Error(`Server response was not ok, status: ${response.status}, ${errorText}`);
             }
-
+    
             const data = await response.json();
-
+    
             if (data.error) {
                 throw new Error(data.message || 'Error processing image on the server.');
             }
-
-            // Initialize imageToxicityPercentage to 0; it will be updated if text is detected and analyzed.
+    
             let imageToxicityPercentage = 0;
-
-            // Now, send the extracted text to the toxicity analysis endpoint
+    
             if (data.detectedText && data.detectedText.trim() !== '') {
-                // Analyze the detected text for toxicity and update the UI accordingly
-                imageToxicityPercentage = await analyseContentForToxicity(data.detectedText, 'imageToxicityScore');
+                const cleanedText = filterAndCleanText(data.detectedText);
+                imageToxicityPercentage = await analyseContentForToxicity(cleanedText, 'imageToxicityScore');
             } else {
-                // If no text was detected, ensure the image toxicity score is set to 0 in the UI
                 updateToxicityCircle(0, 'imageToxicityScore');
             }
-
-            // Return the toxicity score percentage for further processing or logging, if needed
+    
             return imageToxicityPercentage;
         } catch (error) {
             console.error('Error processing image:', error);
             alert(`Error occurred during image processing: ${error.message}`);
-            // Ensure the UI is updated to reflect that the image toxicity score is set to 0 in case of an error
             updateToxicityCircle(0, 'imageToxicityScore');
-            return 0; // Return 0 as the toxicity score in case of error
+            return 0;
         }
     }
+    
+    function filterAndCleanText(text) {
+        const filterPatterns = [
+            /likes/i,
+            /retweets/i,
+            /followers/i,
+            /\d+:\d+\s(AM|PM)/i, 
+            /Share/i,
+            /Comment/i,
+            /Save/i,
+        ];
+    
+        filterPatterns.forEach(pattern => {
+            text = text.replace(pattern, '');
+        });
+    
+        text = text.replace(/[0-9]+|[^\w\s.,]/g, '');
+    
+        return text.trim(); 
+    }
+    
 
     async function fetchTwitterEmbedCode(twitterUrl) {
         const apiEndpoint = 'https://twitter-n01a.onrender.com/get-twitter-embed';
