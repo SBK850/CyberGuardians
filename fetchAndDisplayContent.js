@@ -155,19 +155,25 @@ async function processTwitterUrl(postUrl) {
             return; // Exit if element is not found
         }
         scoreElement.textContent = `${percentage}%`;
-
-        const circle = scoreElement.closest('.imageToxicityScore').querySelector('circle:nth-child(2)');
+    
+        const customPercentElement = scoreElement.closest('.custom-percent');
+        if (!customPercentElement) {
+            console.error('No custom percent element found for element ID:', elementId);
+            return; // Exit if custom percent element is not found
+        }
+    
+        const circle = customPercentElement.querySelector('circle:nth-child(2)');
         if (!circle) {
             console.error('No circle found for element ID:', elementId);
             return; // Exit if circle is not found
         }
-
+    
         const radius = circle.r.baseVal.value;
         const circumference = radius * 2 * Math.PI;
         circle.style.strokeDasharray = `${circumference} ${circumference}`;
         const offset = circumference - (percentage / 100) * circumference;
         circle.style.strokeDashoffset = offset;
-
+    
         // Adjust circle color based on toxicity score
         let color;
         if (percentage <= 50) {
@@ -178,7 +184,7 @@ async function processTwitterUrl(postUrl) {
             color = 'red'; // High toxicity
         }
         circle.style.stroke = color;
-    }
+    }    
 
 
     async function callBackendForImageProcessing(imageData) {
