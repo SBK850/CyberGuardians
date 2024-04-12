@@ -144,7 +144,7 @@ document.addEventListener('DOMContentLoaded', () => {
     
             // Complete the button loading process
             $(".btn").addClass('btn-complete');
-            setTimeout(() => $(".input").hide(), 3000);
+            setTimeout(() => $(".input").hide(), 30000);
         } catch (error) {
             console.error(error);
         }
