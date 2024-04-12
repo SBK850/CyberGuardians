@@ -162,6 +162,7 @@ document.addEventListener('DOMContentLoaded', () => {
             });
 
             if (!response.ok) {
+                // Improved error message based on the status code
                 const errorText = await response.text();
                 throw new Error(`Server response was not ok, status: ${response.status}, ${errorText}`);
             }
@@ -172,11 +173,14 @@ document.addEventListener('DOMContentLoaded', () => {
                 throw new Error(data.message || 'Error processing image on the server.');
             }
 
-            return data.detectedText;
+            return data.imageToxicityPercentage;
         } catch (error) {
+            // Log the detailed error to the console
             console.error('Error processing image:', error);
+
+            // Display a user-friendly error message
             alert(`Error occurred during image processing: ${error.message}`);
-            return '';
+            return 0;
         }
     }
 
