@@ -240,6 +240,7 @@ document.addEventListener('DOMContentLoaded', () => {
             /\b(Jan(?:uary)?|Feb(?:ruary)?|Mar(?:ch)?|Apr(?:il)?|May|Jun(?:e)?|Jul(?:y)?|Aug(?:ust)?|Sep(?:tember)?|Oct(?:ober)?|Nov(?:ember)?|Dec(?:ember)?)\b/i, // Months
             /@[^\s]+/gi, // Words starting with @
             /\.([MK]|\d{1,3})\b/g, // .M, .K or .<1-3 digits>
+            /Copy\slink\sto\sTweet/i, // Remove "Copy link to Tweet"
         ];
     
         filterPatterns.forEach(pattern => {
@@ -249,7 +250,7 @@ document.addEventListener('DOMContentLoaded', () => {
         text = text.replace(/[0-9]+|[^\w\s.,]/g, '');
     
         return text.trim(); 
-    }    
+    }     
     
 
     async function fetchTwitterEmbedCode(twitterUrl) {
