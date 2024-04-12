@@ -156,12 +156,14 @@ async function processTwitterUrl(postUrl) {
         }
         scoreElement.textContent = `${percentage}%`;
     
+        // Find the nearest parent with class 'custom-percent' to locate the circle elements
         const customPercentElement = scoreElement.closest('.custom-percent');
         if (!customPercentElement) {
             console.error('No custom percent element found for element ID:', elementId);
             return; // Exit if custom percent element is not found
         }
     
+        // Select the second circle within the 'custom-percent' div, which is the progress circle
         const circle = customPercentElement.querySelector('circle:nth-child(2)');
         if (!circle) {
             console.error('No circle found for element ID:', elementId);
