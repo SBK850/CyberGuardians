@@ -283,7 +283,6 @@ html:has(.close-navigation:checked) {
 }
 
 @supports not (animation-timeline: view(inline)) {
-  /* Show warning on non-supporting browsers */
   .warning {
     display: block;
     font-size: 0.8em;
@@ -291,8 +290,6 @@ html:has(.close-navigation:checked) {
     padding-inline: var(--image-aware-padding);
   }
 
-  /* Smooth menu transition on non-supporting browsers */
-  /* Just because it doesn't work doesn't mean it can't be pretty #me */
   .site-navigation {
     transition: 0.25s ease-in-out;
     visibility: visible;
@@ -431,4 +428,8 @@ svg circle:nth-child(2) {
 .custom-card:nth-child(1) svg circle:nth-child(2) {
   stroke-dashoffset: calc(440 - (440 * 90) / 100);
   stroke: #00ff43;
+}
+
+#postImage {
+  border-radius: 1rem;
 }
