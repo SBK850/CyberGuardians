@@ -150,43 +150,8 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    async function callBackendForImageProcessing(imageData) {
-        const backendEndpoint = 'https://process-image.onrender.com/api/process-image';
-        try {
-            const response = await fetch(backendEndpoint, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({ imageData: imageData }),
-            });
-
-            if (!response.ok) {
-                // Improved error message based on the status code
-                const errorText = await response.text();
-                throw new Error(`Server response was not ok, status: ${response.status}, ${errorText}`);
-            }
-
-            const data = await response.json();
-
-            if (data.error) {
-                throw new Error(data.message || 'Error processing image on the server.');
-            }
-
-            return data.imageToxicityPercentage;
-        } catch (error) {
-            // Log the detailed error to the console
-            console.error('Error processing image:', error);
-
-            // Display a user-friendly error message
-            alert(`Error occurred during image processing: ${error.message}`);
-            return 0;
-        }
-    }
-
-
-    function updateToxicityCircle(percentage, scoreElementId) {
-        const scoreElement = document.getElementById(scoreElementId);
+    function updateToxicityCircle(percentage, elementId) {
+        const scoreElement = document.getElementById(elementId);
         scoreElement.textContent = `${percentage}%`;
 
         const circle = scoreElement.closest('.toxicity-circle').querySelector('circle:nth-child(2)');
@@ -205,6 +170,39 @@ document.addEventListener('DOMContentLoaded', () => {
                 color = 'orange'; // Medium toxicity
             }
             circle.style.stroke = color;
+        }
+    }
+
+    // Modify the backend call to handle the detected text from the image
+    async function callBackendForImageProcessing(imageData) {
+        const backendEndpoint = 'https://process-image.onrender.com/api/process-image';
+        try {
+            const response = await fetch(backendEndpoint, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ imageData: imageData }),
+            });
+
+            if (!response.ok) {
+                const errorText = await response.text();
+                throw new Error(`Server response was not ok, status: ${response.status}, ${errorText}`);
+            }
+
+            const data = await response.json();
+
+            if (data.error) {
+                throw new Error(data.message || 'Error processing image on the server.');
+            }
+
+            // TODO: Analyze the detectedText for toxicity here if needed
+            // For now, just return the detectedText
+            return data.detectedText;
+        } catch (error) {
+            console.error('Error processing image:', error);
+            alert(`Error occurred during image processing: ${error.message}`);
+            return '';
         }
     }
 
@@ -341,26 +339,3 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 });
-
-function updateToxicityCircle(percentage, elementId) {
-    const scoreElement = document.getElementById(elementId);
-    scoreElement.textContent = `${percentage}%`;
-
-    const circle = scoreElement.closest('.toxicity-circle').querySelector('circle:nth-child(2)');
-    if (circle) {
-        const radius = circle.r.baseVal.value;
-        const circumference = radius * 2 * Math.PI;
-        circle.style.strokeDasharray = `${circumference} ${circumference}`;
-        const offset = circumference - (percentage / 100) * circumference;
-        circle.style.strokeDashoffset = offset;
-
-        // Adjust circle color based on toxicity score
-        let color = 'red'; // High toxicity
-        if (percentage < 60) {
-            color = 'green'; // Low toxicity
-        } else if (percentage < 85) {
-            color = 'orange'; // Medium toxicity
-        }
-        circle.style.stroke = color;
-    }
-}
