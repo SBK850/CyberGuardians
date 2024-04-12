@@ -233,10 +233,13 @@ document.addEventListener('DOMContentLoaded', () => {
             /likes/i,
             /retweets/i,
             /followers/i,
-            /\d+:\d+\s(AM|PM)/i, 
+            /\d+:\d+\s(AM|PM)/i,
             /Share/i,
             /Comment/i,
             /Save/i,
+            /\b(Jan(?:uary)?|Feb(?:ruary)?|Mar(?:ch)?|Apr(?:il)?|May|Jun(?:e)?|Jul(?:y)?|Aug(?:ust)?|Sep(?:tember)?|Oct(?:ober)?|Nov(?:ember)?|Dec(?:ember)?)\b/i, // Months
+            /@[^\s]+/gi, // Words starting with @
+            /\.([MK]|\d{1,3})\b/g, // .M, .K or .<1-3 digits>
         ];
     
         filterPatterns.forEach(pattern => {
@@ -246,7 +249,7 @@ document.addEventListener('DOMContentLoaded', () => {
         text = text.replace(/[0-9]+|[^\w\s.,]/g, '');
     
         return text.trim(); 
-    }
+    }    
     
 
     async function fetchTwitterEmbedCode(twitterUrl) {
