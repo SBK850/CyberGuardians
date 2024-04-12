@@ -187,7 +187,6 @@ document.addEventListener('DOMContentLoaded', () => {
         circle.style.stroke = color;
     }
 
-
     async function callBackendForImageProcessing(imageData) {
         const backendEndpoint = 'https://process-image.onrender.com/api/process-image';
         try {
@@ -214,6 +213,7 @@ document.addEventListener('DOMContentLoaded', () => {
     
             if (data.detectedText && data.detectedText.trim() !== '') {
                 const cleanedText = filterAndCleanText(data.detectedText);
+                console.log("Cleaned text to be analyzed for toxicity:", cleanedText); // Output the cleaned text
                 imageToxicityPercentage = await analyseContentForToxicity(cleanedText, 'imageToxicityScore');
             } else {
                 updateToxicityCircle(0, 'imageToxicityScore');
