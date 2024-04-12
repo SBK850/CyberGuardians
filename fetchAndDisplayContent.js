@@ -68,23 +68,22 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    async function processTwitterUrl(postUrl) {
-        const responseHtml = await fetchTwitterEmbedCode(postUrl);
-        if (responseHtml) {
-            twitterEmbedContainer.innerHTML = responseHtml;
-            loadTwitterWidgets();
-            toggleDisplay([twitterEmbedContainer], 'block');
-            const tweetText = extractTweetText(responseHtml);
-            await analyseContentForToxicity(tweetText, customContainer);
-    
-            $(".btn").addClass('btn-complete');
-    
-            setTimeout(() => {
-                $(".input").hide();
-            }, 3000);
-        }
+async function processTwitterUrl(postUrl) {
+    const responseHtml = await fetchTwitterEmbedCode(postUrl);
+    if (responseHtml) {
+        twitterEmbedContainer.innerHTML = responseHtml;
+        loadTwitterWidgets();
+        toggleDisplay([twitterEmbedContainer], 'block');
+        const tweetText = extractTweetText(responseHtml);
+        await analyseContentForToxicity(tweetText, customContainer);
+
+        $(".btn").addClass('btn-complete');
+
+        setTimeout(() => {
+            $(".input").hide();
+        }, 3000);
     }
-    
+}
 
     async function fetchAndDisplayContent(postUrl, contentContainer) {
         const apiEndpoint = 'https://cyberguardians.onrender.com/scrape';
@@ -342,9 +341,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
     async function confirmToxicContent(carouselItemId) {
         try {
-            console.log("Attempting to remove post with ID:", carouselItemId); 
+            console.log("Attempting to remove post with ID:", carouselItemId); // Log the ID to the console
             const result = await removeToxicPost(carouselItemId);
-            console.log("Server response:", result);
+            console.log("Server response:", result); // Log the actual response from the server
             if (result && result.message === 'Post removed successfully.') {
                 var message = document.createElement('p');
                 message.textContent = "You have confirmed the removal of this content. It will be removed immediately from YouthVibe. Thank you for helping us maintain a safe environment.";
