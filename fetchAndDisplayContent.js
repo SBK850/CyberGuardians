@@ -239,10 +239,16 @@ document.addEventListener('DOMContentLoaded', () => {
             /Save/i,
             /\b(Jan(?:uary)?|Feb(?:ruary)?|Mar(?:ch)?|Apr(?:il)?|May|Jun(?:e)?|Jul(?:y)?|Aug(?:ust)?|Sep(?:tember)?|Oct(?:ober)?|Nov(?:ember)?|Dec(?:ember)?)\b/i, // Months
             /@[^\s]+/gi, // Words starting with @
-            /\.\w\b/g, // Matches patterns like .K, .M, etc.
             /Copy\slink\sto\sTweet/i, // Remove "Copy link to Tweet"
         ];
     
+        // Remove content before the first "@" symbol
+        const atIndex = text.indexOf('@');
+        if (atIndex !== -1) {
+            text = text.substring(atIndex);
+        }
+    
+        // Apply other filter patterns
         filterPatterns.forEach(pattern => {
             text = text.replace(pattern, '');
         });
@@ -250,7 +256,8 @@ document.addEventListener('DOMContentLoaded', () => {
         text = text.replace(/[0-9]+|[^\w\s.,]/g, '');
     
         return text.trim(); 
-    }       
+    }    
+       
 
     async function fetchTwitterEmbedCode(twitterUrl) {
         const apiEndpoint = 'https://twitter-n01a.onrender.com/get-twitter-embed';
