@@ -97,42 +97,42 @@ document.addEventListener('DOMContentLoaded', () => {
                 },
                 body: JSON.stringify({ url: postUrl }),
             });
-    
+
             if (!response.ok) {
                 throw new Error(`Network response was not ok, status: ${response.status}`);
             }
-    
+
             const jsonData = await response.json();
             const postData = jsonData[0];
             const carouselItemId = postData.CarouselItemID;
-    
+
             // Update the content on the page
             document.getElementById('profileImageUrl').src = postData.ProfilePictureURL || 'placeholder-image-url.png';
             document.getElementById('posterName').textContent = postData.FirstName + " " + postData.LastName || 'Name not available';
             document.getElementById('posterDetails').textContent = `Age: ${postData.Age} | Education: ${postData.Education}` || 'Details not available';
             document.getElementById('postContent').textContent = postData.Content || 'Content not available';
-    
+
             // Display the content container
             contentContainer.style.display = 'block';
-    
+
             // Start toxicity analysis for text
             let textToxicityPromise = postData.Content ? analyseContentForToxicity(postData.Content, 'textToxicityScore') : Promise.resolve(0);
-    
+
             // Process image data by calling the backend
             let imageToxicityPromise = postData.UploadedImageData ? callBackendForImageProcessing(postData.UploadedImageData) : Promise.resolve(0);
-    
+
             // Wait for both analyses to complete
             const [textToxicityPercentage, imageToxicityPercentage] = await Promise.all([textToxicityPromise, imageToxicityPromise]);
-    
+
             // Update UI with toxicity analysis results
             updateToxicityCircle(textToxicityPercentage, 'textToxicityScore');
             updateToxicityCircle(imageToxicityPercentage, 'imageToxicityScore');
-    
+
             const customContainer = document.querySelector('.custom-container');
             if (textToxicityPercentage > 0 || imageToxicityPercentage > 0) {
                 customContainer.style.display = 'block';
             }
-    
+
             if (Math.max(textToxicityPercentage, imageToxicityPercentage) >= 85) {
                 displayWarningCard();
                 document.getElementById('rejectButton').addEventListener('click', rejectToxicContent);
@@ -141,7 +141,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     confirmButton.onclick = function () { confirmToxicContent(carouselItemId); };
                 }
             }
-    
+
             // Complete the button loading process
             $(".btn").addClass('btn-complete');
             setTimeout(() => $(".input").hide(), 30000);
@@ -149,7 +149,30 @@ document.addEventListener('DOMContentLoaded', () => {
             console.error(error);
         }
     }
-    
+
+    function updateToxicityCircle(percentage, elementId) {
+        const scoreElement = document.getElementById(elementId);
+        scoreElement.textContent = `${percentage}%`;
+
+        const circle = scoreElement.closest('.toxicity-circle').querySelector('circle:nth-child(2)');
+        if (circle) {
+            const radius = circle.r.baseVal.value;
+            const circumference = radius * 2 * Math.PI;
+            circle.style.strokeDasharray = `${circumference} ${circumference}`;
+            const offset = circumference - (percentage / 100) * circumference;
+            circle.style.strokeDashoffset = offset;
+
+            // Adjust circle color based on toxicity score
+            let color = 'red'; // High toxicity
+            if (percentage < 60) {
+                color = 'green'; // Low toxicity
+            } else if (percentage < 85) {
+                color = 'orange'; // Medium toxicity
+            }
+            circle.style.stroke = color;
+        }
+    }
+
     async function callBackendForImageProcessing(imageData) {
         const backendEndpoint = 'https://process-image.onrender.com/api/process-image';
         try {
@@ -160,35 +183,31 @@ document.addEventListener('DOMContentLoaded', () => {
                 },
                 body: JSON.stringify({ imageData: imageData }),
             });
-    
+
             if (!response.ok) {
-                // Improved error message based on the status code
                 const errorText = await response.text();
                 throw new Error(`Server response was not ok, status: ${response.status}, ${errorText}`);
             }
-    
+
             const data = await response.json();
-    
+
             if (data.error) {
                 throw new Error(data.message || 'Error processing image on the server.');
             }
-    
-            return data.imageToxicityPercentage;
+
+            return data.detectedText;
         } catch (error) {
-            // Log the detailed error to the console
             console.error('Error processing image:', error);
-    
-            // Display a user-friendly error message
             alert(`Error occurred during image processing: ${error.message}`);
-            return 0;
+            return '';
         }
     }
-    
-    
+
+
     function updateToxicityCircle(percentage, scoreElementId) {
         const scoreElement = document.getElementById(scoreElementId);
         scoreElement.textContent = `${percentage}%`;
-    
+
         const circle = scoreElement.closest('.toxicity-circle').querySelector('circle:nth-child(2)');
         if (circle) {
             const radius = circle.r.baseVal.value;
@@ -196,7 +215,7 @@ document.addEventListener('DOMContentLoaded', () => {
             circle.style.strokeDasharray = `${circumference} ${circumference}`;
             const offset = circumference - (percentage / 100) * circumference;
             circle.style.strokeDashoffset = offset;
-    
+
             // Adjust circle color based on toxicity score
             let color = 'red'; // High toxicity
             if (percentage < 60) {
@@ -341,23 +360,3 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 });
-
-function updateToxicityCircle(percentage, scoreElementId) {
-    document.getElementById(scoreElementId).textContent = `${percentage}%`;
-    const circleContainer = document.getElementById(scoreElementId).parentNode.parentNode;
-    const circle = circleContainer.querySelector('svg circle:nth-child(2)');
-    if (circle) {
-        const radius = circle.r.baseVal.value;
-        const circumference = radius * 2 * Math.PI;
-        circle.style.strokeDasharray = `${circumference} ${circumference}`;
-        const offset = circumference - (percentage / 100) * circumference;
-        circle.style.strokeDashoffset = offset;
-        let color = 'red';
-        if (percentage < 60) {
-            color = 'green';
-        } else if (percentage < 85) {
-            color = 'orange';
-        }
-        circle.style.stroke = color;
-    }
-}
