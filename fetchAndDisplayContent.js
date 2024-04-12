@@ -150,29 +150,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    function updateToxicityCircle(percentage, elementId) {
-        const scoreElement = document.getElementById(elementId);
-        scoreElement.textContent = `${percentage}%`;
-
-        const circle = scoreElement.closest('.toxicity-circle').querySelector('circle:nth-child(2)');
-        if (circle) {
-            const radius = circle.r.baseVal.value;
-            const circumference = radius * 2 * Math.PI;
-            circle.style.strokeDasharray = `${circumference} ${circumference}`;
-            const offset = circumference - (percentage / 100) * circumference;
-            circle.style.strokeDashoffset = offset;
-
-            // Adjust circle color based on toxicity score
-            let color = 'red'; // High toxicity
-            if (percentage < 60) {
-                color = 'green'; // Low toxicity
-            } else if (percentage < 85) {
-                color = 'orange'; // Medium toxicity
-            }
-            circle.style.stroke = color;
-        }
-    }
-
     async function callBackendForImageProcessing(imageData) {
         const backendEndpoint = 'https://process-image.onrender.com/api/process-image';
         try {
@@ -360,3 +337,26 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 });
+
+function updateToxicityCircle(percentage, elementId) {
+    const scoreElement = document.getElementById(elementId);
+    scoreElement.textContent = `${percentage}%`;
+
+    const circle = scoreElement.closest('.toxicity-circle').querySelector('circle:nth-child(2)');
+    if (circle) {
+        const radius = circle.r.baseVal.value;
+        const circumference = radius * 2 * Math.PI;
+        circle.style.strokeDasharray = `${circumference} ${circumference}`;
+        const offset = circumference - (percentage / 100) * circumference;
+        circle.style.strokeDashoffset = offset;
+
+        // Adjust circle color based on toxicity score
+        let color = 'red'; // High toxicity
+        if (percentage < 60) {
+            color = 'green'; // Low toxicity
+        } else if (percentage < 85) {
+            color = 'orange'; // Medium toxicity
+        }
+        circle.style.stroke = color;
+    }
+}
