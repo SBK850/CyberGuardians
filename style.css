@@ -315,8 +315,7 @@ body {
 
 .custom-container {
   position: relative;
-  /* display: flex !important; */
-  justify-content: space-around;
+  margin-top: -3rem;
 }
 
 .custom-container .custom-card {
