@@ -110,29 +110,24 @@ document.addEventListener('DOMContentLoaded', () => {
             document.getElementById('posterDetails').textContent = `Age: ${postData.Age} | Education: ${postData.Education}` || 'Details not available';
             document.getElementById('postContent').textContent = postData.Content || 'Content not available';
     
-            // Check for image data and update or hide the image element with base64 handling
             const postImage = document.getElementById('postImage');
             if (postData.UploadedImageData) {
                 postImage.src = `data:image/png;base64,${postData.UploadedImageData}`;
                 postImage.alt = "Post Image";
-                postImage.style.display = 'block'; // Ensure the image is visible
+                postImage.style.display = 'block';
             } else {
-                postImage.style.display = 'none'; // Hide the image element if there's no image data
+                postImage.style.display = 'none';
             }
     
-            // Display the content container
             contentContainer.style.display = 'block';
     
             // Start toxicity analysis for text
             let textToxicityPromise = postData.Content ? analyseContentForToxicity(postData.Content, 'textToxicityScore') : Promise.resolve(0);
     
-            // Process image data by calling the backend
             let imageToxicityPromise = postData.UploadedImageData ? callBackendForImageProcessing(postData.UploadedImageData) : Promise.resolve(0);
     
-            // Wait for both analyses to complete
             const [textToxicityPercentage, imageToxicityPercentage] = await Promise.all([textToxicityPromise, imageToxicityPromise]);
     
-            // Update UI with toxicity analysis results
             updateToxicityCircle(textToxicityPercentage, 'textToxicityScore');
             updateToxicityCircle(imageToxicityPercentage, 'imageToxicityScore');
     
@@ -150,7 +145,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
             }
     
-            // Complete the button loading process
             $(".btn").addClass('btn-complete');
             setTimeout(() => $(".input").hide(), 3000);
         } catch (error) {
@@ -162,22 +156,20 @@ document.addEventListener('DOMContentLoaded', () => {
         const scoreElement = document.getElementById(elementId);
         if (!scoreElement) {
             console.error('No element with ID:', elementId);
-            return; // Exit if element is not found
+            return; 
         }
         scoreElement.textContent = `${percentage}%`;
 
-        // Find the nearest parent with class 'custom-percent' to locate the circle elements
         const customPercentElement = scoreElement.closest('.custom-percent');
         if (!customPercentElement) {
             console.error('No custom percent element found for element ID:', elementId);
             return; // Exit if custom percent element is not found
         }
 
-        // Select the second circle within the 'custom-percent' div, which is the progress circle
         const circle = customPercentElement.querySelector('circle:nth-child(2)');
         if (!circle) {
             console.error('No circle found for element ID:', elementId);
-            return; // Exit if circle is not found
+            return; 
         }
 
         const radius = circle.r.baseVal.value;
@@ -186,14 +178,13 @@ document.addEventListener('DOMContentLoaded', () => {
         const offset = circumference - (percentage / 100) * circumference;
         circle.style.strokeDashoffset = offset;
 
-        // Adjust circle color based on toxicity score
         let color;
         if (percentage <= 50) {
-            color = 'green'; // Low toxicity
+            color = 'green'; 
         } else if (percentage > 50 && percentage <= 75) {
-            color = 'orange'; // Medium toxicity
+            color = 'orange'; 
         } else {
-            color = 'red'; // High toxicity
+            color = 'red'; 
         }
         circle.style.stroke = color;
     }

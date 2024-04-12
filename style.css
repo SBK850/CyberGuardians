@@ -432,4 +432,5 @@ svg circle:nth-child(2) {
 
 #postImage {
   border-radius: 1rem;
+  border: 2px solid #cc6666;
 }
