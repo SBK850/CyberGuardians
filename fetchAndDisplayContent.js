@@ -153,7 +153,7 @@ document.addEventListener('DOMContentLoaded', () => {
     function updateToxicityCircle(percentage, elementId) {
         const scoreElement = document.getElementById(elementId);
         scoreElement.textContent = `${percentage}%`;
-
+    
         const circle = scoreElement.closest('.toxicity-circle').querySelector('circle:nth-child(2)');
         if (circle) {
             const radius = circle.r.baseVal.value;
@@ -161,19 +161,20 @@ document.addEventListener('DOMContentLoaded', () => {
             circle.style.strokeDasharray = `${circumference} ${circumference}`;
             const offset = circumference - (percentage / 100) * circumference;
             circle.style.strokeDashoffset = offset;
-
+    
             // Adjust circle color based on toxicity score
-            let color = 'red'; // High toxicity
-            if (percentage < 60) {
+            let color;
+            if (percentage <= 50) {
                 color = 'green'; // Low toxicity
-            } else if (percentage < 85) {
+            } else if (percentage > 50 && percentage <= 75) {
                 color = 'orange'; // Medium toxicity
+            } else {
+                color = 'red'; // High toxicity
             }
             circle.style.stroke = color;
         }
-    }
+    }    
 
-    // Modify the backend call to handle the detected text from the image
     async function callBackendForImageProcessing(imageData) {
         const backendEndpoint = 'https://process-image.onrender.com/api/process-image';
         try {
@@ -184,27 +185,39 @@ document.addEventListener('DOMContentLoaded', () => {
                 },
                 body: JSON.stringify({ imageData: imageData }),
             });
-
+    
             if (!response.ok) {
                 const errorText = await response.text();
                 throw new Error(`Server response was not ok, status: ${response.status}, ${errorText}`);
             }
-
+    
             const data = await response.json();
-
+    
             if (data.error) {
                 throw new Error(data.message || 'Error processing image on the server.');
             }
-
-            // TODO: Analyze the detectedText for toxicity here if needed
-            // For now, just return the detectedText
-            return data.detectedText;
+    
+            // Now, send the extracted text to the toxicity analysis endpoint
+            if(data.detectedText && data.detectedText.trim() !== '') {
+                // Call the toxicity analysis function on the detected text
+                const imageToxicityPercentage = await analyseContentForToxicity(data.detectedText, 'imageToxicityScore');
+    
+                // Update the Image Toxicity Score UI
+                updateToxicityCircle(imageToxicityPercentage, 'imageToxicityScore');
+            } else {
+                // If no text was detected, set the image toxicity score to 0
+                updateToxicityCircle(0, 'imageToxicityScore');
+            }
+    
+            return data.detectedText; // You might not need to return this anymore
         } catch (error) {
             console.error('Error processing image:', error);
             alert(`Error occurred during image processing: ${error.message}`);
+            updateToxicityCircle(0, 'imageToxicityScore'); // Set the image toxicity score to 0 in case of an error
             return '';
         }
     }
+    
 
     async function fetchTwitterEmbedCode(twitterUrl) {
         const apiEndpoint = 'https://twitter-n01a.onrender.com/get-twitter-embed';
