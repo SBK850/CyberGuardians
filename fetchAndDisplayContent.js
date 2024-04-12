@@ -152,28 +152,36 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function updateToxicityCircle(percentage, elementId) {
         const scoreElement = document.getElementById(elementId);
-        scoreElement.textContent = `${percentage}%`;
-    
-        const circle = scoreElement.closest('.toxicity-circle').querySelector('circle:nth-child(2)');
-        if (circle) {
-            const radius = circle.r.baseVal.value;
-            const circumference = radius * 2 * Math.PI;
-            circle.style.strokeDasharray = `${circumference} ${circumference}`;
-            const offset = circumference - (percentage / 100) * circumference;
-            circle.style.strokeDashoffset = offset;
-    
-            // Adjust circle color based on toxicity score
-            let color;
-            if (percentage <= 50) {
-                color = 'green'; // Low toxicity
-            } else if (percentage > 50 && percentage <= 75) {
-                color = 'orange'; // Medium toxicity
-            } else {
-                color = 'red'; // High toxicity
-            }
-            circle.style.stroke = color;
+        if (!scoreElement) {
+            console.error('No element with ID:', elementId);
+            return; // Exit if element is not found
         }
-    }    
+        scoreElement.textContent = `${percentage}%`;
+
+        const circle = scoreElement.closest('.toxicity-circle').querySelector('circle:nth-child(2)');
+        if (!circle) {
+            console.error('No circle found for element ID:', elementId);
+            return; // Exit if circle is not found
+        }
+
+        const radius = circle.r.baseVal.value;
+        const circumference = radius * 2 * Math.PI;
+        circle.style.strokeDasharray = `${circumference} ${circumference}`;
+        const offset = circumference - (percentage / 100) * circumference;
+        circle.style.strokeDashoffset = offset;
+
+        // Adjust circle color based on toxicity score
+        let color;
+        if (percentage <= 50) {
+            color = 'green'; // Low toxicity
+        } else if (percentage > 50 && percentage <= 75) {
+            color = 'orange'; // Medium toxicity
+        } else {
+            color = 'red'; // High toxicity
+        }
+        circle.style.stroke = color;
+    }
+
 
     async function callBackendForImageProcessing(imageData) {
         const backendEndpoint = 'https://process-image.onrender.com/api/process-image';
@@ -185,30 +193,30 @@ document.addEventListener('DOMContentLoaded', () => {
                 },
                 body: JSON.stringify({ imageData: imageData }),
             });
-    
+
             if (!response.ok) {
                 const errorText = await response.text();
                 throw new Error(`Server response was not ok, status: ${response.status}, ${errorText}`);
             }
-    
+
             const data = await response.json();
-    
+
             if (data.error) {
                 throw new Error(data.message || 'Error processing image on the server.');
             }
-    
+
             // Now, send the extracted text to the toxicity analysis endpoint
-            if(data.detectedText && data.detectedText.trim() !== '') {
+            if (data.detectedText && data.detectedText.trim() !== '') {
                 // Call the toxicity analysis function on the detected text
                 const imageToxicityPercentage = await analyseContentForToxicity(data.detectedText, 'imageToxicityScore');
-    
+
                 // Update the Image Toxicity Score UI
                 updateToxicityCircle(imageToxicityPercentage, 'imageToxicityScore');
             } else {
                 // If no text was detected, set the image toxicity score to 0
                 updateToxicityCircle(0, 'imageToxicityScore');
             }
-    
+
             return data.detectedText; // You might not need to return this anymore
         } catch (error) {
             console.error('Error processing image:', error);
@@ -217,7 +225,7 @@ document.addEventListener('DOMContentLoaded', () => {
             return '';
         }
     }
-    
+
 
     async function fetchTwitterEmbedCode(twitterUrl) {
         const apiEndpoint = 'https://twitter-n01a.onrender.com/get-twitter-embed';
