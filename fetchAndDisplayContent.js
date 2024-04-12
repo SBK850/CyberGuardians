@@ -152,23 +152,33 @@ async function processTwitterUrl(postUrl) {
         const scoreElement = document.getElementById(elementId);
         if (!scoreElement) {
             console.error('No element with ID:', elementId);
-            return; // Exit if element is not found
+            return; // Exit if the element is not found
         }
         scoreElement.textContent = `${percentage}%`;
-
-        const circle = scoreElement.closest('.toxicity-circle').querySelector('circle:nth-child(2)');
+    
+        // Find the parent container of the score element, which has the SVG circles
+        const percentContainer = scoreElement.closest('.custom-percent');
+        if (!percentContainer) {
+            console.error('No custom-percent container found for element ID:', elementId);
+            return; // Exit if the container is not found
+        }
+    
+        // The second 'circle' element is the one that needs to be animated
+        const circle = percentContainer.querySelector('svg circle:nth-of-type(2)');
         if (!circle) {
             console.error('No circle found for element ID:', elementId);
-            return; // Exit if circle is not found
+            return; // Exit if the circle is not found
         }
-
+    
         const radius = circle.r.baseVal.value;
         const circumference = radius * 2 * Math.PI;
+    
+        // Set the circle's stroke-dasharray and stroke-dashoffset to create the progress effect
         circle.style.strokeDasharray = `${circumference} ${circumference}`;
         const offset = circumference - (percentage / 100) * circumference;
         circle.style.strokeDashoffset = offset;
-
-        // Adjust circle color based on toxicity score
+    
+        // Set the stroke color based on the toxicity percentage
         let color;
         if (percentage <= 50) {
             color = 'green'; // Low toxicity
@@ -179,6 +189,7 @@ async function processTwitterUrl(postUrl) {
         }
         circle.style.stroke = color;
     }
+    
 
 
     async function callBackendForImageProcessing(imageData) {
