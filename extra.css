@@ -80,9 +80,9 @@ main {
     display: none;
 }
 
-.site-navigation {
+/* .site-navigation {
     flex: 1;
-}
+} */
 
 .nav-list {
     gap: var(--spacing);
