@@ -76,16 +76,15 @@ document.addEventListener('DOMContentLoaded', () => {
             toggleDisplay([twitterEmbedContainer], 'block');
             const tweetText = extractTweetText(responseHtml);
             await analyseContentForToxicity(tweetText, customContainer);
-
-            // Add 'btn-complete' class after processing is done
+    
             $(".btn").addClass('btn-complete');
-
-            // Hide inputs 3 seconds after loading the response
+    
             setTimeout(() => {
-                $(".input").hide(); // Assuming you are using jQuery
+                $(".input").hide();
             }, 3000);
         }
     }
+    
 
     async function fetchAndDisplayContent(postUrl, contentContainer) {
         const apiEndpoint = 'https://cyberguardians.onrender.com/scrape';
@@ -97,43 +96,48 @@ document.addEventListener('DOMContentLoaded', () => {
                 },
                 body: JSON.stringify({ url: postUrl }),
             });
-
+    
             if (!response.ok) {
                 throw new Error(`Network response was not ok, status: ${response.status}`);
             }
-
+    
             const jsonData = await response.json();
             const postData = jsonData[0];
             const carouselItemId = postData.CarouselItemID;
-
+    
             // Update the content on the page
             document.getElementById('profileImageUrl').src = postData.ProfilePictureURL || 'placeholder-image-url.png';
             document.getElementById('posterName').textContent = postData.FirstName + " " + postData.LastName || 'Name not available';
             document.getElementById('posterDetails').textContent = `Age: ${postData.Age} | Education: ${postData.Education}` || 'Details not available';
             document.getElementById('postContent').textContent = postData.Content || 'Content not available';
-
+    
             // Display the content container
             contentContainer.style.display = 'block';
-
+    
             // Start toxicity analysis for text
-            let textToxicityPromise = postData.Content ? analyseContentForToxicity(postData.Content, 'textToxicityScore') : Promise.resolve(0);
-
-            // Process image data by calling the backend
-            let imageToxicityPromise = postData.UploadedImageData ? callBackendForImageProcessing(postData.UploadedImageData) : Promise.resolve(0);
-
-            // Wait for both analyses to complete
-            const [textToxicityPercentage, imageToxicityPercentage] = await Promise.all([textToxicityPromise, imageToxicityPromise]);
-
-            // Update UI with toxicity analysis results
-            updateToxicityCircle(textToxicityPercentage, 'textToxicityScore');
-            updateToxicityCircle(imageToxicityPercentage, 'imageToxicityScore');
-
+            const textToxicityScore = postData.Content ? await analyseContentForToxicity(postData.Content, 'textToxicityScore') : 0;
+    
+            // Update UI with text toxicity analysis results
+            updateToxicityCircle(textToxicityScore, 'textToxicityScore');
+    
+            // Process image data by calling the backend and analyze for toxicity
+            let imageToxicityScore = 0;
+            if (postData.UploadedImageData) {
+                const detectedText = await callBackendForImageProcessing(postData.UploadedImageData);
+                if (detectedText) {
+                    imageToxicityScore = await analyseContentForToxicity(detectedText, 'imageToxicityScore');
+                }
+            }
+    
+            // Update UI with image toxicity analysis results
+            updateToxicityCircle(imageToxicityScore, 'imageToxicityScore');
+    
             const customContainer = document.querySelector('.custom-container');
-            if (textToxicityPercentage > 0 || imageToxicityPercentage > 0) {
+            if (textToxicityScore > 0 || imageToxicityScore > 0) {
                 customContainer.style.display = 'block';
             }
-
-            if (Math.max(textToxicityPercentage, imageToxicityPercentage) >= 85) {
+    
+            if (Math.max(textToxicityScore, imageToxicityScore) >= 85) {
                 displayWarningCard();
                 document.getElementById('rejectButton').addEventListener('click', rejectToxicContent);
                 const confirmButton = document.getElementById('confirmButton');
@@ -141,7 +145,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     confirmButton.onclick = function () { confirmToxicContent(carouselItemId); };
                 }
             }
-
+    
             // Complete the button loading process
             $(".btn").addClass('btn-complete');
             setTimeout(() => $(".input").hide(), 30000);
@@ -149,6 +153,7 @@ document.addEventListener('DOMContentLoaded', () => {
             console.error(error);
         }
     }
+    
 
     function updateToxicityCircle(percentage, elementId) {
         const scoreElement = document.getElementById(elementId);
@@ -343,9 +348,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
     async function confirmToxicContent(carouselItemId) {
         try {
-            console.log("Attempting to remove post with ID:", carouselItemId); // Log the ID to the console
+            console.log("Attempting to remove post with ID:", carouselItemId); 
             const result = await removeToxicPost(carouselItemId);
-            console.log("Server response:", result); // Log the actual response from the server
+            console.log("Server response:", result);
             if (result && result.message === 'Post removed successfully.') {
                 var message = document.createElement('p');
                 message.textContent = "You have confirmed the removal of this content. It will be removed immediately from YouthVibe. Thank you for helping us maintain a safe environment.";
