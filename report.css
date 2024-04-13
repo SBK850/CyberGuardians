@@ -135,17 +135,20 @@ form input {
 }
 
 .btn:after {
-	content: "";
-	background: #1ecd97;
-	position: absolute;
-	top: 0;
-	left: 0;
-	height: 100%;
-	width: 100%;
-	transform: scaleX(0);
-	transform-origin: 0;
-	display: block;
-	animation: fill 3.2s linear forwards;
+    content: "";
+    background: #1ecd97;
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 100%;
+    width: 100%;
+    transform: scaleX(0);
+    transform-origin: 0;
+    display: block;
+}
+
+.btn-fill:after {
+    animation: fill 3.2s linear forwards;
 }
 
 .btn:hover:after {

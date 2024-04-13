@@ -1,9 +1,9 @@
 $(function () {
     $(".btn").on("click", function () {
-        var $this = $(this); // Cache this to use inside setTimeout callbacks
+        var $this = $(this);
         $this.addClass('btn-progress');
         setTimeout(function () {
-            $this.addClass('btn-fill');
+            $this.addClass('btn-fill'); // Apply the fill animation only after the button is clicked
         }, 500);
 
         setTimeout(function () {
