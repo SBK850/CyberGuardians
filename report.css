@@ -1,3 +1,6 @@
+@import url("https://fonts.googleapis.com/css?family=Montserrat:400,700");
+
+/* Common styles for form and inputs */
 form {
 	display: contents;
 }
@@ -9,19 +12,18 @@ form input {
 	outline: none;
 	background-color: white;
 	color: black;
-	margin: 0rem;
+	margin: 0;
 	margin-bottom: 2rem;
 	border-radius: 1rem;
 }
 
+/* Keyframes animation */
 @keyframes push {
-	0%,
-	100% {
-		scale: 1;
+	0%, 100% {
+		transform: scale(1);
 	}
-
 	50% {
-		scale: 0.95;
+		transform: scale(0.95);
 	}
 }
 
@@ -29,7 +31,6 @@ form input {
 	0% {
 		width: 25%;
 	}
-
 	100% {
 		width: 100%;
 	}
@@ -39,43 +40,30 @@ form input {
 	0% {
 		width: 0%;
 	}
-
 	100% {
 		width: 100%;
 	}
 }
 
-@import url("https://fonts.googleapis.com/css?family=Montserrat:400,700");
-
+/* Styles for content container */
 #content {
 	max-width: 420px;
 	margin: 50px auto;
 	font-family: "Montserrat", Arial, sans-serif;
 }
 
+/* Styles for profile image */
 .profile-image img {
 	width: 100px;
 	height: 100px;
 	border-radius: 50%;
 	border: 2px solid #cc6666;
 	transition: all 0.3s;
-	display: block; /* Makes sure the image is block level for margin to work */
-	margin: 0 auto 15px auto; /* Adds bottom margin */
+	display: block;
+	margin: 0 auto 15px auto;
 }
 
-#posterName {
-	color: white;
-	font-weight: 500;
-	font-size: 18px;
-	background-color: transparent;
-	transition: all 0.3s;
-	padding: 13px;
-	margin-bottom: 15px;
-	width: calc(100% - 26px); /* Adjusts width to account for padding */
-	box-sizing: border-box;
-	display: block; /* Ensures the name is treated as a block-level element */
-}
-
+/* Styles for poster name and details */
 #posterName,
 #posterDetails,
 #postContent {
@@ -99,22 +87,14 @@ form input {
 	border: 2px solid #cc4949;
 }
 
+/* Styles for post content */
 #postContent {
-	color: white; /* Text color */
-	font-weight: 500;
-	font-size: 18px;
-	background-color: transparent; /* Background color */
-	border: 2px solid #cc6666; /* Border color and width */
-	transition: all 0.3s;
-	padding: 13px;
-	margin-bottom: 15px;
-	width: 100%;
-	box-sizing: border-box;
-	min-height: 150px; /* Minimum height to accommodate more content */
-	max-height: 300px; /* Maximum height before scrolling */
-	overflow-y: auto; /* Allows scrolling for overflow content */
-	word-wrap: break-word; /* Ensures long words do not overflow */
+	min-height: 150px;
+	max-height: 300px;
+	overflow-y: auto;
+	word-wrap: break-word;
 }
+
 /* ............................... */
 
 .inputGroup {
