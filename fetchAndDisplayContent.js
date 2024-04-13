@@ -1,18 +1,15 @@
-$(function () {
-    $(".btn").on("click", function () {
-        var $this = $(this);
-        $this.addClass('btn-progress');
-        setTimeout(function () {
-            $this.addClass('btn-fill'); // Apply the fill animation only after the button is clicked
-        }, 500);
+$(".btn").on("click", function (e) {
+    e.preventDefault(); // Prevent default button action
+    var $this = $(this);
+    $this.addClass('btn-progress');
+    setTimeout(function () {
+        $this.addClass('btn-fill'); // Apply the fill animation only after the button is clicked
+    }, 500);
 
-        setTimeout(function () {
-            $this.removeClass('btn-fill');
-            // Do not automatically add 'btn-complete' here
-        }, 4100);
-    });
+    setTimeout(function () {
+        $this.removeClass('btn-fill');
+    }, 4100);
 });
-
 
 document.addEventListener('DOMContentLoaded', () => {
     const form = document.getElementById('reportForm');
