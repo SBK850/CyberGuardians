@@ -10,11 +10,6 @@
     text-transform: capitalize;
 }
 
-body {
-    background-color: transparent;
-    padding: 20px;
-}
-
 .container {
     max-width: 1200px;
     margin: 100px auto;
