@@ -1,7 +1,5 @@
-/* Fonts */
 @import url("https://fonts.googleapis.com/css?family=Montserrat:400,700");
 
-/* General Styles */
 * {
   box-sizing: border-box;
   margin: 0;
@@ -36,7 +34,6 @@ form input {
   border-radius: 1rem;
 }
 
-/* Input Group */
 .inputGroup {
   background-color: #fff;
   margin: 10px 0;
