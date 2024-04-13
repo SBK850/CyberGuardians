@@ -16,32 +16,24 @@
 <body>
   <!-- partial:index.partial.html -->
   <div class="warning">Your browser doesn't support scroll animations. This demo will not work.</div>
-
   <header class="site-header">
     <h1>Cyber<span>Guardians</span></h1>
 
+    <!-- Toggle button -->
     <label class="mobile-menu-button hamburger-icon">
-      <input type="radio" name="toggle-navigation" class="open-navigation navigation-closed" autocomplete="off">
-      <span class="visually-hidden">Open Navigation</span>
+      <input type="checkbox" class="toggle-navigation" autocomplete="off">
+      <span class="visually-hidden">Toggle Navigation</span>
     </label>
 
+    <!-- Navigation Menu -->
     <nav class="site-navigation">
-      <div class="navigation-animation-wrapper">
-        <label class="mobile-menu-button close-icon">
-          <input type="radio" name="toggle-navigation" class="close-navigation navigation-opened" autocomplete="off">
-          <span class="visually-hidden">Close navigation</span>
-        </label>
-
-        <ul class="nav-list">
-          <li style="--index: 0"><a href="index">Home</a></li>
-          <li style="--index: 1"><a href="report">Report Cyberbullying</a></li>
-          <!-- Prioritizes direct action -->
-          <li style="--index: 2"><a href="#">Resources</a></li>
-          <!-- Combines educational content and support -->
-          <li style="--index: 3"><a href="#">About Us</a></li> <!-- Background and mission -->
-          <li style="--index: 4"><a href="report" class="button">Take a Stand: Report Now</a></li>
-        </ul>
-      </div>
+      <ul class="nav-list">
+        <li><a href="index">Home</a></li>
+        <li><a href="report">Report Cyberbullying</a></li>
+        <li><a href="#">Resources</a></li>
+        <li><a href="#">About Us</a></li>
+        <li><a href="report" class="button">Take a Stand: Report Now</a></li>
+      </ul>
     </nav>
   </header>
 
