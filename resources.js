@@ -25,3 +25,20 @@ videoList.forEach((vid) => {
         document.querySelector(".main-video-container .main-video__title").textContent = title;
     };
 });
+
+function changeVideo(src, title) {
+    var mainVideo = document.getElementById('mainVideo');
+    var mainVideoTitle = document.querySelector('.main-video__title');
+
+    mainVideo.src = src;
+    mainVideoTitle.textContent = title;
+
+    // Optionally, play the video and scroll back to the main video section
+    mainVideo.play();
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+
+    // Update active class for current video
+    var lists = document.querySelectorAll('.list');
+    lists.forEach(list => list.classList.remove('active'));
+    event.currentTarget.classList.add('active');
+}
