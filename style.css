@@ -321,7 +321,6 @@ body {
 
 .custom-container .custom-card {
   position: relative;
-  width: 250px;
   display: flex;
   justify-content: center;
   align-items: center;

@@ -1,18 +1,15 @@
-$(function () {
-    $(".btn").on("click", function () {
-        var $this = $(this); // Cache this to use inside setTimeout callbacks
-        $this.addClass('btn-progress');
-        setTimeout(function () {
-            $this.addClass('btn-fill');
-        }, 500);
+$(".btn").on("click", function (e) {
+    e.preventDefault(); // Prevent default button action
+    var $this = $(this);
+    $this.addClass('btn-progress');
+    setTimeout(function () {
+        $this.addClass('btn-fill'); // Apply the fill animation only after the button is clicked
+    }, 500);
 
-        setTimeout(function () {
-            $this.removeClass('btn-fill');
-            // Do not automatically add 'btn-complete' here
-        }, 4100);
-    });
+    setTimeout(function () {
+        $this.removeClass('btn-fill');
+    }, 4100);
 });
-
 
 document.addEventListener('DOMContentLoaded', () => {
     const form = document.getElementById('reportForm');
@@ -237,25 +234,31 @@ document.addEventListener('DOMContentLoaded', () => {
             /Share/i,
             /Comment/i,
             /Save/i,
+            /reply/i,
             /\b(Jan(?:uary)?|Feb(?:ruary)?|Mar(?:ch)?|Apr(?:il)?|May|Jun(?:e)?|Jul(?:y)?|Aug(?:ust)?|Sep(?:tember)?|Oct(?:ober)?|Nov(?:ember)?|Dec(?:ember)?)\b/i,
             /@[^\s]+/gi,
             /Copy\slink\sto\sTweet/i,
             /\b\d+(\.\d+)?[kKmM]\b/g,
+            /\byear\sago\b/i,
+            /\bmonths\sago\b/i,
+            /\bdays\sago\b/i,
         ];
-    
+        
         const atIndex = text.indexOf('@');
         if (atIndex !== -1) {
-            text = text.substring(atIndex);
+            const endOfLineIndex = text.indexOf('\n', atIndex);
+            text = text.substring(0, atIndex) + (endOfLineIndex !== -1 ? text.substring(endOfLineIndex) : "");
         }
-    
+        
         filterPatterns.forEach(pattern => {
             text = text.replace(pattern, '');
         });
-    
-        text = text.replace(/[0-9]+|[^\w\s.,]/g, '');
+        
+        text = text.replace(/[0-9]+|[^\w\s]/g, '');
     
         return text.trim();
     }
+    
     
     async function fetchTwitterEmbedCode(twitterUrl) {
         const apiEndpoint = 'https://twitter-n01a.onrender.com/get-twitter-embed';
