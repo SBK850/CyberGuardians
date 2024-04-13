@@ -392,12 +392,10 @@ form input {
 
   /* ----------- */
 
-#message-section,
-#warning-section {
+#message-section {
 	display: none;
 }
 
-/* Primary background and text colors */
 .bg-primary {
 	background: #0346f2;
 }
@@ -406,7 +404,10 @@ form input {
 	color: #0346f2;
 }
 
-/* Common card padding */
 .card-x {
 	padding: 10px;
+}
+
+#warning-section {
+	display: none;
 }
