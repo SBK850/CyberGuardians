@@ -33,7 +33,7 @@ body {
     flex: 1 1 700px;
     border-radius: 5px;
     box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
-    background-color: #fff;
+    background-color: transparent;
     padding: 15px;
 }
 
@@ -44,7 +44,7 @@ body {
 }
 .main-video__title {
     font-size: 20px;
-    color: #444;
+    color: white;
 }
 @media (max-width: 450px) {
     .main-video__title {
@@ -55,10 +55,9 @@ body {
 
 .video-list-container {
     flex: 1 1 350px;
-    overflow-y: scroll;
     border-radius: 5px;
     box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
-    background-color: #fff;
+    background-color: transparent;
     padding: 15px;
 }
 .video-list-container::-webkit-scrollbar {
