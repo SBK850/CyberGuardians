@@ -191,10 +191,6 @@ main {
   z-index: 100;
 }
 
-/* Open/close animation */
-
-/* Menu styling */
-/* Since the custom props are set inside the animation (which triggers on large screens), the defaults will be used on small screens */
 .navigation-animation-wrapper {
   background-color: var(--nav-wrapper-background, var(--color-background));
   display: var(--nav-wrapper-display, flex);
