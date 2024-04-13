@@ -281,7 +281,7 @@ form input {
 }
 
 /* Menu buttons */
-.mobile-menu-button {
+/* .mobile-menu-button {
 	--width: var(--min-tap-size);
 	--height: var(--min-tap-size);
 
@@ -367,4 +367,4 @@ form input {
 	&::after {
 		transform: rotate(-45deg);
 	}
-}
+} */
