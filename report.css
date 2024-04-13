@@ -265,6 +265,7 @@ form input {
 #message-section,
 #warning-section {
 	display: none;
+	margin: 0 auto;
 }
 
 .bg-primary,
