@@ -42,35 +42,34 @@ main {
     animation-name: kitten;
     background-image: initial;
   }
-}
 
-/* Swaps to a two-column layout when marker is in-view */
-@keyframes expand-content {
-  0%,
-  100% {
-    flex-direction: row;
-    align-items: center;
-    max-height: 30rem;
+  /* Swaps to a two-column layout when marker is in-view */
+  @keyframes expand-content {
+    0%,
+    100% {
+      flex-direction: row;
+      align-items: center;
+      max-height: 30rem;
+    }
+  }
+
+  @keyframes wall {
+    0%,
+    100% {
+      width: 50%;
+    }
+  }
+
+  @keyframes kitten {
+    0%,
+    100% {
+      background-image: url("https://sbk850.github.io/images/cyberguardians-logo-ax.png") !important;
+      inset-inline-start: calc(50vw - calc(var(--image-width) * var(--image-clip-offset))) !important;
+      transform: none !important;
+      width: 50% !important;
+    }
   }
 }
-
-@keyframes wall {
-  0%,
-  100% {
-    width: 50%;
-  }
-}
-
-@keyframes kitten {
-  0%,
-  100% {
-    background-image: url("https://sbk850.github.io/images/cyberguardians-logo-ax.png") !important;
-    inset-inline-start: calc(50vw - calc(var(--image-width) * var(--image-clip-offset))) !important;
-    transform: none !important;
-    width: 50% !important;
-  }
-}
-
 .left-content {
   animation-name: main-content;
 
