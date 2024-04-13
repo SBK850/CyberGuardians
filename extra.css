@@ -1,5 +1,3 @@
-/* styling for this pen https://codepen.io/giana/pen/gOEQWpR */
-
 :root {
     /* Sizes */
     --rhythm: 1.6;
@@ -74,8 +72,6 @@ main {
     justify-content: center;
 }
 
-/* Header styles */
-
 .warning {
     display: none;
 }
@@ -109,7 +105,6 @@ main {
     }
 }
 
-/* Header page title */
 h1 {
     border-block: 1px solid transparent; /* alignment with button/links */
     font-size: 1em;
@@ -126,21 +121,17 @@ h1 {
     }
 }
 
-/* Section title */
-
 h2 {
     font-size: clamp(2rem, 1.231rem + 3.846vw, 4rem);
     font-weight: 200;
     line-height: 1.1;
     text-wrap: balance;
     margin: 0;
-    /* margin-block-end: var(--spacing); */
 
     & span {
         color: var(--color-cyan);
     }
 
-    /* Behold, the lone media query in this entire document */
     @media (min-width: 40rem) {
         font-weight: 100;
     }
@@ -201,16 +192,12 @@ footer {
 }
 
 :root {
-    /* Background glows */
     --color-glow-yellow: oklch(98% 0.01 108);
     --color-glow-teal: oklch(92.73% 0.04 190);
     --color-glow-pink: oklch(92.73% 0.04 348);
     --color-glow-blue: oklch(80% 0.04 248);
     --color-glow-purple: oklch(30% 0.075 306);
 
-    /* --color-text: oklch(96% 0.032 107); */
-
-    /* Kitten image */
     --image-width: min(265px, 28vw);
     --image-height: calc(var(--image-width) * 2.1283);
     --image-clip-offset: 0.15094;
@@ -225,7 +212,6 @@ body {
     padding-inline: var(--image-aware-padding);
     align-items: center;
 
-    /* Background glows */
     &::before,
     &::after {
         content: "";
@@ -237,7 +223,6 @@ body {
         z-index: 0;
     }
 
-    /* Top left background glow */
     &::before {
         --light-size: 70vmin;
 
@@ -247,7 +232,6 @@ body {
             calc(var(--light-size) / -2 - 2vmin);
     }
 
-    /* Bottom right background glow */
     &::after {
         --light-size: 100vw;
 
@@ -266,7 +250,6 @@ main {
         pointer-events: none;
     }
 
-    /* Wall */
     &::before {
         --background-size: 70vmax;
         --border-position: calc(var(--image-width) * var(--image-clip-offset) - var(--image-outline-width));
@@ -282,7 +265,6 @@ main {
         z-index: 1;
     }
 
-    /* Kitten */
     &::after {
         --gradient-clip: calc(var(--image-clip-offset) * 100% - var(--image-outline-width));
 
@@ -318,8 +300,6 @@ main {
     inherits: false;
     initial-value: purple;
 }
-
-/* Links */
 
 main a {
     --gradient-start: var(--color-pink);
@@ -361,7 +341,6 @@ main a {
         pointer-events: none;
     }
 
-    /* Gradient shadow */
     &::before {
         inset: 0.2em;
         transform-origin: bottom;
@@ -386,94 +365,5 @@ main a {
             transform: none;
             opacity: 1;
         }
-    }
-}
-
-/* Menu buttons */
-.mobile-menu-button {
-    --width: var(--min-tap-size);
-    --height: var(--min-tap-size);
-
-    --line-thickness: 2px;
-    --line-spacing: 3px;
-
-    cursor: pointer;
-    display: block;
-    position: absolute;
-    inset-inline-end: var(--spacing);
-    width: var(--width);
-    height: var(--height);
-    z-index: 100;
-
-    & input {
-        cursor: pointer;
-        position: absolute;
-        inset: 0;
-        opacity: 0;
-    }
-
-    &::before,
-    &::after {
-        --width: 100%;
-        --height: 100%;
-
-        content: "";
-        position: absolute;
-        inset-inline-start: 0;
-        width: var(--width);
-        height: var(--height);
-    }
-
-    &:hover,
-    &:focus {
-        &::before,
-        &::after {
-            --color-text-bright: var(--color-cyan);
-        }
-    }
-}
-
-.hamburger-icon {
-    clip-path: polygon(0 0, 100% 0, 100% 100%, 50% 100%);
-
-    &::before,
-    &::after {
-        --height: calc(var(--line-thickness) * 3 + var(--line-spacing) * 2);
-
-        inset-block-start: calc(50% - var(--height) / 2);
-    }
-
-    &::before {
-        border-block: var(--line-thickness) solid var(--color-text-bright);
-    }
-
-    &::after {
-        border-block-start: var(--line-thickness) solid var(--color-text-bright);
-        margin-block-start: calc(var(--line-thickness) + var(--line-spacing));
-    }
-}
-
-.close-icon {
-    inset-block-start: calc(var(--spacing) * 2);
-    inset-inline-end: calc(var(--spacing) + var(--image-aware-padding));
-
-    &::before,
-    &::after {
-        --width: 75%;
-        --height: 0;
-
-        border-block-start: var(--line-thickness) solid var(--color-text-bright);
-        transform-origin: 50% 50%;
-        margin-inline: auto;
-        inset-block-start: calc(50% - var(--line-thickness) / 2);
-        inset-inline: 0;
-    }
-
-    &::before {
-        transform: rotate(45deg);
-    }
-
-    &::after {
-        transform: rotate(-45deg);
     }
 }
