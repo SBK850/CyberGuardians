@@ -148,11 +148,8 @@ form input {
   animation: fill 3.2s linear forwards;
 }
 
-.btn-complete {
-  padding: 10px;
-  width: 50px;
-  color: #fff;
-  pointer-events: none;
+.btn.complete:after {
+  transform: scaleX(1);
 }
 
 /* Animation */
@@ -164,6 +161,7 @@ form input {
     transform: scaleX(1);
   }
 }
+
 
 /* ------------------------------- */
 
