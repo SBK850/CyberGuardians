@@ -2,8 +2,14 @@
 .site-navigation::after {
   background-color: red;
   z-index: 10000;
+
+  /* Comment out to debug */
   visibility: hidden;
 }
+
+/*
+  Content swaps between one to two columns based on content-width
+*/
 
 :root {
   --min-text-width: 34rem;
@@ -11,25 +17,34 @@
 }
 
 main {
+  /* already a flexbox container */
+
+  /* Attach animations and scope */
   timeline-scope: --content-width;
   animation: expand-content;
   animation-timeline: --content-width;
+
+  /* Attach animation timeline to all children */
   & > *,
   &::before,
   &::after {
     animation-timeline: --content-width;
   }
+
+  /* Now attach individual animation */
   &::before {
     animation-name: wall;
     --border-position: initial;
     background-position: 0% calc(50% + var(--spacing));
   }
+
   &::after {
     animation-name: kitten;
     background-image: initial;
   }
 }
 
+/* Swaps to a two-column layout when marker is in-view */
 @keyframes expand-content {
   0%,
   100% {
@@ -58,13 +73,18 @@ main {
 
 .left-content {
   animation-name: main-content;
+
+  /* Content width marker */
+  /* When this is in-view, the animations will trigger */
   &::after {
     content: "";
     position: fixed;
     top: 50%;
     inset-inline-start: var(--content-min-width);
+
     width: 1px;
     height: 50px;
+
     view-timeline: --content-width inline;
   }
 }
@@ -91,6 +111,10 @@ main {
   }
 }
 
+/*
+  Navigation swaps between hidden to expanded when there's enough space
+*/
+
 :root {
   timeline-scope: --expanded-navigation;
 }
@@ -98,7 +122,6 @@ main {
 .site-header {
   overflow: hidden;
 }
-
 
 /* Navigation */
 .site-navigation {
