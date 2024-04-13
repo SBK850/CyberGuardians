@@ -1,44 +1,33 @@
-let videoList = document.querySelectorAll(".video-list-container .list");
+// This function will be called when a video list item is clicked
+function changeVideo(src, title, listElement) {
+    // Update the main video source and title
+    let mainVideo = document.querySelector(".main-video-container .main-video");
+    let mainVideoTitle = document.querySelector(".main-video-container .main-video__title");
+    mainVideo.src = src;
+    mainVideoTitle.textContent = title;
 
-videoList.forEach((vid) => {
+    // Play the video
+    mainVideo.play();
+
+    // Scroll to the top of the page to bring the main video into view
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+
+    // Update the 'active' class for the current video
+    let videoList = document.querySelectorAll(".video-list-container .list");
+    videoList.forEach((vid) => {
+        vid.classList.remove("active");
+    });
+    listElement.classList.add("active");
+}
+
+// Set up the click event for each video list item
+document.querySelectorAll(".video-list-container .list").forEach((vid) => {
     vid.onclick = () => {
-        // Remove 'active' class from all list items first
-        videoList.forEach((remove) => {
-            remove.classList.remove("active");
-        });
-
-        // Add 'active' class to the clicked list item
-        vid.classList.add("active");
-
         // Get the video source and title from the clicked item
         let src = vid.querySelector(".list__video").src;
         let title = vid.querySelector(".list__title").textContent; // Use textContent for better performance and consistency
 
-        // Update the main video source
-        let mainVideo = document.querySelector(".main-video-container .main-video");
-        mainVideo.src = src;
-
-        // Play the video
-        mainVideo.play();
-
-        // Update the title in the main video container
-        document.querySelector(".main-video-container .main-video__title").textContent = title;
+        // Call the changeVideo function with the src, title, and clicked list item element
+        changeVideo(src, title, vid);
     };
 });
-
-function changeVideo(src, title) {
-    var mainVideo = document.getElementById('mainVideo');
-    var mainVideoTitle = document.querySelector('.main-video__title');
-
-    mainVideo.src = src;
-    mainVideoTitle.textContent = title;
-
-    // Optionally, play the video and scroll back to the main video section
-    mainVideo.play();
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-
-    // Update active class for current video
-    var lists = document.querySelectorAll('.list');
-    lists.forEach(list => list.classList.remove('active'));
-    event.currentTarget.classList.add('active');
-}
