@@ -1,37 +1,25 @@
+@import url("https://fonts.googleapis.com/css?family=Montserrat:400,700");
+
 form {
 	display: contents;
 }
 
-form input {
-	width: 70%;
+form input, #posterName, #posterDetails, #postContent {
+	width: 100%;
 	padding: 20px;
 	font-size: 25px;
-	outline: none;
-	background-color: white;
-	color: black;
-	margin: 0rem;
-	margin-bottom: 2rem;
-	border-radius: 1rem;
-}
-
-#content, #posterName, #posterDetails, #postContent {
-	color: white;
-	font-weight: 500;
-	font-size: 18px;
 	background-color: transparent;
+	color: white;
 	border: 2px solid #cc6666;
+	border-radius: 1rem;
+	margin-bottom: 2rem;
 	transition: all 0.3s;
-	padding: 13px;
-	margin-bottom: 15px;
-	width: 100%;
 	box-sizing: border-box;
-	outline: 0;
+	outline: none;
 }
 
-#content {
-	max-width: 420px;
-	margin: 50px auto;
-	font-family: "Arial", sans-serif; /* Adjusted for unused Montserrat */
+form input:focus, #posterName:focus, #posterDetails:focus, #postContent:focus {
+	border-color: #cc4949;
 }
 
 .profile-image img {
@@ -41,65 +29,56 @@ form input {
 	border: 2px solid #cc6666;
 	transition: all 0.3s;
 	display: block;
-	margin: 0 auto 15px auto;
+	margin: auto;
 }
 
-#posterName {
-	width: calc(100% - 26px); /* Adjusts width to account for padding */
+.inputGroup label {
 	display: block;
+	color: #3c454c;
+	background-color: #fff;
+	cursor: pointer;
+	padding: 12px 50px;
+	transition: color 200ms ease-in;
+	position: relative;
+	z-index: 2;
 }
 
-#posterName:focus, #posterDetails:focus, #postContent:focus {
-	border: 2px solid #cc4949;
+.inputGroup label:before, .inputGroup label:after {
+	content: "";
+	position: absolute;
+	transition: all 200ms ease-in;
 }
 
-#postContent {
-	max-height: 300px;
-	overflow-y: auto;
-	word-wrap: break-word;
+.inputGroup input:checked + label:before {
+	transform: scale(56);
+	opacity: 1;
 }
 
-.form {
-	padding: 0 16px;
-	max-width: 550px;
-	margin: 50px auto;
-	font-size: 18px;
-	font-weight: 600;
-	line-height: 36px;
-}
-
-code {
-	background-color: #9aa3ac;
-	padding: 0 8px;
+.inputGroup input:checked + label:after {
+	background-color: #54e0c7;
+	border-color: #54e0c7;
 }
 
 .btn {
 	background: transparent;
-	width: 200px;
-	position: relative;
 	padding: 15px;
 	color: #1ecd97;
-	cursor: pointer;
-	text-align: center;
-	text-transform: uppercase;
-	letter-spacing: 3px;
-	transition: all 500ms cubic-bezier(0.6, -0.28, 0.735, 0.045);
+	border: 2px solid #1ecd97;
 	border-radius: 4px;
 	font-weight: 600;
-	overflow: hidden;
-	border: 2px solid #1ecd97;
-	text-decoration: none;
+	text-transform: uppercase;
+	letter-spacing: 3px;
+	transition: all 500ms;
+	width: 200px;
+	text-align: center;
+	cursor: pointer;
 }
 
-#message-section, #warning-section {
-	display: none;
+.btn-fill:after {
+	animation: fill 3.2s linear forwards;
 }
 
-.bg-primary, .text-primary {
-	background: #0346f2;
-	color: #0346f2;
-}
-
-.card-x {
-	padding: 10px;
+@keyframes fill {
+	from { transform: scaleX(0); }
+	to { transform: scaleX(1); }
 }
