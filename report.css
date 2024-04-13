@@ -42,7 +42,6 @@ form input {
 
 #content, #posterName, #posterDetails, #postContent, #postImage {
     max-width: 420px;
-    margin: 50px auto;
     color: var(--color-main);
     background-color: var(--background-transparent);
     border: var(--border-main);
@@ -52,6 +51,7 @@ form input {
     width: 100%;
     box-sizing: border-box;
     outline: 0;
+    border-radius: 1rem;
 }
 
 #postContent {
