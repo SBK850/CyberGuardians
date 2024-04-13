@@ -35,11 +35,16 @@ main {
 }
 
 /* Styling for the hamburger icon */
+.hamburger-icon {
+  cursor: pointer;
+  position: relative; /* Ensure relative positioning for pseudo elements */
+  display: block;
+  font-size: 24px; /* Icon size */
+}
+
 .hamburger-icon:before {
   content: "\2630"; /* Unicode hamburger icon */
-  font-size: 24px; /* Icon size */
   display: block; /* Ensure it's a block element to catch clicks */
-  cursor: pointer; /* Pointer cursor on hover */
 }
 
 /* Toggle Navigation visibility */
@@ -48,7 +53,7 @@ main {
 }
 
 /* Change hamburger icon to 'X' when navigation is open */
-.toggle-navigation:checked + .hamburger-icon:before {
+.toggle-navigation:checked + label.hamburger-icon:before {
   content: "\2715"; /* Unicode 'X' */
 }
 
