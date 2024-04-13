@@ -7,6 +7,13 @@
     --border-radius-main: 1rem;
     --color-main: #fff;
     --color-black: #000;
+	--text-color: #ffffff;
+    --background-color: #275efe;
+    --icon-stroke-color: #ffffff;
+    --stroke-opacity: rgba(255, 255, 255, 0.8);
+    --fill-opacity-low: rgba(255, 255, 255, 0.08);
+    --fill-opacity-none: rgba(255, 255, 255, 0);
+    --fill-opacity-medium: rgba(255, 255, 255, 0.2);
 }
 
 @import url("https://fonts.googleapis.com/css?family=Montserrat:400,700");
@@ -117,154 +124,114 @@ form input {
 }
 
 .button-tx {
-	--text: #ffffff;
-	--background: #275efe;
-	--background-opacity: 1;
-	--handle-stroke: #{rgba(#fff, 0.8)};
-	--handle-fill: #{rgba(#fff, 0.08)};
-	--handle-blur: 2;
-	--drop-stroke: #{rgba(#fff, 0.2)};
-	--drop-fill: #{rgba(#fff, 0)};
-	--icon-stroke: #ffffff;
-	--icon-rotate: 0;
-	--icon-scale: 1;
-	--icon-y: 0;
-	--icon-offset: 16.8;
-	--handle-drop-opacity: 0;
-	--default-opacity: 1;
-	--default-x: 0;
-	--default-scale: 1;
-	--progress-opacity: 0;
-	--progress-scale: 0.75;
-	--success-opacity: 0;
-	--success-x: 0;
-	--success-scale: 0.75;
-	display: block;
-	cursor: pointer;
-	position: relative;
-	text-align: center;
-	outline: none;
-	border: none;
-	overflow: hidden;
-	padding: 8px 0;
-	margin: 0;
-	width: 20rem;
-	line-height: 30px;
-	font-family: inherit;
-	font-weight: 600;
-	border-radius: 16px;
-	color: var(--text);
-	background: var(--background);
-	transform: scale(var(--button-scale, 1)) translateZ(0);
-	transition: transform 0.15s;
-	-webkit-appearance: none;
-	-webkit-tap-highlight-color: transparent;
-	.handle-tx,
-	.progress-tx,
-	.success-tx,
-	.drop-tx {
-		position: absolute;
-		left: var(--left, auto);
-		right: var(--right, auto);
-		top: var(--top, auto);
-	}
-	.handle-tx {
-		-webkit-backdrop-filter: blur(calc(var(--handle-blur) * 1px));
-		backdrop-filter: blur(calc(var(--handle-blur) * 1px));
-	}
-	.handle-tx,
-	.drop-tx {
-		--top: 8px;
-		z-index: 1;
-		border-radius: 11px;
-		opacity: var(--handle-drop-opacity);
-		pointer-events: var(--handle-drop-pointer, auto);
-		svg {
-			display: block;
-			width: var(--svg-size, 40px);
-			height: var(--svg-size, 40px);
-			stroke-width: 1px;
-			stroke: var(--stroke, var(--handle-stroke));
-			fill: var(--fill, var(--handle-fill));
-			&.background-tx {
-				margin: -5px;
-				opacity: var(--background-opacity);
-			}
-			&.icon-tx {
-				--svg-size: 20px;
-				--fill: none;
-				--stroke: var(--icon-stroke);
-				position: absolute;
-				left: 5px;
-				top: 5px;
-				stroke-width: 1.25;
-				stroke-linecap: round;
-				stroke-linejoin: round;
-				stroke-dasharray: 8.5;
-				stroke-dashoffset: var(--icon-offset);
-				transform: translateY(calc(var(--icon-y) * 1px)) rotate(calc(var(--icon-rotate) * 1deg))
-					scale(var(--icon-scale)) translateZ(0);
-			}
-		}
-	}
-	.handle-tx {
-		--left: 8px;
-	}
-	.drop-tx {
-		--right: 8px;
-		--stroke: var(--drop-stroke);
-		--fill: var(--drop-fill);
-	}
-	.default-tx,
-	.progress-tx,
-	.success-tx {
-		display: block;
-		font-size: var(--font-size, 14px);
-		opacity: var(--opacity, var(--default-opacity));
-		transform: translateX(calc(var(--x, var(--default-x)) * 1px)) scale(var(--scale, var(--default-scale)))
-			translateZ(0);
-	}
-	.progress-tx,
-	.success-tx {
-		--left: 0;
-		--right: 0;
-		--top: 8px;
-	}
-	.progress-tx {
-		--font-size: 11px;
-		--opacity: var(--progress-opacity);
-		--scale: var(--progress-scale);
-	}
-	.success-tx {
-		--font-size: 14px;
-		--opacity: var(--success-opacity);
-		--x: var(--success-x);
-		--scale: var(--success-scale);
-	}
-	&:not(.active) {
-		--handle-drop-pointer: none;
-		&:active {
-			--button-scale: 0.975;
-		}
-	}
+    --handle-blur: 2px;
+    --icon-offset: 16.8;
+    display: block;
+    cursor: pointer;
+    position: relative;
+    text-align: center;
+    outline: none;
+    border: none;
+    overflow: hidden;
+    padding: 8px 0;
+    margin: 0;
+    width: 20rem;
+    line-height: 30px;
+    font-family: inherit;
+    font-weight: 600;
+    border-radius: 16px;
+    color: var(--text-color);
+    background: var(--background-color);
+    transform: scale(var(--button-scale, 1));
+    transition: transform 0.15s;
+    -webkit-appearance: none;
+    -webkit-tap-highlight-color: transparent;
 }
 
-#message-section {
-	display: none;
+.handle-tx,
+.progress-tx,
+.success-tx,
+.drop-tx {
+    position: absolute;
+    top: 8px;
+    opacity: 0; /* Default state; override as needed */
+}
+
+.handle-tx,
+.drop-tx {
+    z-index: 1;
+    border-radius: 11px;
+    backdrop-filter: blur(var(--handle-blur));
+}
+
+svg {
+    display: block;
+    width: 40px;
+    height: 40px;
+    stroke-width: 1px;
+    stroke: var(--stroke-opacity);
+    fill: var(--fill-opacity-low);
+}
+
+.icon-tx {
+    --svg-size: 20px;
+    width: var(--svg-size);
+    height: var(--svg-size);
+    stroke: var(--icon-stroke-color);
+    position: absolute;
+    left: 5px;
+    top: 5px;
+    stroke-width: 1.25;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    stroke-dasharray: 8.5;
+    stroke-dashoffset: var(--icon-offset);
+    transform: translateY(var(--icon-y, 0)) rotate(var(--icon-rotate, 0deg)) scale(var(--icon-scale, 1));
+}
+
+.handle-tx {
+    left: 8px;
+}
+
+.drop-tx {
+    right: 8px;
+    stroke: var(--fill-opacity-medium);
+    fill: var(--fill-opacity-none);
+}
+
+.default-tx,
+.progress-tx,
+.success-tx {
+    display: block;
+    font-size: 14px; /* Default size, override in specific classes if needed */
+    transform: translateX(0) scale(1);
+}
+
+.progress-tx {
+    font-size: 11px;
+}
+
+&:not(.active) {
+    pointer-events: none; /* Use pointer-events to control interaction instead of custom properties */
+    &:active {
+        --button-scale: 0.975;
+    }
+}
+
+#message-section,
+#warning-section {
+    display: none;
+}
+
+.bg-primary,
+.text-primary {
+    color: #0346f2;
 }
 
 .bg-primary {
-	background: #0346f2;
-}
-
-.text-primary {
-	color: #0346f2;
+    background: #0346f2;
 }
 
 .card-x {
-	padding: 10px;
-}
-
-#warning-section {
-	display: none;
+    padding: 10px;
 }
