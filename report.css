@@ -74,32 +74,6 @@ code {
 }
 
 .button-tx {
-    --text: #ffffff;
-    --background: #275efe;
-    /* Additional styles for the button */
-}
-
-#message-section {
-    display: none;
-}
-
-.bg-primary {
-    background: #0346f2;
-}
-
-.text-primary {
-    color: #0346f2;
-}
-
-.card-x {
-    padding: 10px;
-}
-
-#warning-section {
-    display: none;
-}
-
-.button-tx {
 	--text: #ffffff;
 	--background: #275efe;
 	--background-opacity: 1;
