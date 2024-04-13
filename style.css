@@ -70,7 +70,7 @@ main {
 @keyframes kitten {
   0%,
   100% {
-    background-image: url("https://assets.codepen.io/197359/kitten-peek-transparent.png");
+    background-image: url("https://raw.githubusercontent.com/SBK850/CyberGuardians/main/images/cyberguardians-logo-au.png");
     inset-inline-start: calc(50vw - calc(var(--image-width) * var(--image-clip-offset)));
     transform: none;
     width: 50%;
