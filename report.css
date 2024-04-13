@@ -1,0 +1,105 @@
+form {
+	display: contents;
+}
+
+form input {
+	width: 70%;
+	padding: 20px;
+	font-size: 25px;
+	outline: none;
+	background-color: white;
+	color: black;
+	margin: 0rem;
+	margin-bottom: 2rem;
+	border-radius: 1rem;
+}
+
+#content, #posterName, #posterDetails, #postContent {
+	color: white;
+	font-weight: 500;
+	font-size: 18px;
+	background-color: transparent;
+	border: 2px solid #cc6666;
+	transition: all 0.3s;
+	padding: 13px;
+	margin-bottom: 15px;
+	width: 100%;
+	box-sizing: border-box;
+	outline: 0;
+}
+
+#content {
+	max-width: 420px;
+	margin: 50px auto;
+	font-family: "Arial", sans-serif; /* Adjusted for unused Montserrat */
+}
+
+.profile-image img {
+	width: 100px;
+	height: 100px;
+	border-radius: 50%;
+	border: 2px solid #cc6666;
+	transition: all 0.3s;
+	display: block;
+	margin: 0 auto 15px auto;
+}
+
+#posterName {
+	width: calc(100% - 26px); /* Adjusts width to account for padding */
+	display: block;
+}
+
+#posterName:focus, #posterDetails:focus, #postContent:focus {
+	border: 2px solid #cc4949;
+}
+
+#postContent {
+	max-height: 300px;
+	overflow-y: auto;
+	word-wrap: break-word;
+}
+
+.form {
+	padding: 0 16px;
+	max-width: 550px;
+	margin: 50px auto;
+	font-size: 18px;
+	font-weight: 600;
+	line-height: 36px;
+}
+
+code {
+	background-color: #9aa3ac;
+	padding: 0 8px;
+}
+
+.btn {
+	background: transparent;
+	width: 200px;
+	position: relative;
+	padding: 15px;
+	color: #1ecd97;
+	cursor: pointer;
+	text-align: center;
+	text-transform: uppercase;
+	letter-spacing: 3px;
+	transition: all 500ms cubic-bezier(0.6, -0.28, 0.735, 0.045);
+	border-radius: 4px;
+	font-weight: 600;
+	overflow: hidden;
+	border: 2px solid #1ecd97;
+	text-decoration: none;
+}
+
+#message-section, #warning-section {
+	display: none;
+}
+
+.bg-primary, .text-primary {
+	background: #0346f2;
+	color: #0346f2;
+}
+
+.card-x {
+	padding: 10px;
+}
