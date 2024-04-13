@@ -64,10 +64,10 @@ main {
 @keyframes kitten {
   0%,
   100% {
-    background-image: url("https://sbk850.github.io/images/cyberguardians-logo-ax.png");
-    inset-inline-start: calc(50vw - calc(var(--image-width) * var(--image-clip-offset)));
-    transform: none;
-    width: 50%;
+    background-image: url("https://sbk850.github.io/images/cyberguardians-logo-ax.png") !important;
+    inset-inline-start: calc(50vw - calc(var(--image-width) * var(--image-clip-offset))) !important;
+    transform: none !important;
+    width: 50% !important;
   }
 }
 
