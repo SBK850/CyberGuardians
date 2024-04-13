@@ -114,12 +114,6 @@
     }
 }
 
-main {
-    & > * {
-        margin-inline-end: initial !important;
-    }
-}
-
 h2 {
     text-align: center;
 }
