@@ -80,6 +80,7 @@ main::after {
   }
 }
 
+/* Content specific animations */
 .left-content {
   animation-name: main-content;
 }
@@ -143,17 +144,18 @@ main::after {
   }
 }
 
-/* Menu toggle styles */
-.close-icon, .warning, .site-navigation {
-  display: none; /* Default state for close-icon and warning */
-}
 
+/* Menu close button, display:none unless menu opened */
 .close-icon {
+  display: none;
   position: fixed;
   z-index: 100;
 }
 
-/* Open/close animation and general navigation styling */
+/* Open/close animation */
+
+/* Menu styling */
+/* Since the custom props are set inside the animation (which triggers on large screens), the defaults will be used on small screens */
 .navigation-animation-wrapper {
   background-color: var(--nav-wrapper-background, var(--color-background));
   display: var(--nav-wrapper-display, flex);
@@ -162,14 +164,21 @@ main::after {
   inset: 0;
   transform: var(--nav-wrapper-transform, translateX(100%));
   z-index: 100;
-  position: fixed; /* Simplify repeated position property */
 }
 
-/* Styles when navigation is open */
+/* On open */
+
 html:has(.open-navigation:checked) {
   overflow: hidden;
 
+  /* 
+    expand-navigation is automatically triggered and the element becomes visible
+    due to the properties we are applying that move the marker within the viewport
+  */
   .navigation-animation-wrapper {
+    background-color: var(--color-background);
+    display: flex;
+    position: fixed;
     transition: transform 0.25s ease-out;
     transform: none;
     width: 100%;
@@ -177,10 +186,10 @@ html:has(.open-navigation:checked) {
 
   .nav-list {
     flex-direction: column;
-  }
 
-  .nav-list li {
-    margin: 0;
+    & li {
+      margin: 0;
+    }
   }
 
   .close-icon {
@@ -188,55 +197,93 @@ html:has(.open-navigation:checked) {
   }
 }
 
-/* Animation on navigation close */
-html:has(.close-navigation:checked) .navigation-animation-wrapper {
-  animation: slide-out 0.25s ease-out;
+/* On close */
+html:has(.close-navigation:checked) {
+  .navigation-animation-wrapper {
+    animation: slide-out 0.25s ease-out;
+  }
+
+  .nav-list {
+    animation: opacity-out 0.25s ease-out;
+  }
 }
 
-.nav-list {
-  animation: opacity-out 0.25s ease-out; /* Apply to all .nav-list to prevent redundancy */
-}
+/* 
+  Because we're swapping non-animatable properties, we'll use a keyframe animation
+  to first animate the animatable properties while preserving the layout
+  and then, at the last moment, allow the non-animatable properties to swap out
+*/
 
-/* Keyframe animations for navigation transitions */
 @keyframes slide-out {
-  from {
+  0% {
     transform: none;
   }
-  to {
+
+  100% {
     transform: translateX(100%);
+  }
+
+  /* Preserve properties until right before the end */
+  0%,
+  99% {
+    background-color: var(--color-background);
+    display: flex;
+    position: fixed;
+    width: 100%;
   }
 }
 
 @keyframes opacity-out {
-  from {
+  0% {
     opacity: 1;
   }
-  to {
+
+  100% {
     opacity: 0;
   }
+
+  /* Preserve properties until right before the end */
+  0%,
+  99% {
+    flex-direction: column;
+  }
 }
 
-/* Fallback and enhancements for non-supporting browsers */
 @supports not (animation-timeline: view(inline)) {
-  .warning, .site-navigation {
+  /* Show warning on non-supporting browsers */
+  .warning {
     display: block;
+    font-size: 0.8em;
+    text-align: center;
+    padding-inline: var(--image-aware-padding);
   }
 
+  /* Smooth menu transition on non-supporting browsers */
+  /* Just because it doesn't work doesn't mean it can't be pretty #me */
   .site-navigation {
     transition: 0.25s ease-in-out;
-    visibility: visible; /* Toggle visibility */
+    visibility: visible;
   }
 }
 
-/* Structural styles */
+body {
+  padding-right: initial;
+}
+
 .flex-wrapper {
   display: flex;
   flex-flow: row nowrap;
 }
 
-.container-s, .custom-container {
+.container-s {
+  /* display: none; */
   align-items: center;
+}
+
+.custom-container {
   position: relative;
+  /* display: flex !important; */
+  justify-content: space-around;
 }
 
 .custom-container .custom-card {
@@ -251,10 +298,21 @@ html:has(.close-navigation:checked) .navigation-animation-wrapper {
   transition: 0.5s;
 }
 
-.custom-container .custom-card:hover {
+/* .custom-container .custom-card:hover {
   transform: translateY(-10px);
   box-shadow: 0 15px 35px rgba(0, 0, 0, 0.5);
-}
+} */
+
+/* .custom-container .custom-card:before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -50%;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 1;
+} */
 
 .custom-percent {
   position: relative;
@@ -269,6 +327,8 @@ html:has(.close-navigation:checked) .navigation-animation-wrapper {
 
 .custom-percent .custom-num {
   position: absolute;
+  top: 0;
+  left: 0;
   width: 100%;
   height: 100%;
   display: flex;
@@ -291,6 +351,7 @@ html:has(.close-navigation:checked) .navigation-animation-wrapper {
 
 .custom-percent .custom-num h2 span {
   color: #777;
+  /* font-size: 24px; */
   transition: 0.5s;
 }
 
@@ -299,6 +360,7 @@ html:has(.close-navigation:checked) .navigation-animation-wrapper {
 }
 
 .custom-text {
+  position: relative;
   color: #777;
   margin-top: 20px;
   font-weight: 700;
