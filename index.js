@@ -1,17 +1,22 @@
-document.addEventListener("DOMContentLoaded", function () {
-    const openButton = document.querySelector('.open-navigation');
-    const closeButton = document.querySelector('.close-navigation');
-    const navigation = document.querySelector('.site-navigation');
-
-    openButton.addEventListener('change', function () {
-        if (this.checked) {
-            navigation.style.visibility = 'visible';
+document.addEventListener('DOMContentLoaded', function() {
+    const toggle = document.querySelector('.toggle-navigation');
+    const navLinks = document.querySelectorAll('.nav-list a');
+  
+    // Close navigation when a link is clicked
+    navLinks.forEach(link => {
+      link.addEventListener('click', () => {
+        if (toggle.checked) {
+          toggle.checked = false; // Uncheck the checkbox, hiding the navigation
         }
+      });
     });
-
-    closeButton.addEventListener('change', function () {
-        if (this.checked) {
-            navigation.style.visibility = 'hidden';
-        }
+  
+    // Optional: Close navigation when clicking outside
+    document.addEventListener('click', function(event) {
+      const withinNav = event.target.closest('.site-navigation') || event.target.closest('.hamburger-icon');
+      if (!withinNav && toggle.checked) {
+        toggle.checked = false;
+      }
     });
-});
+  });
+  
