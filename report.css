@@ -110,9 +110,9 @@ form input {
 	margin-bottom: 15px;
 	width: 100%;
 	box-sizing: border-box;
-	max-height: 300px;
-	overflow-y: auto;
-	word-wrap: break-word; 
+	max-height: 300px; /* Maximum height before scrolling */
+	overflow-y: auto; /* Allows scrolling for overflow content */
+	word-wrap: break-word; /* Ensures long words do not overflow */
 }
 /* ............................... */
 
