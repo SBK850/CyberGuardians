@@ -2,19 +2,19 @@ document.addEventListener('DOMContentLoaded', function() {
     const toggle = document.querySelector('.toggle-navigation');
     const navLinks = document.querySelectorAll('.nav-list a');
   
-    // Close navigation when a link is clicked
+    // Event listener for navigation links
     navLinks.forEach(link => {
       link.addEventListener('click', () => {
         if (toggle.checked) {
-          toggle.checked = false; // Uncheck the checkbox, hiding the navigation
+          toggle.checked = false;
         }
       });
     });
   
-    // Optional: Close navigation when clicking outside
+    // This listens for any click that is not on the nav or icon to close the nav
     document.addEventListener('click', function(event) {
-      const withinNav = event.target.closest('.site-navigation') || event.target.closest('.hamburger-icon');
-      if (!withinNav && toggle.checked) {
+      const isClickInsideNav = event.target.closest('.site-navigation') || event.target.closest('.hamburger-icon');
+      if (!isClickInsideNav && toggle.checked) {
         toggle.checked = false;
       }
     });
