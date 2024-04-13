@@ -104,6 +104,7 @@ form input {
     font-weight: 600;
     overflow: hidden;
     border: var(--border-main);
+    background: transparent;
 }
 
 /* Animation */
