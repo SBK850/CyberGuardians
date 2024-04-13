@@ -97,106 +97,99 @@ form input {
 
 /* ............................... */
 
+/* Input Group */
 .inputGroup {
 	background-color: #fff;
-	display: block;
 	margin: 10px 0;
 	position: relative;
-
-	label {
-		padding: 12px 50px;
-		width: 100%;
-		display: block;
-		text-align: left;
-		color: #3c454c;
-		cursor: pointer;
-		position: relative;
-		z-index: 2;
-		transition: color 200ms ease-in;
-		overflow: hidden;
-
-		&:before {
-			width: 10px;
-			height: 10px;
-			border-radius: 50%;
-			content: "";
-			background-color: #5562eb;
-			position: absolute;
-			left: 50%;
-			top: 50%;
-			transform: translate(-50%, -50%) scale3d(1, 1, 1);
-			transition: all 300ms cubic-bezier(0.4, 0, 0.2, 1);
-			opacity: 0;
-			z-index: -1;
-		}
-
-		&:after {
-			width: 32px;
-			height: 32px;
-			content: "";
-			border: 2px solid #d1d7dc;
-			background-color: #fff;
-			background-image: url("data:image/svg+xml,%3Csvg width='32' height='32' viewBox='0 0 32 32' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M5.414 11L4 12.414l5.414 5.414L20.828 6.414 19.414 5l-10 10z' fill='%23fff' fill-rule='nonzero'/%3E%3C/svg%3E ");
-			background-repeat: no-repeat;
-			background-position: 2px 3px;
-			border-radius: 50%;
-			z-index: 2;
-			position: absolute;
-			right: 30px;
-			top: 50%;
-			transform: translateY(-50%);
-			cursor: pointer;
-			transition: all 200ms ease-in;
-		}
-	}
-
-	input:checked ~ label {
-		color: #fff;
-
-		&:before {
-			transform: translate(-50%, -50%) scale3d(56, 56, 1);
-			opacity: 1;
-		}
-
-		&:after {
-			background-color: #54e0c7;
-			border-color: #54e0c7;
-		}
-	}
-
-	input {
-		width: 32px;
-		height: 32px;
-		order: 1;
-		z-index: 2;
-		position: absolute;
-		right: 30px;
-		top: 50%;
-		transform: translateY(-50%);
-		cursor: pointer;
-		visibility: hidden;
-	}
 }
 
+.inputGroup label {
+	display: block;
+	padding: 12px 50px;
+	width: 100%;
+	text-align: left;
+	color: #3c454c;
+	cursor: pointer;
+	position: relative;
+	z-index: 2;
+	transition: color 200ms ease-in;
+	overflow: hidden;
+}
+
+.inputGroup label:before {
+	content: "";
+	width: 10px;
+	height: 10px;
+	border-radius: 50%;
+	background-color: #5562eb;
+	position: absolute;
+	left: 50%;
+	top: 50%;
+	transform: translate(-50%, -50%) scale3d(1, 1, 1);
+	transition: all 300ms cubic-bezier(0.4, 0, 0.2, 1);
+	opacity: 0;
+	z-index: -1;
+}
+
+.inputGroup label:after {
+	content: "";
+	width: 32px;
+	height: 32px;
+	border: 2px solid #d1d7dc;
+	background-color: #fff;
+	background-image: url("data:image/svg+xml,%3Csvg width='32' height='32' viewBox='0 0 32 32' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M5.414 11L4 12.414l5.414 5.414L20.828 6.414 19.414 5l-10 10z' fill='%23fff' fill-rule='nonzero'/%3E%3C/svg%3E ");
+	background-repeat: no-repeat;
+	background-position: 2px 3px;
+	border-radius: 50%;
+	position: absolute;
+	right: 30px;
+	top: 50%;
+	transform: translateY(-50%);
+	cursor: pointer;
+	transition: all 200ms ease-in;
+	z-index: 2;
+}
+
+.inputGroup input {
+	width: 32px;
+	height: 32px;
+	order: 1;
+	z-index: 2;
+	position: absolute;
+	right: 30px;
+	top: 50%;
+	transform: translateY(-50%);
+	cursor: pointer;
+	visibility: hidden;
+}
+
+.inputGroup input:checked ~ label {
+	color: #fff;
+}
+
+.inputGroup input:checked ~ label:before {
+	transform: translate(-50%, -50%) scale3d(56, 56, 1);
+	opacity: 1;
+}
+
+.inputGroup input:checked ~ label:after {
+	background-color: #54e0c7;
+	border-color: #54e0c7;
+}
+
+/* Form */
 .form {
 	padding: 0 16px;
 	max-width: 550px;
 	margin: 50px auto;
-	font-size: 18px;
+	font: 18px/36px "Montserrat", Arial, sans-serif;
 	font-weight: 600;
-	line-height: 36px;
-}
-
-code {
-	background-color: #9aa3ac;
-	padding: 0 8px;
 }
 
 /* Button */
 .btn {
-	background: transparent;
 	width: 200px;
-	position: relative;
 	padding: 15px;
 	color: #1ecd97;
 	cursor: pointer;
@@ -206,18 +199,12 @@ code {
 	transition: all 500ms cubic-bezier(0.6, -0.28, 0.735, 0.045);
 	border-radius: 4px;
 	font-weight: 600;
-	overflow: hidden;
 	border: 2px solid #1ecd97;
 	text-decoration: none;
+	position: relative;
 }
 
-/* In Progress Button */
-.btn-progress {
-	width: 500px;
-	color: transparent;
-}
-
-.btn-fill:after {
+.btn:after {
 	content: "";
 	background: #1ecd97;
 	position: absolute;
@@ -231,7 +218,6 @@ code {
 	animation: fill 3.2s linear forwards;
 }
 
-/* Button Complete */
 .btn-complete {
 	padding: 10px;
 	width: 50px;
@@ -240,8 +226,8 @@ code {
 }
 
 .btn-complete:after {
-	font-family: FontAwesome;
 	content: "\f00c";
+	font-family: FontAwesome;
 	color: #fff;
 	height: 100%;
 	padding-left: 3px;
@@ -265,23 +251,24 @@ code {
 	}
 }
 
+/* ------------------------------- */
+
 .button-tx {
 	--text: #ffffff;
 	--background: #275efe;
-	--background-opacity: 1;
-	--handle-stroke: #{rgba(#fff, 0.8)};
-	--handle-fill: #{rgba(#fff, 0.08)};
-	--handle-blur: 2;
-	--drop-stroke: #{rgba(#fff, 0.2)};
-	--drop-fill: #{rgba(#fff, 0)};
+	--handle-stroke: rgba(255, 255, 255, 0.8);
+	--handle-fill: rgba(255, 255, 255, 0.08);
+	--handle-blur: 2px;
+	--drop-stroke: rgba(255, 255, 255, 0.2);
+	--drop-fill: rgba(255, 255, 255, 0);
 	--icon-stroke: #ffffff;
-	--icon-rotate: 0;
+	--icon-rotate: 0deg;
 	--icon-scale: 1;
 	--icon-y: 0;
-	--icon-offset: 16.8;
+	--icon-offset: 16.8px;
 	--handle-drop-opacity: 0;
 	--default-opacity: 1;
-	--default-x: 0;
+	--default-x: 0px;
 	--default-scale: 1;
 	--progress-opacity: 0;
 	--progress-scale: 0.75;
@@ -308,97 +295,105 @@ code {
 	transition: transform 0.15s;
 	-webkit-appearance: none;
 	-webkit-tap-highlight-color: transparent;
-	.handle-tx,
-	.progress-tx,
-	.success-tx,
-	.drop-tx {
-		position: absolute;
-		left: var(--left, auto);
-		right: var(--right, auto);
-		top: var(--top, auto);
-	}
-	.handle-tx {
-		-webkit-backdrop-filter: blur(calc(var(--handle-blur) * 1px));
-		backdrop-filter: blur(calc(var(--handle-blur) * 1px));
-	}
-	.handle-tx,
-	.drop-tx {
-		--top: 8px;
-		z-index: 1;
-		border-radius: 11px;
-		opacity: var(--handle-drop-opacity);
-		pointer-events: var(--handle-drop-pointer, auto);
-		svg {
-			display: block;
-			width: var(--svg-size, 40px);
-			height: var(--svg-size, 40px);
-			stroke-width: 1px;
-			stroke: var(--stroke, var(--handle-stroke));
-			fill: var(--fill, var(--handle-fill));
-			&.background-tx {
-				margin: -5px;
-				opacity: var(--background-opacity);
-			}
-			&.icon-tx {
-				--svg-size: 20px;
-				--fill: none;
-				--stroke: var(--icon-stroke);
-				position: absolute;
-				left: 5px;
-				top: 5px;
-				stroke-width: 1.25;
-				stroke-linecap: round;
-				stroke-linejoin: round;
-				stroke-dasharray: 8.5;
-				stroke-dashoffset: var(--icon-offset);
-				transform: translateY(calc(var(--icon-y) * 1px)) rotate(calc(var(--icon-rotate) * 1deg))
-					scale(var(--icon-scale)) translateZ(0);
-			}
-		}
-	}
-	.handle-tx {
-		--left: 8px;
-	}
-	.drop-tx {
-		--right: 8px;
-		--stroke: var(--drop-stroke);
-		--fill: var(--drop-fill);
-	}
-	.default-tx,
-	.progress-tx,
-	.success-tx {
-		display: block;
-		font-size: var(--font-size, 14px);
-		opacity: var(--opacity, var(--default-opacity));
-		transform: translateX(calc(var(--x, var(--default-x)) * 1px)) scale(var(--scale, var(--default-scale)))
-			translateZ(0);
-	}
-	.progress-tx,
-	.success-tx {
-		--left: 0;
-		--right: 0;
-		--top: 8px;
-	}
-	.progress-tx {
-		--font-size: 11px;
-		--opacity: var(--progress-opacity);
-		--scale: var(--progress-scale);
-	}
-	.success-tx {
-		--font-size: 14px;
-		--opacity: var(--success-opacity);
-		--x: var(--success-x);
-		--scale: var(--success-scale);
-	}
-	&:not(.active) {
-		--handle-drop-pointer: none;
-		&:active {
-			--button-scale: 0.975;
-		}
-	}
-}
+  }
+  
+  .button-tx .handle-tx,
+  .button-tx .progress-tx,
+  .button-tx .success-tx,
+  .button-tx .drop-tx {
+	position: absolute;
+  }
+  
+  .button-tx .handle-tx {
+	left: 8px;
+	right: auto;
+	top: 8px;
+	-webkit-backdrop-filter: blur(var(--handle-blur));
+	backdrop-filter: blur(var(--handle-blur));
+	z-index: 1;
+	border-radius: 11px;
+	opacity: var(--handle-drop-opacity);
+	pointer-events: auto;
+  }
+  
+  .button-tx .drop-tx {
+	left: auto;
+	right: 8px;
+	top: 8px;
+	--stroke: var(--drop-stroke);
+	--fill: var(--drop-fill);
+  }
+  
+  .button-tx .handle-tx svg,
+  .button-tx .drop-tx svg {
+	display: block;
+	width: 40px;
+	height: 40px;
+	stroke-width: 1px;
+	stroke: var(--stroke);
+	fill: var(--fill);
+  }
+  
+  .button-tx .handle-tx svg.background-tx {
+	margin: -5px;
+  }
+  
+  .button-tx .handle-tx svg.icon-tx {
+	width: 20px;
+	height: 20px;
+	fill: none;
+	stroke: var(--icon-stroke);
+	position: absolute;
+	left: 5px;
+	top: 5px;
+	stroke-width: 1.25px;
+	stroke-linecap: round;
+	stroke-linejoin: round;
+	stroke-dasharray: 8.5;
+	stroke-dashoffset: var(--icon-offset);
+	transform: translateY(var(--icon-y)) rotate(var(--icon-rotate)) scale(var(--icon-scale)) translateZ(0);
+  }
+  
+  .button-tx .default-tx,
+  .button-tx .progress-tx,
+  .button-tx .success-tx {
+	display: block;
+	font-size: var(--font-size, 14px);
+	opacity: var(--opacity, var(--default-opacity));
+	transform: translateX(var(--x, var(--default-x))) scale(var(--scale, var(--default-scale))) translateZ(0);
+  }
+  
+  .button-tx .progress-tx {
+	font-size: 11px;
+	opacity: var(--progress-opacity);
+	--left: 0;
+	--right: 0;
+	--top: 8px;
+	--scale: var(--progress-scale);
+  }
+  
+  .button-tx .success-tx {
+	font-size: 14px;
+	opacity: var(--success-opacity);
+	--left: 0;
+	--right: 0;
+	--top: 8px;
+	--x: var(--success-x);
+	--scale: var(--success-scale);
+  }
+  
+  .button-tx:not(.active) {
+	--handle-drop-pointer: none;
+  }
+  
+  .button-tx:not(.active):active {
+	--button-scale: 0.975;
+  }
 
-#message-section {
+  /* ----------- */
+
+#message-section,
+#warning-section {
 	display: none;
 }
 
@@ -412,8 +407,4 @@ code {
 
 .card-x {
 	padding: 10px;
-}
-
-#warning-section {
-	display: none;
 }
