@@ -94,21 +94,21 @@ document.addEventListener('DOMContentLoaded', () => {
                 },
                 body: JSON.stringify({ url: postUrl }),
             });
-    
+
             if (!response.ok) {
                 throw new Error(`Network response was not ok, status: ${response.status}`);
             }
-    
+
             const jsonData = await response.json();
             const postData = jsonData[0];
             const carouselItemId = postData.CarouselItemID;
-    
+
             // Update the content on the page
             document.getElementById('profileImageUrl').src = postData.ProfilePictureURL || 'placeholder-image-url.png';
             document.getElementById('posterName').textContent = postData.FirstName + " " + postData.LastName || 'Name not available';
             document.getElementById('posterDetails').textContent = `Age: ${postData.Age} | Education: ${postData.Education}` || 'Details not available';
             document.getElementById('postContent').textContent = postData.Content || 'Content not available';
-    
+
             const postImage = document.getElementById('postImage');
             if (postData.UploadedImageData) {
                 postImage.src = `data:image/png;base64,${postData.UploadedImageData}`;
@@ -117,23 +117,23 @@ document.addEventListener('DOMContentLoaded', () => {
             } else {
                 postImage.style.display = 'none';
             }
-    
+
             contentContainer.style.display = 'block';
-    
+
             let textToxicityPromise = postData.Content ? analyseContentForToxicity(postData.Content, 'textToxicityScore') : Promise.resolve(0);
-    
+
             let imageToxicityPromise = postData.UploadedImageData ? callBackendForImageProcessing(postData.UploadedImageData) : Promise.resolve(0);
-    
+
             const [textToxicityPercentage, imageToxicityPercentage] = await Promise.all([textToxicityPromise, imageToxicityPromise]);
-    
+
             updateToxicityCircle(textToxicityPercentage, 'textToxicityScore');
             updateToxicityCircle(imageToxicityPercentage, 'imageToxicityScore');
-    
+
             const customContainer = document.querySelector('.custom-container');
             if (textToxicityPercentage > 0 || imageToxicityPercentage > 0) {
                 customContainer.style.display = 'block';
             }
-    
+
             if (Math.max(textToxicityPercentage, imageToxicityPercentage) >= 85) {
                 displayWarningCard();
                 document.getElementById('rejectButton').addEventListener('click', rejectToxicContent);
@@ -142,19 +142,19 @@ document.addEventListener('DOMContentLoaded', () => {
                     confirmButton.onclick = function () { confirmToxicContent(carouselItemId); };
                 }
             }
-    
+
             $(".btn").addClass('btn-complete');
             setTimeout(() => $(".input").hide(), 3000);
         } catch (error) {
             console.error(error);
         }
-    }    
+    }
 
     function updateToxicityCircle(percentage, elementId) {
         const scoreElement = document.getElementById(elementId);
         if (!scoreElement) {
             console.error('No element with ID:', elementId);
-            return; 
+            return;
         }
         scoreElement.textContent = `${percentage}%`;
 
@@ -167,7 +167,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const circle = customPercentElement.querySelector('circle:nth-child(2)');
         if (!circle) {
             console.error('No circle found for element ID:', elementId);
-            return; 
+            return;
         }
 
         const radius = circle.r.baseVal.value;
@@ -178,11 +178,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
         let color;
         if (percentage <= 50) {
-            color = 'green'; 
+            color = 'green';
         } else if (percentage > 50 && percentage <= 75) {
-            color = 'orange'; 
+            color = 'orange';
         } else {
-            color = 'red'; 
+            color = 'red';
         }
         circle.style.stroke = color;
     }
@@ -197,20 +197,20 @@ document.addEventListener('DOMContentLoaded', () => {
                 },
                 body: JSON.stringify({ imageData: imageData }),
             });
-    
+
             if (!response.ok) {
                 const errorText = await response.text();
                 throw new Error(`Server response was not ok, status: ${response.status}, ${errorText}`);
             }
-    
+
             const data = await response.json();
-    
+
             if (data.error) {
                 throw new Error(data.message || 'Error processing image on the server.');
             }
-    
+
             let imageToxicityPercentage = 0;
-    
+
             if (data.detectedText && data.detectedText.trim() !== '') {
                 const cleanedText = filterAndCleanText(data.detectedText);
                 console.log("Cleaned text to be analysed for toxicity:", cleanedText);
@@ -218,7 +218,7 @@ document.addEventListener('DOMContentLoaded', () => {
             } else {
                 updateToxicityCircle(0, 'imageToxicityScore');
             }
-    
+
             return imageToxicityPercentage;
         } catch (error) {
             console.error('Error processing image:', error);
@@ -227,7 +227,8 @@ document.addEventListener('DOMContentLoaded', () => {
             return 0;
         }
     }
-    
+
+
     function filterAndCleanText(text) {
         const filterPatterns = [
             /likes/i,
@@ -237,26 +238,31 @@ document.addEventListener('DOMContentLoaded', () => {
             /Share/i,
             /Comment/i,
             /Save/i,
+            /reply/i,
             /\b(Jan(?:uary)?|Feb(?:ruary)?|Mar(?:ch)?|Apr(?:il)?|May|Jun(?:e)?|Jul(?:y)?|Aug(?:ust)?|Sep(?:tember)?|Oct(?:ober)?|Nov(?:ember)?|Dec(?:ember)?)\b/i,
             /@[^\s]+/gi,
             /Copy\slink\sto\sTweet/i,
             /\b\d+(\.\d+)?[kKmM]\b/g,
+            /\byear\sago\b/i,
+            /\bmonths\sago\b/i,
+            /\bdays\sago\b/i,
         ];
-    
+
         const atIndex = text.indexOf('@');
         if (atIndex !== -1) {
-            text = text.substring(atIndex);
+            const endOfLineIndex = text.indexOf('\n', atIndex);
+            text = text.substring(0, atIndex) + (endOfLineIndex !== -1 ? text.substring(endOfLineIndex) : "");
         }
-    
+
         filterPatterns.forEach(pattern => {
             text = text.replace(pattern, '');
         });
-    
-        text = text.replace(/[0-9]+|[^\w\s.,]/g, '');
-    
+
+        text = text.replace(/[0-9]+|[^\w\s]/g, '');
+
         return text.trim();
     }
-    
+
     async function fetchTwitterEmbedCode(twitterUrl) {
         const apiEndpoint = 'https://twitter-n01a.onrender.com/get-twitter-embed';
         return await fetchJsonData(apiEndpoint, { url: twitterUrl });

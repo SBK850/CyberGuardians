@@ -55,8 +55,6 @@ form input {
 }
 
 #postContent {
-    min-height: 150px;
-    max-height: 300px;
     overflow-y: auto;
     word-wrap: break-word;
 }
