@@ -114,8 +114,10 @@
     }
 }
 
-main & > * {
-    margin-inline-end: initial !important;
+main {
+    & > * {
+        margin-inline-end: initial !important;
+    }
 }
 
 h2 {
