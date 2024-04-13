@@ -1,11 +1,9 @@
 :root {
-    /* Sizes */
     --rhythm: 1.6;
     --spacing: calc(var(--rhythm) * 1rem);
     --max-content-width: 90rem;
     --min-tap-size: 48px;
 
-    /* Colors */
     --color-purple: oklch(66% 0.2 306);
     --color-lavender: oklch(70% 0.15 306);
     --color-pink: oklch(70% 0.15 348);
