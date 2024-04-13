@@ -356,4 +356,87 @@ input {
   transition: transform 0.15s;
 }
 
-/* Additional styles based on HTML structure and interaction needs */
+/* Navigation dynamic visibility */
+.site-navigation {
+  animation-name: expand-navigation;
+  animation-duration: 0.5s;
+  animation-fill-mode: both;
+}
+
+/* Form interaction styles */
+.form input:focus, #posterName:focus, #posterDetails:focus, #postContent:focus {
+  border-color: #cc4949;
+}
+
+/* Button interaction effects */
+.btn:hover, .btn:focus, .button:hover, .button:focus {
+  background-color: #54e0c7;
+  color: #fff;
+  border-color: #54e0c7;
+}
+
+/* Visibility toggles for dynamic content display */
+.navigation-animation-wrapper, .custom-container, #content, .container-s {
+  display: none;
+}
+
+html:has(.open-navigation:checked) .navigation-animation-wrapper,
+html:has(.close-navigation:checked) .custom-container,
+html:has(.open-navigation:checked) #content,
+html:has(.open-navigation:checked) .container-s {
+  display: block;
+}
+
+/* Styling for active states in navigation */
+.nav-list li a.active {
+  font-weight: bold;
+  color: var(--color-cyan);
+}
+
+/* Responsive adjustments for mobile views */
+@media (max-width: 768px) {
+  .nav-list {
+      flex-direction: column;
+  }
+
+  .mobile-menu-button {
+      display: block;
+  }
+}
+
+/* Custom animations for specific interactions */
+.close-icon:hover, .hamburger-icon:hover {
+  background-color: var(--color-cyan-light);
+  color: var(--color-text-bright);
+}
+
+/* Styling for warning and message sections, assuming they become visible upon certain conditions */
+#warning-section, #message-section {
+  display: block; /* Initially set to none, assumed to be shown via JavaScript */
+  background: var(--color-background);
+  color: var(--color-text);
+  border: 1px solid var(--color-pink);
+  padding: 20px;
+  margin-top: 20px;
+}
+
+/* Transitions for smooth effects on hover/focus */
+a, .btn, .button, input[type='text'], input[type='button'] {
+  transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+}
+
+/* General styling for text elements that need emphasis */
+h1, h2 {
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+/* Ensure visibility for elements that are important but might be visually hidden for accessibility */
+.visually-hidden:not(:focus):not(:active) {
+  clip: rect(0 0 0 0);
+  clip-path: inset(50%);
+  overflow: hidden;
+  position: absolute;
+  white-space: nowrap;
+  width: 1px;
+  height: 1px;
+}
