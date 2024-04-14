@@ -163,10 +163,10 @@ document.addEventListener('DOMContentLoaded', () => {
             updateToxicityCircle(textToxicityPercentage, 'textToxicityScore');
             updateToxicityCircle(imageToxicityPercentage, 'imageToxicityScore');
 
-            const customContainer = document.querySelector('.custom-container');
-            if (textToxicityPercentage > 0 || imageToxicityPercentage > 0) {
-                customContainer.style.display = 'block';
-            }
+            // const customContainer = document.querySelector('.custom-container');
+            // if (textToxicityPercentage > 0 || imageToxicityPercentage > 0) {
+            //     customContainer.style.display = 'block';
+            // }
 
             if (Math.max(textToxicityPercentage, imageToxicityPercentage) >= 85) {
                 displayWarningCard();
