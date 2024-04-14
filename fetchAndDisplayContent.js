@@ -361,8 +361,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 circle.style.stroke = color;
             }
 
-            const customContainerX = document.querySelector('.custom-container');
-            customContainerX.style.setProperty('display', 'block', 'important');
+            const customContainer = document.querySelector('.custom-container');
+            customContainer.style.setProperty('display', 'block', 'important');
 
             return percentage;
         } catch (error) {
