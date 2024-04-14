@@ -107,15 +107,21 @@ document.addEventListener('DOMContentLoaded', () => {
             loadTwitterWidgets();
             toggleDisplay([twitterEmbedContainer], 'block');
             const tweetText = extractTweetText(responseHtml);
-            await analyseContentForToxicity(tweetText, customContainer);
+
+            // Update this line to pass the correct scoreElementId
+            await analyseContentForToxicity(tweetText, 'textToxicityScore');
 
             $(".btn").addClass('btn-complete');
+
+            const customContainer = document.querySelector('.custom-container');
+            customContainer.style.display = 'block';
 
             setTimeout(() => {
                 $(".input").hide();
             }, 3000);
         }
     }
+
 
     async function fetchAndDisplayContent(postUrl, contentContainer) {
         const apiEndpoint = 'https://cyberguardians.onrender.com/scrape';
@@ -331,9 +337,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 body: JSON.stringify({ content: content }),
             });
 
-            const customContainer = document.querySelector('.custom-container');
-            customContainer.style.display = 'block';
-
             const analysisResult = await response.json();
             const toxicityScore = analysisResult.score;
             const percentage = Math.round(toxicityScore * 100);
@@ -371,9 +374,6 @@ document.addEventListener('DOMContentLoaded', () => {
         script.async = true;
         script.onload = () => twttr.widgets.load(twitterEmbedContainer);
         document.body.appendChild(script);
-
-        const customContainer = document.querySelector('.custom-container');
-        customContainer.style.display = 'block';
     }
 
     function extractTweetText(html) {
