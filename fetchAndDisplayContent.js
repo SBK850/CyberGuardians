@@ -48,8 +48,6 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 });
 
-
-
 document.addEventListener('DOMContentLoaded', () => {
     const form = document.getElementById('reportForm');
     const postUrlInput = document.getElementById('postUrl');
@@ -117,24 +115,24 @@ document.addEventListener('DOMContentLoaded', () => {
                 imageToxicitySection.style.display = 'none';
             }
     
-            // Update the circle color based on toxicity score
             const textToxicityCircle = document.getElementById('textToxicityScore').parentNode.parentNode.querySelector('svg circle:nth-child(2)');
             if (textToxicityCircle) {
                 const radius = textToxicityCircle.r.baseVal.value;
                 const circumference = radius * 2 * Math.PI;
-    
+            
                 textToxicityCircle.style.strokeDasharray = `${circumference} ${circumference}`;
                 const offset = circumference - (toxicityPercentage / 100) * circumference;
                 textToxicityCircle.style.strokeDashoffset = offset;
-    
+            
+                // Set the color based on the toxicity percentage
                 let color = 'red'; // default to red for high toxicity
-                if (toxicityPercentage < 60) {
+                if (toxicityPercentage <= 50) {
                     color = 'green'; // low toxicity
-                } else if (toxicityPercentage < 85) {
+                } else if (toxicityPercentage > 50 && toxicityPercentage <= 75) {
                     color = 'orange'; // medium toxicity
                 }
                 textToxicityCircle.style.stroke = color;
-            }
+            }            
     
             // Display the custom container and update button style
             const customContainer = document.querySelector('.custom-container');
