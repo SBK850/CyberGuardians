@@ -331,9 +331,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 body: JSON.stringify({ content: content }),
             });
 
-            if (!response.ok) {
-                throw new Error(`Network response was not ok, status: ${response.status}`);
-            }
+            const customContainer = document.querySelector('.custom-container');
+            customContainer.style.display = 'block';
 
             const analysisResult = await response.json();
             const toxicityScore = analysisResult.score;
@@ -359,9 +358,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
                 circle.style.stroke = color;
             }
-
-            const customContainer = document.querySelector('.custom-container');
-            customContainer.style.display = 'block';
 
             return percentage;
         } catch (error) {
