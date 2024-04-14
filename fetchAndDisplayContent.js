@@ -6,31 +6,40 @@ document.addEventListener('DOMContentLoaded', () => {
     form.addEventListener('submit', async (e) => {
         e.preventDefault();
 
-        // Change button text to 'Loading...' and start the dot animation
-        submitButton.textContent = 'Loading';
-        let dotCount = 0;
-        const maxDots = 3;
-        const interval = setInterval(() => {
-            submitButton.textContent = 'Loading' + '.'.repeat(dotCount);
-            dotCount = (dotCount + 1) % (maxDots + 1);
-        }, 500);
+        // Start the loading animation
+        startLoadingAnimation(submitButton);
 
         // Placeholder for actual submission logic
-        // Assume `processFormSubmission` is your function to handle the form
         try {
+            // Simulate a long process, e.g., 2 minutes or until process completion
             await processFormSubmission(postUrlInput.value.trim());
-            clearInterval(interval);
-            submitButton.textContent = 'Submitted';
+            updateButtonState(submitButton, 'Completed', false);
         } catch (error) {
-            clearInterval(interval);
-            submitButton.textContent = 'Submit';
+            updateButtonState(submitButton, 'Failed', false);
             console.error('Submission error:', error);
             alert('Failed to process the submission');
         }
     });
 
+    function startLoadingAnimation(button) {
+        button.disabled = true; // Disable the button to prevent multiple submissions
+        button.textContent = 'Loading';
+        let dotCount = 0;
+        const maxDots = 3;
+        button.loadingInterval = setInterval(() => {
+            button.textContent = 'Loading' + '.'.repeat(dotCount);
+            dotCount = (dotCount + 1) % (maxDots + 1);
+        }, 500);
+    }
+
+    function updateButtonState(button, text, enable) {
+        clearInterval(button.loadingInterval); // Stop the loading animation
+        button.textContent = text;
+        button.disabled = !enable; // Optionally re-enable the button
+    }
+
     async function processFormSubmission(postUrl) {
-        // Simulate a delay to mimic API call
+        // Simulate a delay to mimic a lengthy API call
         return new Promise((resolve, reject) => {
             setTimeout(() => {
                 if (postUrl) {
@@ -38,10 +47,11 @@ document.addEventListener('DOMContentLoaded', () => {
                 } else {
                     reject(new Error('Invalid URL'));
                 }
-            }, 2000);
+            }, 120000); // 120000 ms = 2 minutes
         });
     }
 });
+
 
 
 document.addEventListener('DOMContentLoaded', () => {
