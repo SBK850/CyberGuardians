@@ -108,13 +108,32 @@ document.addEventListener('DOMContentLoaded', () => {
             toggleDisplay([twitterEmbedContainer], 'block');
             const tweetText = extractTweetText(responseHtml);
     
-            // Pass the correct scoreElementId for text toxicity
-            await analyseContentForToxicity(tweetText, 'textToxicityScore');
+            // Get the toxicity score from the analysis
+            const toxicityPercentage = await analyseContentForToxicity(tweetText, 'textToxicityScore');
     
             // Hide image toxicity section
             const imageToxicitySection = document.querySelector('.image-toxicity');
             if (imageToxicitySection) {
                 imageToxicitySection.style.display = 'none';
+            }
+    
+            // Update the circle color based on toxicity score
+            const textToxicityCircle = document.getElementById('textToxicityScore').parentNode.parentNode.querySelector('svg circle:nth-child(2)');
+            if (textToxicityCircle) {
+                const radius = textToxicityCircle.r.baseVal.value;
+                const circumference = radius * 2 * Math.PI;
+    
+                textToxicityCircle.style.strokeDasharray = `${circumference} ${circumference}`;
+                const offset = circumference - (toxicityPercentage / 100) * circumference;
+                textToxicityCircle.style.strokeDashoffset = offset;
+    
+                let color = 'red'; // default to red for high toxicity
+                if (toxicityPercentage < 60) {
+                    color = 'green'; // low toxicity
+                } else if (toxicityPercentage < 85) {
+                    color = 'orange'; // medium toxicity
+                }
+                textToxicityCircle.style.stroke = color;
             }
     
             // Display the custom container and update button style
@@ -128,6 +147,7 @@ document.addEventListener('DOMContentLoaded', () => {
             }, 3000);
         }
     }
+    
 
     async function fetchAndDisplayContent(postUrl, contentContainer) {
         const apiEndpoint = 'https://cyberguardians.onrender.com/scrape';
