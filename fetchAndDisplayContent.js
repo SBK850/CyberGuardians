@@ -107,21 +107,27 @@ document.addEventListener('DOMContentLoaded', () => {
             loadTwitterWidgets();
             toggleDisplay([twitterEmbedContainer], 'block');
             const tweetText = extractTweetText(responseHtml);
-
-            // Update this line to pass the correct scoreElementId
+    
+            // Pass the correct scoreElementId for text toxicity
             await analyseContentForToxicity(tweetText, 'textToxicityScore');
-
-            $(".btn").addClass('btn-complete');
-
+    
+            // Hide image toxicity section
+            const imageToxicitySection = document.querySelector('.image-toxicity');
+            if (imageToxicitySection) {
+                imageToxicitySection.style.display = 'none';
+            }
+    
+            // Display the custom container and update button style
             const customContainer = document.querySelector('.custom-container');
             customContainer.style.display = 'block';
-
+            $(".btn").addClass('btn-complete');
+    
+            // Hide the input form after a delay
             setTimeout(() => {
                 $(".input").hide();
             }, 3000);
         }
     }
-
 
     async function fetchAndDisplayContent(postUrl, contentContainer) {
         const apiEndpoint = 'https://cyberguardians.onrender.com/scrape';
@@ -167,10 +173,10 @@ document.addEventListener('DOMContentLoaded', () => {
             updateToxicityCircle(textToxicityPercentage, 'textToxicityScore');
             updateToxicityCircle(imageToxicityPercentage, 'imageToxicityScore');
 
-            // const customContainer = document.querySelector('.custom-container');
-            // if (textToxicityPercentage > 0 || imageToxicityPercentage > 0) {
-            //     customContainer.style.display = 'block';
-            // }
+            const customContainer = document.querySelector('.custom-container');
+            if (textToxicityPercentage > 0 || imageToxicityPercentage > 0) {
+                customContainer.style.display = 'block';
+            }
 
             if (Math.max(textToxicityPercentage, imageToxicityPercentage) >= 85) {
                 displayWarningCard();
@@ -336,23 +342,30 @@ document.addEventListener('DOMContentLoaded', () => {
                 },
                 body: JSON.stringify({ content: content }),
             });
-
+    
+            if (!response.ok) {
+                throw new Error(`Network response was not ok, status: ${response.status}`);
+            }
+    
             const analysisResult = await response.json();
             const toxicityScore = analysisResult.score;
             const percentage = Math.round(toxicityScore * 100);
-
-            document.getElementById(scoreElementId).textContent = `${percentage}%`;
-
-            const circleContainer = document.getElementById(scoreElementId).parentNode.parentNode;
+    
+            // Update the text element with the calculated percentage
+            const scoreElement = document.getElementById(scoreElementId);
+            scoreElement.textContent = `${percentage}%`;
+    
+            // Update the circle element to reflect the toxicity score visually
+            const circleContainer = scoreElement.parentNode.parentNode;
             const circle = circleContainer.querySelector('svg circle:nth-child(2)');
             if (circle) {
                 const radius = circle.r.baseVal.value;
                 const circumference = radius * 2 * Math.PI;
-
+    
                 circle.style.strokeDasharray = `${circumference} ${circumference}`;
                 const offset = circumference - (percentage / 100) * circumference;
                 circle.style.strokeDashoffset = offset;
-
+    
                 let color = 'red';
                 if (percentage < 60) {
                     color = 'green';
@@ -361,12 +374,17 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
                 circle.style.stroke = color;
             }
-
+    
+            // Display the custom container if it was previously hidden
+            const customContainer = document.querySelector('.custom-container');
+            customContainer.style.display = 'block';
+    
             return percentage;
         } catch (error) {
             console.error('Error analyzing content:', error);
         }
     }
+    
 
     function loadTwitterWidgets() {
         const script = document.createElement('script');
