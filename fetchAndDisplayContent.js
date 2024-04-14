@@ -55,6 +55,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const postUrlInput = document.getElementById('postUrl');
     const twitterEmbedContainer = document.getElementById('twitterEmbedContainer');
     const contentContainer = document.getElementById('content');
+    const customContainer = document.querySelector('.custom-container');
 
     const toggleDisplay = (elements, displayStyle) => {
         elements.forEach(element => {
