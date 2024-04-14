@@ -85,8 +85,6 @@ document.addEventListener('DOMContentLoaded', () => {
             return;
         }
 
-        toggleDisplay([twitterEmbedContainer, contentContainer], 'none');
-
         const domain = getDomainFromUrl(postUrl);
         try {
             if (domain === 'x.com' || domain === 'twitter.com') {
