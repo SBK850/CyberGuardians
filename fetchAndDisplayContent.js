@@ -362,13 +362,16 @@ document.addEventListener('DOMContentLoaded', () => {
                 circle.style.stroke = color;
             }
 
+            // Ensure customContainer is displayed after analysis
             const customContainer = document.querySelector('.custom-container');
-            customContainer.style.display = 'initial !important';
-
+            customContainer.style.display = 'block'; // Using 'block' instead of 'initial !important'
 
             return percentage;
         } catch (error) {
             console.error('Error analyzing content:', error);
+            // Hide customContainer in case of an error
+            const customContainer = document.querySelector('.custom-container');
+            customContainer.style.display = 'none';
             return null;
         }
     }
