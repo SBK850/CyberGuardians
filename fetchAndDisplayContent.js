@@ -385,14 +385,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 circle.style.strokeDasharray = `${circumference} ${circumference}`;
                 const offset = circumference - (percentage / 100) * circumference;
                 circle.style.strokeDashoffset = offset;
-    
-                let color = 'red';
-                if (percentage < 60) {
-                    color = 'green';
-                } else if (percentage < 85) {
-                    color = 'orange';
-                }
-                circle.style.stroke = color;
             }
     
             // Display the custom container if it was previously hidden
@@ -404,6 +396,7 @@ document.addEventListener('DOMContentLoaded', () => {
             console.error('Error analyzing content:', error);
         }
     }
+    
     
 
     function loadTwitterWidgets() {
