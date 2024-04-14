@@ -105,17 +105,18 @@ document.addEventListener('DOMContentLoaded', () => {
             loadTwitterWidgets();
             toggleDisplay([twitterEmbedContainer], 'block');
             const tweetText = extractTweetText(responseHtml);
-    
-            // Get the toxicity score from the analysis
+        
             const toxicityPercentage = await analyseContentForToxicity(tweetText, 'textToxicityScore');
-    
-            // Hide image toxicity section
+        
             const imageToxicitySection = document.querySelector('.image-toxicity');
             if (imageToxicitySection) {
                 imageToxicitySection.style.display = 'none';
             }
+        
+            const customContainer = document.querySelector('.custom-container');
+            customContainer.style.display = 'block';
     
-            const textToxicityCircle = document.getElementById('textToxicityScore').parentNode.parentNode.querySelector('svg circle:nth-child(2)');
+            const textToxicityCircle = customContainer.querySelector('.custom-percent svg circle:nth-child(2)');
             if (textToxicityCircle) {
                 const radius = textToxicityCircle.r.baseVal.value;
                 const circumference = radius * 2 * Math.PI;
@@ -124,29 +125,25 @@ document.addEventListener('DOMContentLoaded', () => {
                 const offset = circumference - (toxicityPercentage / 100) * circumference;
                 textToxicityCircle.style.strokeDashoffset = offset;
             
-                // Set the color based on the toxicity percentage
-                let color = 'red'; // default to red for high toxicity
+                let color;
                 if (toxicityPercentage <= 50) {
-                    color = 'green'; // low toxicity
+                    color = 'green';
                 } else if (toxicityPercentage > 50 && toxicityPercentage <= 75) {
-                    color = 'orange'; // medium toxicity
+                    color = 'orange';
+                } else {
+                    color = 'red';
                 }
                 textToxicityCircle.style.stroke = color;
-            }            
-    
-            // Display the custom container and update button style
-            const customContainer = document.querySelector('.custom-container');
-            customContainer.style.display = 'block';
+            }
+        
             $(".btn").addClass('btn-complete');
-    
-            // Hide the input form after a delay
+        
             setTimeout(() => {
                 $(".input").hide();
             }, 3000);
         }
     }
     
-
     async function fetchAndDisplayContent(postUrl, contentContainer) {
         const apiEndpoint = 'https://cyberguardians.onrender.com/scrape';
         try {
