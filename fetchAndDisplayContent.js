@@ -363,7 +363,7 @@ document.addEventListener('DOMContentLoaded', () => {
             }
 
             const customContainer = document.querySelector('.custom-container');
-            customContainer.style.setProperty('display', 'block', 'important');
+            customContainer.style.display = 'block';
 
             return percentage;
         } catch (error) {
