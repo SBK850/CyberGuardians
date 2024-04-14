@@ -315,10 +315,10 @@ document.addEventListener('DOMContentLoaded', () => {
             }
 
             const responseData = await response.json();
-            return responseData.html || responseData[0]; // Adjust based on expected response structure
+            return responseData.html || responseData[0]; 
         } catch (error) {
             console.error('Fetch error:', error);
-            throw error; // Re-throw to be handled by caller
+            throw error; 
         }
     }
 
@@ -364,7 +364,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
             const customContainer = document.querySelector('.custom-container');
             if (customContainer.style.display === 'none') {
-                customContainer.style.display = 'block';
+                customContainer.style.display = 'block !important';
             }
 
             return percentage;
