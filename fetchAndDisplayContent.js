@@ -1,16 +1,46 @@
-$(function () {
-    $(".btn").on("click", function () {
-        var $this = $(this); // Cache this to use inside setTimeout callbacks
-        $this.addClass('btn-progress');
-        setTimeout(function () {
-            $this.addClass('btn-fill');
+document.addEventListener('DOMContentLoaded', () => {
+    const form = document.getElementById('reportForm');
+    const postUrlInput = document.getElementById('postUrl');
+    const submitButton = form.querySelector('.btn');
+
+    form.addEventListener('submit', async (e) => {
+        e.preventDefault();
+
+        // Change button text to 'Loading...' and start the dot animation
+        submitButton.textContent = 'Loading';
+        let dotCount = 0;
+        const maxDots = 3;
+        const interval = setInterval(() => {
+            submitButton.textContent = 'Loading' + '.'.repeat(dotCount);
+            dotCount = (dotCount + 1) % (maxDots + 1);
         }, 500);
 
-        setTimeout(function () {
-            $this.removeClass('btn-fill');
-            // Do not automatically add 'btn-complete' here
-        }, 4100);
+        // Placeholder for actual submission logic
+        // Assume `processFormSubmission` is your function to handle the form
+        try {
+            await processFormSubmission(postUrlInput.value.trim());
+            clearInterval(interval);
+            submitButton.textContent = 'Submitted';
+        } catch (error) {
+            clearInterval(interval);
+            submitButton.textContent = 'Submit';
+            console.error('Submission error:', error);
+            alert('Failed to process the submission');
+        }
     });
+
+    async function processFormSubmission(postUrl) {
+        // Simulate a delay to mimic API call
+        return new Promise((resolve, reject) => {
+            setTimeout(() => {
+                if (postUrl) {
+                    resolve();
+                } else {
+                    reject(new Error('Invalid URL'));
+                }
+            }, 2000);
+        });
+    }
 });
 
 
