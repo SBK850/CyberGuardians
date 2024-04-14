@@ -55,7 +55,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const postUrlInput = document.getElementById('postUrl');
     const twitterEmbedContainer = document.getElementById('twitterEmbedContainer');
     const contentContainer = document.getElementById('content');
-    const customContainer = document.querySelector('.custom-container');
 
     const toggleDisplay = (elements, displayStyle) => {
         elements.forEach(element => {
@@ -362,8 +361,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 circle.style.stroke = color;
             }
 
-            const customContainer = document.querySelector('.custom-container');
-            customContainer.style.setProperty('display', 'block', 'important');
+            const customContainerX = document.querySelector('.custom-container');
+            customContainerX.style.setProperty('display', 'block', 'important');
 
             return percentage;
         } catch (error) {
