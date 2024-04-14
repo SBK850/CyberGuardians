@@ -85,7 +85,7 @@ document.addEventListener('DOMContentLoaded', () => {
             return;
         }
 
-        toggleDisplay([twitterEmbedContainer, contentContainer, customContainer], 'none');
+        toggleDisplay([twitterEmbedContainer, contentContainer], 'none');
 
         const domain = getDomainFromUrl(postUrl);
         try {
