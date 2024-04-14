@@ -280,3 +280,7 @@ form input {
 .card-x {
 	padding: 10px;
 }
+
+.custom-container {
+	display: none;
+}
