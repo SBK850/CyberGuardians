@@ -6,18 +6,14 @@
     <title>CyberGuardians | Take a Stand: Report Now</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@100..700&display=swap" rel="stylesheet">
 
-    <!-- Font Awesome -->
     <link rel='stylesheet' href='https://maxcdn.bootstrapcdn.com/font-awesome/4.6.3/css/font-awesome.min.css'>
 
-    <!-- Tailwind CSS -->
     <link rel='stylesheet' href='https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.7/tailwind.min.css'>
 
-    <!-- Custom Stylesheets -->
     <link rel='stylesheet' href='https://codepen.io/giana/pen/XWGyRbL.css'>
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="report.css">
@@ -31,7 +27,6 @@
 </head>
 
 <body>
-    <!-- partial:index.partial.html -->
     <div class="warning">Your browser doesn't support scroll animations. This demo will not work.</div>
     <header class="site-header">
         <h1>Cyber<span>Guardians</span></h1>
@@ -61,29 +56,22 @@
     </header>
 
 
-    <!-- Container for form and instruction -->
     <div
         style="width: 800px; height: auto; margin: 0 auto; display: flex; flex-direction: column; justify-content: center; align-items: center;">
         <h2 style="text-align: center; margin-bottom: 1rem;">Empowering Action Against Cyberbullying: <span>Report
                 Online Abuse</span></h2>
 
-        <!-- Report Form -->
         <form id="reportForm" class="input">
             <input type="text" id="postUrl" autofocus="true" required placeholder="Enter Post URL">
             <button type="submit" class='btn'>Submit</button>
         </form>
     </div>
 
-    <!-- Container for results display -->
     <div class="container-s" style="margin: 0 auto;">
-        <!-- Adjusted to match the form's width and initially hidden -->
-        <!-- Twitter Embed Container -->
         <div id="twitterEmbedContainer" style="width: 21rem;"></div>
 
-        <!-- Content Container -->
         <div id="content"
             style="display: block;width: initial !important;background-color: #585d5d;border-radius: 1rem; display: none;">
-            <!-- Initially hidden -->
             <div class="profile-image">
                 <img id="profileImageUrl" src="" alt="Profile Image">
             </div>
@@ -150,10 +138,7 @@
         <p>By. <a href="https://www.linkedin.com/in/seikou-bah-karagera/" target="_top">Seikou Bah Karagera</a>.</p>
     </footer>
 
-    <!-- Include jQuery library -->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
-
-    <!-- Your custom scripts -->
     <script src="fetchAndDisplayContent.js"></script>
     <script src='https://unpkg.co/gsap@3/dist/gsap.min.js'></script>
 </body>

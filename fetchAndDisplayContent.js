@@ -6,12 +6,9 @@ document.addEventListener('DOMContentLoaded', () => {
     form.addEventListener('submit', async (e) => {
         e.preventDefault();
 
-        // Start the loading animation
         startLoadingAnimation(submitButton);
 
-        // Placeholder for actual submission logic
         try {
-            // Simulate a long process, e.g., 2 minutes or until process completion
             await processFormSubmission(postUrlInput.value.trim());
             updateButtonState(submitButton, 'Completed', false);
         } catch (error) {
@@ -22,7 +19,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     function startLoadingAnimation(button) {
-        button.disabled = true; // Disable the button to prevent multiple submissions
+        button.disabled = true; 
         button.textContent = 'Loading';
         let dotCount = 0;
         const maxDots = 3;
@@ -33,13 +30,12 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function updateButtonState(button, text, enable) {
-        clearInterval(button.loadingInterval); // Stop the loading animation
+        clearInterval(button.loadingInterval); 
         button.textContent = text;
-        button.disabled = !enable; // Optionally re-enable the button
+        button.disabled = !enable; 
     }
 
     async function processFormSubmission(postUrl) {
-        // Simulate a delay to mimic a lengthy API call
         return new Promise((resolve, reject) => {
             setTimeout(() => {
                 if (postUrl) {
@@ -47,7 +43,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 } else {
                     reject(new Error('Invalid URL'));
                 }
-            }, 120000); // 120000 ms = 2 minutes
+            }, 120000); 
         });
     }
 });
@@ -61,7 +57,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const contentContainer = document.getElementById('content');
     const customContainer = document.querySelector('.custom-container');
 
-    // Hide or show elements function
     const toggleDisplay = (elements, displayStyle) => {
         elements.forEach(element => {
             if (typeof element === 'string') {
@@ -143,7 +138,6 @@ document.addEventListener('DOMContentLoaded', () => {
             const postData = jsonData[0];
             const carouselItemId = postData.CarouselItemID;
 
-            // Update the content on the page
             document.getElementById('profileImageUrl').src = postData.ProfilePictureURL || 'placeholder-image-url.png';
             document.getElementById('posterName').textContent = postData.FirstName + " " + postData.LastName || 'Name not available';
             document.getElementById('posterDetails').textContent = `Age: ${postData.Age} | Education: ${postData.Education}` || 'Details not available';
@@ -201,7 +195,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const customPercentElement = scoreElement.closest('.custom-percent');
         if (!customPercentElement) {
             console.error('No custom percent element found for element ID:', elementId);
-            return; // Exit if custom percent element is not found
+            return; 
         }
 
         const circle = customPercentElement.querySelector('circle:nth-child(2)');
@@ -347,10 +341,8 @@ document.addEventListener('DOMContentLoaded', () => {
             const toxicityScore = analysisResult.score;
             const percentage = Math.round(toxicityScore * 100);
 
-            // Update the toxicity score in the appropriate container
             document.getElementById(scoreElementId).textContent = `${percentage}%`;
 
-            // Adjust the corresponding circle to reflect the toxicity score and color based on the score
             const circleContainer = document.getElementById(scoreElementId).parentNode.parentNode;
             const circle = circleContainer.querySelector('svg circle:nth-child(2)');
             if (circle) {
@@ -361,17 +353,15 @@ document.addEventListener('DOMContentLoaded', () => {
                 const offset = circumference - (percentage / 100) * circumference;
                 circle.style.strokeDashoffset = offset;
 
-                // Determine the color based on the toxicity score
-                let color = 'red'; // High toxicity
+                let color = 'red';
                 if (percentage < 60) {
-                    color = 'green'; // Low toxicity
+                    color = 'green'; 
                 } else if (percentage < 85) {
-                    color = 'orange'; // Medium toxicity
+                    color = 'orange'; 
                 }
                 circle.style.stroke = color;
             }
 
-            // Show the entire custom container if it's not already visible
             const customContainer = document.querySelector('.custom-container');
             if (customContainer.style.display === 'none') {
                 customContainer.style.display = 'block';
@@ -409,7 +399,6 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function rejectToxicContent() {
-        // Handle rejection action here
         var message = document.createElement('p');
         message.textContent = "You have chosen to reject the removal of this content. It will remain visible unless reported by another user as cyberbullying.";
         document.getElementById("message-section").appendChild(message);
@@ -419,9 +408,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
     async function confirmToxicContent(carouselItemId) {
         try {
-            console.log("Attempting to remove post with ID:", carouselItemId); // Log the ID to the console
+            console.log("Attempting to remove post with ID:", carouselItemId); 
             const result = await removeToxicPost(carouselItemId);
-            console.log("Server response:", result); // Log the actual response from the server
+            console.log("Server response:", result);
             if (result && result.message === 'Post removed successfully.') {
                 var message = document.createElement('p');
                 message.textContent = "You have confirmed the removal of this content. It will be removed immediately from YouthVibe. Thank you for helping us maintain a safe environment.";
