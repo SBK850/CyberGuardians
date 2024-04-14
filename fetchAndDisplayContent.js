@@ -371,6 +371,9 @@ document.addEventListener('DOMContentLoaded', () => {
         script.async = true;
         script.onload = () => twttr.widgets.load(twitterEmbedContainer);
         document.body.appendChild(script);
+
+        const customContainer = document.querySelector('.custom-container');
+        customContainer.style.display = 'block';
     }
 
     function extractTweetText(html) {
