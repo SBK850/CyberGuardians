@@ -19,7 +19,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     function startLoadingAnimation(button) {
-        button.disabled = true; 
+        button.disabled = true;
         button.textContent = 'Loading';
         let dotCount = 0;
         const maxDots = 3;
@@ -30,9 +30,9 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function updateButtonState(button, text, enable) {
-        clearInterval(button.loadingInterval); 
+        clearInterval(button.loadingInterval);
         button.textContent = text;
-        button.disabled = !enable; 
+        button.disabled = !enable;
     }
 
     async function processFormSubmission(postUrl) {
@@ -43,7 +43,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 } else {
                     reject(new Error('Invalid URL'));
                 }
-            }, 120000); 
+            }, 120000);
         });
     }
 });
@@ -195,7 +195,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const customPercentElement = scoreElement.closest('.custom-percent');
         if (!customPercentElement) {
             console.error('No custom percent element found for element ID:', elementId);
-            return; 
+            return;
         }
 
         const circle = customPercentElement.querySelector('circle:nth-child(2)');
@@ -315,10 +315,10 @@ document.addEventListener('DOMContentLoaded', () => {
             }
 
             const responseData = await response.json();
-            return responseData.html || responseData[0]; 
+            return responseData.html || responseData[0];
         } catch (error) {
             console.error('Fetch error:', error);
-            throw error; 
+            throw error;
         }
     }
 
@@ -355,17 +355,16 @@ document.addEventListener('DOMContentLoaded', () => {
 
                 let color = 'red';
                 if (percentage < 60) {
-                    color = 'green'; 
+                    color = 'green';
                 } else if (percentage < 85) {
-                    color = 'orange'; 
+                    color = 'orange';
                 }
                 circle.style.stroke = color;
             }
 
             const customContainer = document.querySelector('.custom-container');
-            if (customContainer.style.display === 'none') {
-                customContainer.style.display = 'initial !important';
-            }
+            customContainer.style.display = 'initial !important';
+
 
             return percentage;
         } catch (error) {
@@ -408,7 +407,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     async function confirmToxicContent(carouselItemId) {
         try {
-            console.log("Attempting to remove post with ID:", carouselItemId); 
+            console.log("Attempting to remove post with ID:", carouselItemId);
             const result = await removeToxicPost(carouselItemId);
             console.log("Server response:", result);
             if (result && result.message === 'Post removed successfully.') {
