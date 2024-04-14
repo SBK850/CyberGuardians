@@ -177,7 +177,7 @@ document.addEventListener('DOMContentLoaded', () => {
             }
 
             $(".btn").addClass('btn-complete');
-            setTimeout(() => $(".input").hide(), 3000);
+            setTimeout(() => $(".input").hide(), 3000);      
         } catch (error) {
             console.error(error);
         }
@@ -361,8 +361,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 circle.style.stroke = color;
             }
 
-            const customContainerX = document.querySelector('.custom-container');
-            customContainerX.style.setProperty('display', 'block', 'important');
+            const customContainer = document.querySelector('.custom-container');
+            customContainer.style.setProperty('display', 'block', 'important');
 
             return percentage;
         } catch (error) {
