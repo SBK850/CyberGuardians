@@ -364,7 +364,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
             const customContainer = document.querySelector('.custom-container');
             if (customContainer.style.display === 'none') {
-                customContainer.style.display = 'block !important';
+                customContainer.style.display = 'initial';
             }
 
             return percentage;
