@@ -368,10 +368,6 @@ document.addEventListener('DOMContentLoaded', () => {
             return percentage;
         } catch (error) {
             console.error('Error analyzing content:', error);
-            // Hide customContainer in case of an error
-            const customContainer = document.querySelector('.custom-container');
-            customContainer.style.display = 'none';
-            return null;
         }
     }
 
