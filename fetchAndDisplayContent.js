@@ -307,9 +307,11 @@ document.addEventListener('DOMContentLoaded', () => {
             /Home/i, 
         ];
     
+        text = text.replace(/\n/g, ' '); // Replace newline characters with spaces
+    
         const atIndex = text.indexOf('@');
         if (atIndex !== -1) {
-            const endOfLineIndex = text.indexOf('\n', atIndex);
+            const endOfLineIndex = text.indexOf(' ', atIndex); // Changed '\n' to ' ' to find next space
             text = text.substring(0, atIndex) + (endOfLineIndex !== -1 ? text.substring(endOfLineIndex) : "");
         }
     
@@ -317,7 +319,7 @@ document.addEventListener('DOMContentLoaded', () => {
             text = text.replace(pattern, '');
         });
     
-        text = text.replace(/[0-9\/]+|[^\w\s*]/g, '');
+        text = text.replace(/[0-9\/]+|[^\w\s*]/g, ''); // Remove unwanted characters
     
         return text.trim();
     }    
