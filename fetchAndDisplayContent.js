@@ -192,7 +192,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 customContainer.style.display = 'block';
             }
 
-            if (Math.max(textToxicityPercentage, imageToxicityPercentage) >= 85) {
+            if (Math.max(textToxicityPercentage, imageToxicityPercentage) >= 55) {
                 displayWarningCard();
                 document.getElementById('rejectButton').addEventListener('click', rejectToxicContent);
                 const confirmButton = document.getElementById('confirmButton');
