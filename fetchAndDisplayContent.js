@@ -43,7 +43,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 } else {
                     reject(new Error('Invalid URL'));
                 }
-            }, 120000);
+            }, 1200000);
         });
     }
 });
