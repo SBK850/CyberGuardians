@@ -304,7 +304,7 @@ document.addEventListener('DOMContentLoaded', () => {
             /\byear\sago\b/i,
             /\bmonths\sago\b/i,
             /\bdays\sago\b/i,
-            /\bHome\b/i,
+            /Home/i, 
         ];
     
         const atIndex = text.indexOf('@');
@@ -320,7 +320,8 @@ document.addEventListener('DOMContentLoaded', () => {
         text = text.replace(/[0-9]+|[^\w\s]/g, '');
     
         return text.trim();
-    }    
+    }
+     
 
     async function fetchTwitterEmbedCode(twitterUrl) {
         const apiEndpoint = 'https://twitter-n01a.onrender.com/get-twitter-embed';
