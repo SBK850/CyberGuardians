@@ -1,53 +1,57 @@
 <?php
-header('Content-Type: application/json');
+// Database configuration settings
+define('DB_SERVER', 'mudfoot.doc.stu.mmu.ac.uk');
+define('DB_USERNAME', 'bahkaras');
+define('DB_PASSWORD', 'hirsponD3');
+define('DB_NAME', 'bahkaras');
+define('DB_PORT', 6306);
 
-error_reporting(E_ALL);
-ini_set('display_errors', 1);
+// Connect to the MySQL database
+$mysqli = new mysqli(DB_SERVER, DB_USERNAME, DB_PASSWORD, DB_NAME, DB_PORT);
 
-$host = 'mudfoot.doc.stu.mmu.ac.uk';
-$username = 'bahkaras';
-$password = 'hirsponD3'; 
-$database = 'bahkaras';
-$port = 6306; 
-
-$conn = new mysqli($host, $username, $password, $database, $port);
-
-if ($conn->connect_error) {
-    http_response_code(500);
-    echo json_encode(['error' => "Connection failed: " . $conn->connect_error]);
-    exit;
+// Check connection
+if ($mysqli->connect_error) {
+    die('Connection failed: ' . $mysqli->connect_error);
 }
 
-$postData = json_decode(file_get_contents('php://input'), true);
-$carouselItemId = isset($postData['CarouselItemID']) ? $postData['CarouselItemID'] : null;
+// Read the JSON input from the client
+$input = json_decode(file_get_contents('php://input'), true);
+$carouselItemId = $input['CarouselItemID'] ?? null;
 
-if (null === $carouselItemId) {
+if (!$carouselItemId) {
+    echo json_encode(['message' => 'Invalid request: CarouselItemID is missing']);
     http_response_code(400);
-    echo json_encode(['error' => 'CarouselItemID is required']);
     exit;
 }
 
-$deleteSql = "DELETE FROM CarouselItems WHERE CarouselItemID = ?";
-$deleteStmt = $conn->prepare($deleteSql);
+// Prepare a delete statement
+$query = "DELETE FROM CarouselItems WHERE CarouselItemID = ?";
+$stmt = $mysqli->prepare($query);
 
-if (!$deleteStmt) {
+if (!$stmt) {
+    echo json_encode(['message' => 'Database error: unable to prepare statement']);
     http_response_code(500);
-    echo json_encode(['error' => $conn->error]);
     exit;
 }
 
-$deleteStmt->bind_param("i", $carouselItemId);
-if ($deleteStmt->execute()) {
-    if ($deleteStmt->affected_rows > 0) {
+// Bind parameters
+$stmt->bind_param('i', $carouselItemId);
+
+// Execute the statement
+if ($stmt->execute()) {
+    // Check if any rows were affected
+    if ($stmt->affected_rows > 0) {
         echo json_encode(['message' => 'Post removed successfully.']);
     } else {
-        echo json_encode(['message' => 'No post found or already removed.']);
+        echo json_encode(['message' => 'No post found with the given ID or deletion was not necessary.']);
     }
 } else {
+    echo json_encode(['message' => 'Failed to remove post']);
     http_response_code(500);
-    echo json_encode(['error' => $deleteStmt->error]);
 }
 
-$deleteStmt->close();
-$conn->close();
+// Close statement
+$stmt->close();
+// Close connection
+$mysqli->close();
 ?>
