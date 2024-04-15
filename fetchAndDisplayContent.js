@@ -141,7 +141,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     async function fetchAndDisplayContent(postUrl, contentContainer) {
         try {
-            const response = await fetch('https://cyberguardians.onrender.com/scrape', {
+            const response = await fetch('https://lambda-cyberguardians.vercel.app/scrape', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
