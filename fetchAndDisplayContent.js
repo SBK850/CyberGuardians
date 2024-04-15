@@ -153,8 +153,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 throw new Error(`Network response was not ok, status: ${response.status}`);
             }
 
-            const postData = await response.json(); 
-            const carouselItemId = postData.id; 
+            const postData = await response.json();
+            const carouselItemId = postData.id;
 
             document.getElementById('profileImageUrl').src = postData.ProfilePictureURL || 'placeholder-image-url.png';
             document.getElementById('posterName').textContent = postData.FirstName + " " + postData.LastName || 'Name not available';
@@ -172,7 +172,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
             const confirmButton = document.getElementById('confirmButton');
             if (confirmButton) {
-                confirmButton.onclick = function() { confirmToxicContent(carouselItemId); };
+                confirmButton.onclick = function () { confirmToxicContent(carouselItemId); };
             }
 
             contentContainer.style.display = 'block';
@@ -197,7 +197,9 @@ document.addEventListener('DOMContentLoaded', () => {
                 document.getElementById('rejectButton').addEventListener('click', rejectToxicContent);
                 const confirmButton = document.getElementById('confirmButton');
                 if (confirmButton) {
-                    confirmButton.onclick = function () { confirmToxicContent(carouselItemId); };
+                    (function (id) {
+                        confirmButton.onclick = function () { confirmToxicContent(id); };
+                    })(carouselItemId);
                 }
             }
 
@@ -205,6 +207,40 @@ document.addEventListener('DOMContentLoaded', () => {
             setTimeout(() => $(".input").hide(), 3000);
         } catch (error) {
             console.error(error);
+        }
+    }
+
+    async function confirmToxicContent(carouselItemId) {
+        try {
+            console.log("Attempting to remove post with ID:", carouselItemId);
+
+            const response = await fetch('remove-post.php', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ CarouselItemID: carouselItemId })
+            });
+
+            if (!response.ok) {
+                throw new Error(`HTTP error, status = ${response.status}`);
+            }
+
+            const result = await response.json();
+            console.log("Server response:", result);
+
+            if (result && result.message === 'Post removed successfully.') {
+                var message = document.createElement('p');
+                message.textContent = "You have confirmed the removal of this content. It will be removed immediately from YouthVibe. Thank you for helping us maintain a safe environment.";
+                document.getElementById("message-section").appendChild(message);
+                document.getElementById("warning-section").style.display = "none";
+                document.getElementById("message-section").style.display = "block";
+            } else {
+                console.error("Failed to remove post:", result);
+            }
+        } catch (error) {
+            console.error('Error confirming toxic content:', error);
+            alert(`Error occurred: ${error.message}`);
         }
     }
 
@@ -425,39 +461,5 @@ document.addEventListener('DOMContentLoaded', () => {
         document.getElementById("message-section").appendChild(message);
         document.getElementById("warning-section").style.display = "none";
         document.getElementById("message-section").style.display = "block";
-    }
-
-    async function confirmToxicContent(carouselItemId) {
-        try {
-            console.log("Attempting to remove post with ID:", carouselItemId);
-
-            const response = await fetch('remove-post.php', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({ CarouselItemID: carouselItemId })
-            });
-
-            if (!response.ok) {
-                throw new Error(`HTTP error, status = ${response.status}`);
-            }
-
-            const result = await response.json();
-            console.log("Server response:", result);
-
-            if (result && result.message === 'Post removed successfully.') {
-                var message = document.createElement('p');
-                message.textContent = "You have confirmed the removal of this content. It will be removed immediately from YouthVibe. Thank you for helping us maintain a safe environment.";
-                document.getElementById("message-section").appendChild(message);
-                document.getElementById("warning-section").style.display = "none";
-                document.getElementById("message-section").style.display = "block";
-            } else {
-                console.error("Failed to remove post:", result);
-            }
-        } catch (error) {
-            console.error('Error confirming toxic content:', error);
-            alert(`Error occurred: ${error.message}`);
-        }
     }
 });
