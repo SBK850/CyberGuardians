@@ -378,11 +378,9 @@ document.addEventListener('DOMContentLoaded', () => {
             const toxicityScore = analysisResult.score;
             const percentage = Math.round(toxicityScore * 100);
 
-            // Update the text element with the calculated percentage
             const scoreElement = document.getElementById(scoreElementId);
             scoreElement.textContent = `${percentage}%`;
 
-            // Update the circle element to reflect the toxicity score visually
             const circleContainer = scoreElement.parentNode.parentNode;
             const circle = circleContainer.querySelector('svg circle:nth-child(2)');
             if (circle) {
@@ -394,7 +392,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 circle.style.strokeDashoffset = offset;
             }
 
-            // Display the custom container if it was previously hidden
             const customContainer = document.querySelector('.custom-container');
             customContainer.style.display = 'block';
 
@@ -440,7 +437,6 @@ document.addEventListener('DOMContentLoaded', () => {
         try {
             console.log("Attempting to remove post with ID:", carouselItemId);
     
-            // Change the URL to the new endpoint
             const response = await fetch('https://youthvibe-remove.onrender.com/remove-post', {
                 method: 'POST',
                 headers: {
@@ -453,7 +449,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 throw new Error(`HTTP error, status = ${response.status}`);
             }
     
-            // Check if the response Content-Type is application/json before parsing
             const contentType = response.headers.get('Content-Type');
             if (!contentType || !contentType.includes('application/json')) {
                 throw new Error('Received non-JSON response from the server.');
