@@ -145,29 +145,27 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     
     async function fetchAndDisplayContent(postUrl, contentContainer) {
-        const apiEndpoint = 'https://cyberguardians.onrender.com/scrape';
         try {
-            const response = await fetch(apiEndpoint, {
+            const response = await fetch('https://cyberguardians.onrender.com/scrape', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify({ url: postUrl }),
+                body: JSON.stringify({ url: postUrl })
             });
-
+    
             if (!response.ok) {
                 throw new Error(`Network response was not ok, status: ${response.status}`);
             }
-
-            const jsonData = await response.json();
-            const postData = jsonData[0];
-            const carouselItemId = postData.CarouselItemID;
-
+    
+            const postData = await response.json(); // Ensure correct handling of JSON data
+    
+            // Update DOM elements with the fetched data
             document.getElementById('profileImageUrl').src = postData.ProfilePictureURL || 'placeholder-image-url.png';
             document.getElementById('posterName').textContent = postData.FirstName + " " + postData.LastName || 'Name not available';
             document.getElementById('posterDetails').textContent = `Age: ${postData.Age} | Education: ${postData.Education}` || 'Details not available';
             document.getElementById('postContent').textContent = postData.Content || 'Content not available';
-
+    
             const postImage = document.getElementById('postImage');
             if (postData.UploadedImageData) {
                 postImage.src = `data:image/png;base64,${postData.UploadedImageData}`;
@@ -176,8 +174,9 @@ document.addEventListener('DOMContentLoaded', () => {
             } else {
                 postImage.style.display = 'none';
             }
-
+    
             contentContainer.style.display = 'block';
+    
 
             let textToxicityPromise = postData.Content ? analyseContentForToxicity(postData.Content, 'textToxicityScore') : Promise.resolve(0);
 
