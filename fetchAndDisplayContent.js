@@ -317,10 +317,10 @@ document.addEventListener('DOMContentLoaded', () => {
             text = text.replace(pattern, '');
         });
     
-        text = text.replace(/[0-9]+|[^\w\s]/g, '');
+        text = text.replace(/[0-9\/]+|[^\w\s*]/g, '');
     
         return text.trim();
-    }
+    }    
      
 
     async function fetchTwitterEmbedCode(twitterUrl) {
