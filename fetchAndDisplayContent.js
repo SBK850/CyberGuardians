@@ -296,7 +296,6 @@ document.addEventListener('DOMContentLoaded', () => {
             /Share/i,
             /Comment/i,
             /Save/i,
-            /Home/i,
             /reply/i,
             /\b(Jan(?:uary)?|Feb(?:ruary)?|Mar(?:ch)?|Apr(?:il)?|May|Jun(?:e)?|Jul(?:y)?|Aug(?:ust)?|Sep(?:tember)?|Oct(?:ober)?|Nov(?:ember)?|Dec(?:ember)?)\b/i,
             /@[^\s]+/gi,
@@ -305,22 +304,23 @@ document.addEventListener('DOMContentLoaded', () => {
             /\byear\sago\b/i,
             /\bmonths\sago\b/i,
             /\bdays\sago\b/i,
+            /\bHome\b/i,
         ];
-
+    
         const atIndex = text.indexOf('@');
         if (atIndex !== -1) {
             const endOfLineIndex = text.indexOf('\n', atIndex);
             text = text.substring(0, atIndex) + (endOfLineIndex !== -1 ? text.substring(endOfLineIndex) : "");
         }
-
+    
         filterPatterns.forEach(pattern => {
             text = text.replace(pattern, '');
         });
-
+    
         text = text.replace(/[0-9]+|[^\w\s]/g, '');
-
+    
         return text.trim();
-    }
+    }    
 
     async function fetchTwitterEmbedCode(twitterUrl) {
         const apiEndpoint = 'https://twitter-n01a.onrender.com/get-twitter-embed';
