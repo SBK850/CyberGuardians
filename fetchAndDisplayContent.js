@@ -296,6 +296,7 @@ document.addEventListener('DOMContentLoaded', () => {
             /Share/i,
             /Comment/i,
             /Save/i,
+            /Home/i,
             /reply/i,
             /\b(Jan(?:uary)?|Feb(?:ruary)?|Mar(?:ch)?|Apr(?:il)?|May|Jun(?:e)?|Jul(?:y)?|Aug(?:ust)?|Sep(?:tember)?|Oct(?:ober)?|Nov(?:ember)?|Dec(?:ember)?)\b/i,
             /@[^\s]+/gi,
