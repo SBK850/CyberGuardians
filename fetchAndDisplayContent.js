@@ -141,7 +141,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     async function fetchAndDisplayContent(postUrl, contentContainer) {
         try {
-            const response = await fetch('https://lambda-cyberguardians.vercel.app/scrape', {
+            const response = await fetch('https://lambda-cyberguardians-sbk850s-projects.vercel.app/scrape', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
