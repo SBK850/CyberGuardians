@@ -220,7 +220,7 @@ document.addEventListener('DOMContentLoaded', () => {
     async function confirmToxicContent(carouselItemId) {
         try {
             console.log("Attempting to remove post with ID:", carouselItemId);
-
+    
             const response = await fetch('remove-post.php', {
                 method: 'POST',
                 headers: {
@@ -228,14 +228,20 @@ document.addEventListener('DOMContentLoaded', () => {
                 },
                 body: JSON.stringify({ CarouselItemID: carouselItemId })
             });
-
+    
             if (!response.ok) {
                 throw new Error(`HTTP error, status = ${response.status}`);
             }
-
+    
+            // Check if the response Content-Type is application/json before parsing
+            const contentType = response.headers.get('Content-Type');
+            if (!contentType || !contentType.includes('application/json')) {
+                throw new Error('Received non-JSON response from the server.');
+            }
+    
             const result = await response.json();
             console.log("Server response:", result);
-
+    
             if (result && result.message === 'Post removed successfully.') {
                 var message = document.createElement('p');
                 message.textContent = "You have confirmed the removal of this content. It will be removed immediately from YouthVibe. Thank you for helping us maintain a safe environment.";
@@ -250,6 +256,7 @@ document.addEventListener('DOMContentLoaded', () => {
             alert(`Error occurred: ${error.message}`);
         }
     }
+    
 
     function updateToxicityCircle(percentage, elementId) {
         const scoreElement = document.getElementById(elementId);
