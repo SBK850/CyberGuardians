@@ -175,6 +175,11 @@ document.addEventListener('DOMContentLoaded', () => {
                 postImage.style.display = 'none';
             }
 
+            const confirmButton = document.getElementById('confirmButton');
+            if (confirmButton) {
+                confirmButton.onclick = function() { confirmToxicContent(carouselItemId); };
+            }
+
             contentContainer.style.display = 'block';
 
 
