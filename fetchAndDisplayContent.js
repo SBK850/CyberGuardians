@@ -1,8 +1,8 @@
 document.addEventListener('DOMContentLoaded', () => {
     const form = document.getElementById('reportForm');
     const postUrlInput = document.getElementById('postUrl');
+    
     const submitButton = form.querySelector('.btn');
-
     form.addEventListener('submit', async (e) => {
         e.preventDefault();
 
