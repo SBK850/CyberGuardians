@@ -1,6 +1,9 @@
 document.addEventListener('DOMContentLoaded', () => {
     const form = document.getElementById('reportForm');
     const postUrlInput = document.getElementById('postUrl');
+    const twitterEmbedContainer = document.getElementById('twitterEmbedContainer');
+    const contentContainer = document.getElementById('content');
+    const customContainer = document.querySelector('.custom-container');
 
     const submitButton = form.querySelector('.btn');
     form.addEventListener('submit', async (e) => {
@@ -46,14 +49,6 @@ document.addEventListener('DOMContentLoaded', () => {
             }, 1200000);
         });
     }
-});
-
-document.addEventListener('DOMContentLoaded', () => {
-    const form = document.getElementById('reportForm');
-    const postUrlInput = document.getElementById('postUrl');
-    const twitterEmbedContainer = document.getElementById('twitterEmbedContainer');
-    const contentContainer = document.getElementById('content');
-    const customContainer = document.querySelector('.custom-container');
 
     const toggleDisplay = (elements, displayStyle) => {
         elements.forEach(element => {
