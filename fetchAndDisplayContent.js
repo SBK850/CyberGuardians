@@ -87,7 +87,7 @@ document.addEventListener('DOMContentLoaded', () => {
         try {
             if (domain === 'x.com' || domain === 'twitter.com') {
                 await processTwitterUrl(postUrl);
-            } else if (domain.includes('youthvibe.rf.gd')) {
+            } else if (domain.includes('youthvibe.000webhostapp.com')) {
                 await fetchAndDisplayContent(postUrl, contentContainer);
             } else {
                 throw new Error('URL domain not recognized for special handling.');
