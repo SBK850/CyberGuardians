@@ -431,7 +431,7 @@ document.addEventListener('DOMContentLoaded', () => {
         try {
             console.log("Attempting to remove post with ID:", carouselItemId);
 
-            const response = await fetch('remove.php', {
+            const response = await fetch('remove-post.php', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
