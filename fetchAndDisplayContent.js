@@ -394,8 +394,6 @@ document.addEventListener('DOMContentLoaded', () => {
             console.error('Error analyzing content:', error);
         }
     }
-    
-    
 
     function loadTwitterWidgets() {
         const script = document.createElement('script');
@@ -432,8 +430,22 @@ document.addEventListener('DOMContentLoaded', () => {
     async function confirmToxicContent(carouselItemId) {
         try {
             console.log("Attempting to remove post with ID:", carouselItemId);
-            const result = await removeToxicPost(carouselItemId);
+    
+            const response = await fetch('remove.php', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ CarouselItemID: carouselItemId })
+            });
+    
+            if (!response.ok) {
+                throw new Error(`HTTP error, status = ${response.status}`);
+            }
+    
+            const result = await response.json();
             console.log("Server response:", result);
+    
             if (result && result.message === 'Post removed successfully.') {
                 var message = document.createElement('p');
                 message.textContent = "You have confirmed the removal of this content. It will be removed immediately from YouthVibe. Thank you for helping us maintain a safe environment.";
@@ -445,6 +457,7 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         } catch (error) {
             console.error('Error confirming toxic content:', error);
+            alert(`Error occurred: ${error.message}`);
         }
-    }
+    }    
 });
