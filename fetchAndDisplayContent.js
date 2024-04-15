@@ -153,8 +153,17 @@ document.addEventListener('DOMContentLoaded', () => {
                 throw new Error(`Network response was not ok, status: ${response.status}`);
             }
 
+            // Checking for the correct content type
+            const contentType = response.headers.get('Content-Type');
+            if (!contentType || !contentType.includes('application/json')) {
+                throw new TypeError("Oops, we haven't got JSON!");
+            }
+
             const postData = await response.json();
-            const carouselItemId = postData.id;
+            if (typeof postData.CarouselItemID === 'undefined') {
+                throw new Error('CarouselItemID is undefined in the server response.');
+            }
+            const carouselItemId = postData.CarouselItemID;
 
             document.getElementById('profileImageUrl').src = postData.ProfilePictureURL || 'placeholder-image-url.png';
             document.getElementById('posterName').textContent = postData.FirstName + " " + postData.LastName || 'Name not available';
@@ -177,7 +186,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
             contentContainer.style.display = 'block';
 
-
             let textToxicityPromise = postData.Content ? analyseContentForToxicity(postData.Content, 'textToxicityScore') : Promise.resolve(0);
 
             let imageToxicityPromise = postData.UploadedImageData ? callBackendForImageProcessing(postData.UploadedImageData) : Promise.resolve(0);
@@ -197,16 +205,15 @@ document.addEventListener('DOMContentLoaded', () => {
                 document.getElementById('rejectButton').addEventListener('click', rejectToxicContent);
                 const confirmButton = document.getElementById('confirmButton');
                 if (confirmButton) {
-                    (function (id) {
-                        confirmButton.onclick = function () { confirmToxicContent(id); };
-                    })(carouselItemId);
+                    confirmButton.onclick = function () { confirmToxicContent(carouselItemId); };
                 }
             }
 
             $(".btn").addClass('btn-complete');
             setTimeout(() => $(".input").hide(), 3000);
         } catch (error) {
-            console.error(error);
+            console.error('Error fetching and displaying content:', error);
+            alert(`Error occurred: ${error.message}`);
         }
     }
 
