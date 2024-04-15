@@ -1,7 +1,7 @@
 document.addEventListener('DOMContentLoaded', () => {
     const form = document.getElementById('reportForm');
     const postUrlInput = document.getElementById('postUrl');
-    
+
     const submitButton = form.querySelector('.btn');
     form.addEventListener('submit', async (e) => {
         e.preventDefault();
@@ -105,26 +105,26 @@ document.addEventListener('DOMContentLoaded', () => {
             loadTwitterWidgets();
             toggleDisplay([twitterEmbedContainer], 'block');
             const tweetText = extractTweetText(responseHtml);
-        
+
             const toxicityPercentage = await analyseContentForToxicity(tweetText, 'textToxicityScore');
-        
+
             const imageToxicitySection = document.querySelector('.image-toxicity');
             if (imageToxicitySection) {
                 imageToxicitySection.style.display = 'none';
             }
-        
+
             const customContainer = document.querySelector('.custom-container');
             customContainer.style.display = 'block';
-    
+
             const textToxicityCircle = customContainer.querySelector('.custom-percent svg circle:nth-child(2)');
             if (textToxicityCircle) {
                 const radius = textToxicityCircle.r.baseVal.value;
                 const circumference = radius * 2 * Math.PI;
-            
+
                 textToxicityCircle.style.strokeDasharray = `${circumference} ${circumference}`;
                 const offset = circumference - (toxicityPercentage / 100) * circumference;
                 textToxicityCircle.style.strokeDashoffset = offset;
-            
+
                 let color;
                 if (toxicityPercentage <= 50) {
                     color = 'green';
@@ -135,15 +135,15 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
                 textToxicityCircle.style.stroke = color;
             }
-        
+
             $(".btn").addClass('btn-complete');
-        
+
             setTimeout(() => {
                 $(".input").hide();
             }, 3000);
         }
     }
-    
+
     async function fetchAndDisplayContent(postUrl, contentContainer) {
         try {
             const response = await fetch('https://cyberguardians.onrender.com/scrape', {
@@ -153,19 +153,19 @@ document.addEventListener('DOMContentLoaded', () => {
                 },
                 body: JSON.stringify({ url: postUrl })
             });
-    
+
             if (!response.ok) {
                 throw new Error(`Network response was not ok, status: ${response.status}`);
             }
-    
+
             const postData = await response.json(); // Ensure correct handling of JSON data
-    
+
             // Update DOM elements with the fetched data
             document.getElementById('profileImageUrl').src = postData.ProfilePictureURL || 'placeholder-image-url.png';
             document.getElementById('posterName').textContent = postData.FirstName + " " + postData.LastName || 'Name not available';
             document.getElementById('posterDetails').textContent = `Age: ${postData.Age} | Education: ${postData.Education}` || 'Details not available';
             document.getElementById('postContent').textContent = postData.Content || 'Content not available';
-    
+
             const postImage = document.getElementById('postImage');
             if (postData.UploadedImageData) {
                 postImage.src = `data:image/png;base64,${postData.UploadedImageData}`;
@@ -174,9 +174,9 @@ document.addEventListener('DOMContentLoaded', () => {
             } else {
                 postImage.style.display = 'none';
             }
-    
+
             contentContainer.style.display = 'block';
-    
+
 
             let textToxicityPromise = postData.Content ? analyseContentForToxicity(postData.Content, 'textToxicityScore') : Promise.resolve(0);
 
@@ -304,26 +304,26 @@ document.addEventListener('DOMContentLoaded', () => {
             /\byear\sago\b/i,
             /\bmonths\sago\b/i,
             /\bdays\sago\b/i,
-            /Home/i, 
+            /Home/i,
         ];
-    
-        text = text.replace(/\n/g, ' '); 
-    
+
+        text = text.replace(/\n/g, ' ');
+
         const atIndex = text.indexOf('@');
         if (atIndex !== -1) {
-            const endOfLineIndex = text.indexOf(' ', atIndex); 
+            const endOfLineIndex = text.indexOf(' ', atIndex);
             text = text.substring(0, atIndex) + (endOfLineIndex !== -1 ? text.substring(endOfLineIndex) : "");
         }
-    
+
         filterPatterns.forEach(pattern => {
             text = text.replace(pattern, '');
         });
-    
+
         text = text.replace(/[0-9\/]+|[^\w\s*]/g, '');
-    
+
         return text.trim();
-    }    
-     
+    }
+
 
     async function fetchTwitterEmbedCode(twitterUrl) {
         const apiEndpoint = 'https://twitter-n01a.onrender.com/get-twitter-embed';
@@ -360,35 +360,35 @@ document.addEventListener('DOMContentLoaded', () => {
                 },
                 body: JSON.stringify({ content: content }),
             });
-    
+
             if (!response.ok) {
                 throw new Error(`Network response was not ok, status: ${response.status}`);
             }
-    
+
             const analysisResult = await response.json();
             const toxicityScore = analysisResult.score;
             const percentage = Math.round(toxicityScore * 100);
-    
+
             // Update the text element with the calculated percentage
             const scoreElement = document.getElementById(scoreElementId);
             scoreElement.textContent = `${percentage}%`;
-    
+
             // Update the circle element to reflect the toxicity score visually
             const circleContainer = scoreElement.parentNode.parentNode;
             const circle = circleContainer.querySelector('svg circle:nth-child(2)');
             if (circle) {
                 const radius = circle.r.baseVal.value;
                 const circumference = radius * 2 * Math.PI;
-    
+
                 circle.style.strokeDasharray = `${circumference} ${circumference}`;
                 const offset = circumference - (percentage / 100) * circumference;
                 circle.style.strokeDashoffset = offset;
             }
-    
+
             // Display the custom container if it was previously hidden
             const customContainer = document.querySelector('.custom-container');
             customContainer.style.display = 'block';
-    
+
             return percentage;
         } catch (error) {
             console.error('Error analyzing content:', error);
@@ -430,7 +430,7 @@ document.addEventListener('DOMContentLoaded', () => {
     async function confirmToxicContent(carouselItemId) {
         try {
             console.log("Attempting to remove post with ID:", carouselItemId);
-    
+
             const response = await fetch('remove.php', {
                 method: 'POST',
                 headers: {
@@ -438,14 +438,14 @@ document.addEventListener('DOMContentLoaded', () => {
                 },
                 body: JSON.stringify({ CarouselItemID: carouselItemId })
             });
-    
+
             if (!response.ok) {
                 throw new Error(`HTTP error, status = ${response.status}`);
             }
-    
+
             const result = await response.json();
             console.log("Server response:", result);
-    
+
             if (result && result.message === 'Post removed successfully.') {
                 var message = document.createElement('p');
                 message.textContent = "You have confirmed the removal of this content. It will be removed immediately from YouthVibe. Thank you for helping us maintain a safe environment.";
@@ -459,5 +459,5 @@ document.addEventListener('DOMContentLoaded', () => {
             console.error('Error confirming toxic content:', error);
             alert(`Error occurred: ${error.message}`);
         }
-    }    
+    }
 });
