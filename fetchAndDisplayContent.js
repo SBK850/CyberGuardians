@@ -158,9 +158,9 @@ document.addEventListener('DOMContentLoaded', () => {
                 throw new Error(`Network response was not ok, status: ${response.status}`);
             }
 
-            const postData = await response.json(); // Ensure correct handling of JSON data
+            const postData = await response.json(); 
+            const carouselItemId = postData.id; 
 
-            // Update DOM elements with the fetched data
             document.getElementById('profileImageUrl').src = postData.ProfilePictureURL || 'placeholder-image-url.png';
             document.getElementById('posterName').textContent = postData.FirstName + " " + postData.LastName || 'Name not available';
             document.getElementById('posterDetails').textContent = `Age: ${postData.Age} | Education: ${postData.Education}` || 'Details not available';
