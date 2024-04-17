@@ -158,27 +158,27 @@ document.addEventListener('DOMContentLoaded', () => {
                 },
                 body: JSON.stringify({ url: postUrl })
             });
-
+    
             if (!response.ok) {
                 throw new Error(`Network response was not ok, status: ${response.status}`);
             }
-
+    
             const contentType = response.headers.get('Content-Type');
             if (!contentType || !contentType.includes('application/json')) {
                 throw new TypeError("Oops, we haven't got JSON!");
             }
-
+    
             const postData = await response.json();
             if (typeof postData.CarouselItemID === 'undefined') {
                 throw new Error('CarouselItemID is undefined in the server response.');
             }
             const carouselItemId = postData.CarouselItemID;
-
+    
             document.getElementById('profileImageUrl').src = postData.ProfilePictureURL || 'placeholder-image-url.png';
             document.getElementById('posterName').textContent = postData.FirstName + " " + postData.LastName || 'Name not available';
             document.getElementById('posterDetails').textContent = `Age: ${postData.Age} | Education: ${postData.Education}` || 'Details not available';
             document.getElementById('postContent').textContent = postData.Content || 'Content not available';
-
+    
             const postImage = document.getElementById('postImage');
             if (postData.UploadedImageData) {
                 postImage.src = `data:image/png;base64,${postData.UploadedImageData}`;
@@ -187,17 +187,19 @@ document.addEventListener('DOMContentLoaded', () => {
             } else {
                 postImage.style.display = 'none';
             }
-
+    
             const confirmButton = document.getElementById('confirmButton');
             if (confirmButton) {
                 confirmButton.onclick = function () { confirmToxicContent(carouselItemId); };
             }
-
+    
             contentContainer.style.display = 'block';
-
-            let textToxicityPromise = postData.Content ? analyseContentForToxicity(postData.Content, 'textToxicityScore') : Promise.resolve(0);
-            let imageToxicityPromise = postData.UploadedImageData ? callBackendForImageProcessing(postData.UploadedImageData) : Promise.resolve(0);
-
+    
+            // Await the promises here to get the toxicity percentages.
+            const textToxicityPercentage = postData.Content ? await analyseContentForToxicity(postData.Content, 'textToxicityScore') : 0;
+            const imageToxicityPercentage = postData.UploadedImageData ? await callBackendForImageProcessing(postData.UploadedImageData) : 0;
+    
+            // Now that we have the percentages, we can create the analysisData object.
             const analysisData = {
                 url: postUrl,
                 content: postData.Content || '',
@@ -210,28 +212,24 @@ document.addEventListener('DOMContentLoaded', () => {
                 textAnalysisResult: { textToxicityPercentage },
                 imageAnalysisResult: { imageToxicityPercentage }
             };
-
+    
             await storeAnalysisResults(analysisData);
-
-            const [textToxicityPercentage, imageToxicityPercentage] = await Promise.all([textToxicityPromise, imageToxicityPromise]);
-
+    
             updateToxicityCircle(textToxicityPercentage, 'textToxicityScore');
             updateToxicityCircle(imageToxicityPercentage, 'imageToxicityScore');
-
-            const customContainer = document.querySelector('.custom-container');
+    
             if (textToxicityPercentage > 0 || imageToxicityPercentage > 0) {
                 customContainer.style.display = 'block';
             }
-
+    
             if (Math.max(textToxicityPercentage, imageToxicityPercentage) >= 55) {
                 displayWarningCard();
                 document.getElementById('rejectButton').addEventListener('click', rejectToxicContent);
-                const confirmButton = document.getElementById('confirmButton');
                 if (confirmButton) {
                     confirmButton.onclick = function () { confirmToxicContent(carouselItemId); };
                 }
             }
-
+    
             $(".btn").addClass('btn-complete');
             setTimeout(() => $(".input").hide(), 3000);
         } catch (error) {
@@ -239,6 +237,7 @@ document.addEventListener('DOMContentLoaded', () => {
             alert(`Error occurred: ${error.message}`);
         }
     }
+    
 
     function updateToxicityCircle(percentage, elementId) {
         const scoreElement = document.getElementById(elementId);
