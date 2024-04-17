@@ -100,8 +100,18 @@ document.addEventListener('DOMContentLoaded', () => {
             loadTwitterWidgets();
             toggleDisplay([twitterEmbedContainer], 'block');
             const tweetText = extractTweetText(responseHtml);
-
             const toxicityPercentage = await analyseContentForToxicity(tweetText, 'textToxicityScore');
+
+            // Prepare the data for storage - only text analysis data for Twitter
+            const analysisData = {
+                url: postUrl,
+                content: tweetText,
+                metadata: {}, // Add any relevant metadata you wish to store
+                toxicityScore: toxicityPercentage,
+                textAnalysisResult: { toxicityPercentage }
+            };
+            // Store the analysis results
+            await storeAnalysisResults(analysisData);
 
             const imageToxicitySection = document.querySelector('.image-toxicity');
             if (imageToxicitySection) {
@@ -153,7 +163,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 throw new Error(`Network response was not ok, status: ${response.status}`);
             }
 
-            // Checking for the correct content type
             const contentType = response.headers.get('Content-Type');
             if (!contentType || !contentType.includes('application/json')) {
                 throw new TypeError("Oops, we haven't got JSON!");
@@ -436,7 +445,7 @@ document.addEventListener('DOMContentLoaded', () => {
     async function confirmToxicContent(carouselItemId) {
         try {
             console.log("Attempting to remove post with ID:", carouselItemId);
-    
+
             const response = await fetch('https://youthvibe-remove.onrender.com/remove-post', {
                 method: 'POST',
                 headers: {
@@ -444,19 +453,19 @@ document.addEventListener('DOMContentLoaded', () => {
                 },
                 body: JSON.stringify({ CarouselItemID: carouselItemId })
             });
-    
+
             if (!response.ok) {
                 throw new Error(`HTTP error, status = ${response.status}`);
             }
-    
+
             const contentType = response.headers.get('Content-Type');
             if (!contentType || !contentType.includes('application/json')) {
                 throw new Error('Received non-JSON response from the server.');
             }
-    
+
             const result = await response.json();
             console.log("Server response:", result);
-    
+
             if (result && result.message === 'Post removed successfully.') {
                 var message = document.createElement('p');
                 message.textContent = "You have confirmed the removal of this content. It will be removed immediately from YouthVibe. Thank you for helping us maintain a safe environment.";
@@ -470,5 +479,21 @@ document.addEventListener('DOMContentLoaded', () => {
             console.error('Error confirming toxic content:', error);
             alert(`Error occurred: ${error.message}`);
         }
-    }    
+    }
+
+    async function storeAnalysisResults(data) {
+        try {
+            const response = await fetch('https://your-nodejs-server.com/store-analysis', { // Replace with your actual endpoint
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(data)
+            });
+            const responseData = await response.json();
+            console.log('Store analysis results:', responseData);
+        } catch (error) {
+            console.error('Error storing analysis results:', error);
+        }
+    }
 });
