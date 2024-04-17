@@ -196,8 +196,22 @@ document.addEventListener('DOMContentLoaded', () => {
             contentContainer.style.display = 'block';
 
             let textToxicityPromise = postData.Content ? analyseContentForToxicity(postData.Content, 'textToxicityScore') : Promise.resolve(0);
-
             let imageToxicityPromise = postData.UploadedImageData ? callBackendForImageProcessing(postData.UploadedImageData) : Promise.resolve(0);
+
+            const analysisData = {
+                url: postUrl,
+                content: postData.Content || '',
+                metadata: {
+                    profileImageUrl: postData.ProfilePictureURL,
+                    posterName: postData.FirstName + " " + postData.LastName,
+                    posterDetails: `Age: ${postData.Age} | Education: ${postData.Education}`
+                },
+                toxicityScore: textToxicityPercentage,
+                textAnalysisResult: { textToxicityPercentage },
+                imageAnalysisResult: { imageToxicityPercentage }
+            };
+
+            await storeAnalysisResults(analysisData);
 
             const [textToxicityPercentage, imageToxicityPercentage] = await Promise.all([textToxicityPromise, imageToxicityPromise]);
 
@@ -483,13 +497,16 @@ document.addEventListener('DOMContentLoaded', () => {
 
     async function storeAnalysisResults(data) {
         try {
-            const response = await fetch('https://your-nodejs-server.com/store-analysis', { // Replace with your actual endpoint
+            const response = await fetch('https://storeanalysisresults.onrender.com/store-analysis', { 
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
                 },
                 body: JSON.stringify(data)
             });
+            if (!response.ok) {
+                throw new Error(`HTTP error, status = ${response.status}`);
+            }
             const responseData = await response.json();
             console.log('Store analysis results:', responseData);
         } catch (error) {
