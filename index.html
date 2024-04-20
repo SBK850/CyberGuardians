@@ -2,109 +2,73 @@
 <html lang="en">
 
 <head>
-    <meta charset="UTF-8">
-    <title>CyberGuardians | Take a Stand: Report Now</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8">
+  <title>CyberGuardians | Take a Stand: Report Now</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@100..700&display=swap" rel="stylesheet">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@100..700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://codepen.io/giana/pen/XWGyRbL.css">
+  <link rel="stylesheet" href="style.css">
 
-    <link rel='stylesheet' href='https://maxcdn.bootstrapcdn.com/font-awesome/4.6.3/css/font-awesome.min.css'>
-
-    <link rel='stylesheet' href='https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.7/tailwind.min.css'>
-
-    <link rel='stylesheet' href='https://codepen.io/giana/pen/XWGyRbL.css'>
-    <link rel="stylesheet" href="style.css">
-    <link rel="stylesheet" href="report.css">
-
-    <link rel="apple-touch-icon" sizes="180x180" href="favicon/apple-touch-icon.png">
-    <link rel="icon" type="image/png" sizes="32x32" href="favicon/favicon-32x32.png">
-    <link rel="icon" type="image/png" sizes="16x16" href="favicon/favicon-16x16.png">
-    <link rel="manifest" href="favicon/site.webmanifest">
-    <meta name="msapplication-TileColor" content="#da532c">
-    <meta name="theme-color" content="#ffffff">
+  <link rel="apple-touch-icon" sizes="180x180" href="favicon/apple-touch-icon.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="favicon/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="favicon/favicon-16x16.png">
+  <link rel="manifest" href="favicon/site.webmanifest">
+  <meta name="msapplication-TileColor" content="#da532c">
+  <meta name="theme-color" content="#ffffff">
 </head>
 
 <body>
-    <div role="alert" class="warning">Your browser doesn't support scroll animations. This demo will not work.</div>
-    <header class="site-header">
-        <h1>Cyber<span>Guardians</span></h1>
+  <div role="alert" class="warning">Your browser doesn't support scroll animations. This demo will not work.</div>
 
-        <button class="mobile-menu-button hamburger-icon" aria-controls="site-navigation" aria-expanded="false" onclick="toggleMenu(this)">
-            <span class="visually-hidden">Toggle navigation</span>
-            <i class="fa fa-bars" aria-hidden="true"></i>
+  <header class="site-header">
+    <h1 id="main-heading">Cyber<span>Guardians</span></h1>
+
+    <nav aria-labelledby="main-heading" class="site-navigation">
+      <button aria-controls="navigation-menu" aria-expanded="false" class="mobile-menu-button hamburger-icon">
+        <span aria-hidden="true">☰</span>
+        <span class="visually-hidden">Menu</span>
+      </button>
+
+      <div id="navigation-menu" class="navigation-animation-wrapper" hidden>
+        <button aria-controls="navigation-menu" aria-expanded="true" class="mobile-menu-button close-icon">
+          <span aria-hidden="true">×</span>
+          <span class="visually-hidden">Close menu</span>
         </button>
 
-        <nav id="site-navigation" class="site-navigation" aria-hidden="true">
-            <button class="mobile-menu-button close-icon" aria-expanded="true" onclick="toggleMenu(this)">
-                <span class="visually-hidden">Close navigation</span>
-                <i class="fa fa-times" aria-hidden="true"></i>
-            </button>
+        <ul class="nav-list">
+          <li style="--index: 0"><a href="index">Home</a></li>
+          <li style="--index: 1"><a href="report">Report</a></li>
+          <li style="--index: 2"><a href="resources">Resources</a></li>
+          <li style="--index: 3"><a href="about">About</a></li>
+          <li style="--index: 4"><a href="report" class="button">Report Now</a></li>
+        </ul>
+      </div>
+    </nav>
+  </header>
 
-            <ul class="nav-list">
-                <li style="--index: 0"><a href="index">Home</a></li>
-                <li style="--index: 1"><a href="report">Report</a></li>
-                <li style="--index: 2"><a href="resources">Resources</a></li>
-                <li style="--index: 3"><a href="about">About</a></li>
-                <li style="--index: 4"><a href="report" class="button">Report Now</a></li>
-            </ul>
-        </nav>
-    </header>
-
-    <div class="container" role="main">
-        <h2>Empowering Action Against Cyberbullying: <span>Report Online Abuse</span></h2>
-
-        <form id="reportForm" class="input">
-            <label for="postUrl" class="visually-hidden">Enter Post URL</label>
-            <input type="text" id="postUrl" autofocus="true" required placeholder="Enter Post URL" aria-describedby="submitHelp">
-            <button type="submit" class='btn'>Submit</button>
-            <div id="submitHelp" class="visually-hidden">Press submit to report the URL</div>
-        </form>
+  <main>
+    <div class="left-content">
+      <h2>Uniting to Shield Every Voice: <span>Your Ally Against Cyberbullying</span></h2>
     </div>
 
-    <div class="container-s" aria-live="polite">
-        <div id="twitterEmbedContainer"></div>
-        <div id="content" style="display: none;">
-            <img id="profileImageUrl" src="" alt="Profile Image">
-            <div id="posterName"></div>
-            <div id="posterDetails"></div>
-            <div id="postContent"></div>
-            <img id="postImage" src="" alt="Post Image">
-        </div>
+    <div class="right-content">
+      <p>If you're facing or witnessing cyberbullying, you're not alone. Our platform provides a quick and secure way to
+        report these incidents. Your courage to speak up is the first step towards making the online world safer for
+        everyone.</p>
+
+      <p>Click <a href="https://main.dc5bz0dk3svjz.amplifyapp.com/report">here</a> to report an incident. Your report is anonymous and crucial in fighting
+        cyberbullying. Together, we can create a kinder digital community.</p>
     </div>
+  </main>
 
-    <div class="custom-container" id="custom-container">
-        <div class="custom-card">
-            <h2 class="custom-text">Toxicity Scores</h2>
-            <div class="custom-percent" aria-label="Text toxicity score: 0%">
-                <svg>
-                    <circle cx="70" cy="70" r="70"></circle>
-                    <circle cx="70" cy="70" r="70"></circle>
-                </svg>
-                <div class="custom-num">
-                    <h3>0%</h3>
-                </div>
-            </div>
-            <div class="custom-percent" aria-label="Image toxicity score: 0%">
-                <svg>
-                    <circle cx="70" cy="70" r="70"></circle>
-                    <circle cx="70" cy="70" r="70"></circle>
-                </svg>
-                <div class="custom-num">
-                    <h3>0%</h3>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <footer>
-        <p>By. <a href="https://www.linkedin.com/in/seikou-bah-karagera/" target="_top">Seikou Bah Karagera</a>.</p>
-    </footer>
-
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
-    <script src="index.js"></script>
-    <script src="fetchAndDisplayContent.js"></script>
+  <footer>
+    <p>By. <a href="https://www.linkedin.com/in/seikou-bah-karagera/" target="_top">Seikou Bah Karagera</a>.</p>
+  </footer>
 </body>
+
+<script src="index.js"></script>
 
 </html>
