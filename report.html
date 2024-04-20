@@ -27,20 +27,19 @@
 </head>
 
 <body>
-    <div class="warning">Your browser doesn't support scroll animations. This demo will not work.</div>
+    <div role="alert" class="warning">Your browser doesn't support scroll animations. This demo will not work.</div>
     <header class="site-header">
         <h1>Cyber<span>Guardians</span></h1>
 
-        <label class="mobile-menu-button hamburger-icon">
+        <label class="mobile-menu-button hamburger-icon" aria-label="Open Navigation">
             <input type="radio" name="toggle-navigation" class="open-navigation navigation-closed" autocomplete="off">
             <span class="visually-hidden">Open Navigation</span>
         </label>
 
         <nav class="site-navigation">
             <div class="navigation-animation-wrapper">
-                <label class="mobile-menu-button close-icon">
-                    <input type="radio" name="toggle-navigation" class="close-navigation navigation-opened"
-                        autocomplete="off">
+                <label class="mobile-menu-button close-icon" aria-label="Close Navigation">
+                    <input type="radio" name="toggle-navigation" class="close-navigation navigation-opened" autocomplete="off">
                     <span class="visually-hidden">Close navigation</span>
                 </label>
 
@@ -60,31 +59,29 @@
         <h2 style="text-align: center; margin-bottom: 1rem;">Empowering Action Against Cyberbullying: <span>Report
                 Online Abuse</span></h2>
 
-        <form id="reportForm" class="input">
-            <input type="text" id="postUrl" autofocus="true" required placeholder="Enter Post URL">
+        <form id="reportForm" class="input" aria-label="Report Form">
+            <input type="text" id="postUrl" autofocus="true" required placeholder="Enter Post URL" aria-label="Input for post URL">
             <button type="submit" class='btn'>Submit</button>
         </form>
     </div>
 
-    <div class="container-s" style="margin: 0 auto;">
+    <div class="container-s" style="margin: 0 auto;" aria-live="polite">
         <div id="twitterEmbedContainer" style="width: 21rem;"></div>
 
         <div id="content"
             style="display: block;width: initial !important;background-color: #585d5d;border-radius: 1rem; display: none;">
-            <div class="profile-image">
-                <img id="profileImageUrl" src="" alt="Profile Image">
-            </div>
-            <div class="poster-name" id="posterName"></div>
-            <div class="poster-details" id="posterDetails"></div>
-            <div class="post-content" id="postContent"></div>
-            <img id="postImage" src="" alt="Post Image" style="max-width: 100%; height: auto;">
+            <img id="profileImageUrl" src="" alt="Profile Image" aria-label="Profile image displayed here">
+            <div id="posterName" aria-label="Poster's name"></div>
+            <div id="posterDetails" aria-label="Poster's details"></div>
+            <div id="postContent" aria-label="Content of the post"></div>
+            <img id="postImage" src="" alt="Post Image" aria-label="Image posted">
         </div>
 
-        <div class="custom-container" id="custom-container">
+        <div class="custom-container" id="custom-container" aria-label="Toxicity scores display">
             <div class="custom-card">
                 <div class="custom-box" style="display: flex; justify-content: space-around; width: 100%;">
                     <div>
-                        <div class="custom-percent">
+                        <div class="custom-percent" aria-label="Text toxicity score">
                             <svg>
                                 <circle cx="70" cy="70" r="70"></circle>
                                 <circle cx="70" cy="70" r="70"></circle>
@@ -96,7 +93,7 @@
                         <h2 class="custom-text">Text Toxicity</h2>
                     </div>
                     <div class="image-toxicity">
-                        <div class="custom-percent">
+                        <div class="custom-percent" aria-label="Image toxicity score">
                             <svg>
                                 <circle cx="70" cy="70" r="70"></circle>
                                 <circle cx="70" cy="70" r="70"></circle>
@@ -112,34 +109,12 @@
         </div>
     </div>
 
-    <div class="card-x" id="warning-section">
-        <div class="card bg-white rounded-2xl p-8 w-96">
-            <header class="flex items-center justify-between">
-                <p class="text-base font-semibold" style="margin: 0;">Warning: Potentially Toxic Content Detected!</p>
-            </header>
-            <br>
-            <p class="my-8 text-sm text-gray-600 leading-6" style="margin: 0;">Our algorithm and machine learning system
-                has detected
-                that this post has a high toxicity, and it may contain offensive words. Would you like to remove it
-                from the social media YouthVibe, so no one else can see this offensive post? This action cannot be
-                undone.</p>
-            <br>
-            <button id="rejectButton" onclick="rejectToxicContent()"
-                class="py-3.5 block w-full text-primary text-center text-sm font-medium rounded-lg mb-2 bg-blue-100 hover:bg-blue-50">Reject</button>
-            <button id="confirmButton"
-                class="py-3.5 block w-full text-center text-sm font-medium rounded-lg bg-primary text-white hover:bg-blue-500"
-                data-carousel-item-id="SPECIFIC_ID"
-                onclick="confirmToxicContent(this.getAttribute('data-carousel-item-id'))">Confirm</button>
-        </div>
-    </div>
-
-    <div id="message-section" class="mt-4 mx-auto w-96"></div>
-
     <footer>
         <p>By. <a href="https://www.linkedin.com/in/seikou-bah-karagera/" target="_top">Seikou Bah Karagera</a>.</p>
     </footer>
 
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script src="index.js"></script>
     <script src="fetchAndDisplayContent.js"></script>
 </body>
 
