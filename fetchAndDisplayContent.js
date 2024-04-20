@@ -195,11 +195,9 @@ document.addEventListener('DOMContentLoaded', () => {
     
             contentContainer.style.display = 'block';
     
-            // Await the promises here to get the toxicity percentages.
             const textToxicityPercentage = postData.Content ? await analyseContentForToxicity(postData.Content, 'textToxicityScore') : 0;
             const imageToxicityPercentage = postData.UploadedImageData ? await callBackendForImageProcessing(postData.UploadedImageData) : 0;
     
-            // Now that we have the percentages, we can create the analysisData object.
             const analysisData = {
                 url: postUrl,
                 content: postData.Content || '',

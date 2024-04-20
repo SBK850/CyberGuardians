@@ -9,7 +9,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@100..700&display=swap" rel="stylesheet">
-  <link rel='stylesheet' href='https://codepen.io/giana/pen/XWGyRbL.css'>
+  <link rel="stylesheet" href="https://codepen.io/giana/pen/XWGyRbL.css">
   <link rel="stylesheet" href="style.css">
 
   <link rel="apple-touch-icon" sizes="180x180" href="favicon/apple-touch-icon.png">
@@ -21,22 +21,22 @@
 </head>
 
 <body>
-  <div class="warning">Your browser doesn't support scroll animations. This demo will not work.</div>
+  <div role="alert" class="warning">Your browser doesn't support scroll animations. This demo will not work.</div>
 
   <header class="site-header">
-    <h1>Cyber<span>Guardians</span></h1>
+    <h1 id="main-heading">Cyber<span>Guardians</span></h1>
 
-    <label class="mobile-menu-button hamburger-icon">
-      <input type="radio" name="toggle-navigation" class="open-navigation navigation-closed" autocomplete="off">
-      <span class="visually-hidden">Open Navigation</span>
-    </label>
+    <nav aria-labelledby="main-heading" class="site-navigation">
+      <button aria-controls="navigation-menu" aria-expanded="false" class="mobile-menu-button hamburger-icon">
+        <span aria-hidden="true">☰</span>
+        <span class="visually-hidden">Menu</span>
+      </button>
 
-    <nav class="site-navigation">
-      <div class="navigation-animation-wrapper">
-        <label class="mobile-menu-button close-icon">
-          <input type="radio" name="toggle-navigation" class="close-navigation navigation-opened" autocomplete="off">
-          <span class="visually-hidden">Close navigation</span>
-        </label>
+      <div id="navigation-menu" class="navigation-animation-wrapper" hidden>
+        <button aria-controls="navigation-menu" aria-expanded="true" class="mobile-menu-button close-icon">
+          <span aria-hidden="true">×</span>
+          <span class="visually-hidden">Close menu</span>
+        </button>
 
         <ul class="nav-list">
           <li style="--index: 0"><a href="index">Home</a></li>
