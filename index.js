@@ -4,7 +4,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     menuButton.addEventListener('click', function() {
         const isExpanded = this.getAttribute('aria-expanded') === 'true';
-        this.setAttribute('aria-expanded', !isExpanded);
-        menu.hidden = isExpanded; 
+        this.setAttribute('aria-expanded', String(!isExpanded));
+        menu.hidden = !isExpanded;
     });
 });
