@@ -31,68 +31,79 @@
     <header class="site-header">
         <h1>Cyber<span>Guardians</span></h1>
 
-        <button class="mobile-menu-button hamburger-icon" aria-controls="site-navigation" aria-expanded="false" onclick="toggleMenu(this)">
-            <span class="visually-hidden">Toggle navigation</span>
-            <i class="fa fa-bars" aria-hidden="true"></i>
-        </button>
+        <label class="mobile-menu-button hamburger-icon" aria-label="Open Navigation">
+            <input type="radio" name="toggle-navigation" class="open-navigation navigation-closed" autocomplete="off">
+            <span class="visually-hidden">Open Navigation</span>
+        </label>
 
-        <nav id="site-navigation" class="site-navigation" aria-hidden="true">
-            <button class="mobile-menu-button close-icon" aria-expanded="true" onclick="toggleMenu(this)">
-                <span class="visually-hidden">Close navigation</span>
-                <i class="fa fa-times" aria-hidden="true"></i>
-            </button>
+        <nav class="site-navigation">
+            <div class="navigation-animation-wrapper">
+                <label class="mobile-menu-button close-icon" aria-label="Close Navigation">
+                    <input type="radio" name="toggle-navigation" class="close-navigation navigation-opened" autocomplete="off">
+                    <span class="visually-hidden">Close navigation</span>
+                </label>
 
-            <ul class="nav-list">
-                <li style="--index: 0"><a href="index">Home</a></li>
-                <li style="--index: 1"><a href="report">Report</a></li>
-                <li style="--index: 2"><a href="resources">Resources</a></li>
-                <li style="--index: 3"><a href="about">About</a></li>
-                <li style="--index: 4"><a href="report" class="button">Report Now</a></li>
-            </ul>
+                <ul class="nav-list">
+                    <li style="--index: 0"><a href="index">Home</a></li>
+                    <li style="--index: 1"><a href="report">Report</a></li>
+                    <li style="--index: 2"><a href="resources">Resources</a></li>
+                    <li style="--index: 3"><a href="about">About</a></li>
+                    <li style="--index: 4"><a href="report" class="button">Report Now</a></li>
+                </ul>
+            </div>
         </nav>
     </header>
 
-    <div class="container" role="main">
-        <h2>Empowering Action Against Cyberbullying: <span>Report Online Abuse</span></h2>
+    <div
+        style="width: 800px; height: auto; margin: 0 auto; display: flex; flex-direction: column; justify-content: center; align-items: center;">
+        <h2 style="text-align: center; margin-bottom: 1rem;">Empowering Action Against Cyberbullying: <span>Report
+                Online Abuse</span></h2>
 
-        <form id="reportForm" class="input">
-            <label for="postUrl" class="visually-hidden">Enter Post URL</label>
-            <input type="text" id="postUrl" autofocus="true" required placeholder="Enter Post URL" aria-describedby="submitHelp">
+        <form id="reportForm" class="input" aria-label="Report Form">
+            <input type="text" id="postUrl" autofocus="true" required placeholder="Enter Post URL" aria-label="Input for post URL">
             <button type="submit" class='btn'>Submit</button>
-            <div id="submitHelp" class="visually-hidden">Press submit to report the URL</div>
         </form>
     </div>
 
-    <div class="container-s" aria-live="polite">
-        <div id="twitterEmbedContainer"></div>
-        <div id="content" style="display: none;">
-            <img id="profileImageUrl" src="" alt="Profile Image">
-            <div id="posterName"></div>
-            <div id="posterDetails"></div>
-            <div id="postContent"></div>
-            <img id="postImage" src="" alt="Post Image">
-        </div>
-    </div>
+    <div class="container-s" style="margin: 0 auto;" aria-live="polite">
+        <div id="twitterEmbedContainer" style="width: 21rem;"></div>
 
-    <div class="custom-container" id="custom-container">
-        <div class="custom-card">
-            <h2 class="custom-text">Toxicity Scores</h2>
-            <div class="custom-percent" aria-label="Text toxicity score: 0%">
-                <svg>
-                    <circle cx="70" cy="70" r="70"></circle>
-                    <circle cx="70" cy="70" r="70"></circle>
-                </svg>
-                <div class="custom-num">
-                    <h3>0%</h3>
-                </div>
-            </div>
-            <div class="custom-percent" aria-label="Image toxicity score: 0%">
-                <svg>
-                    <circle cx="70" cy="70" r="70"></circle>
-                    <circle cx="70" cy="70" r="70"></circle>
-                </svg>
-                <div class="custom-num">
-                    <h3>0%</h3>
+        <div id="content"
+            style="display: block;width: initial !important;background-color: #585d5d;border-radius: 1rem; display: none;">
+            <img id="profileImageUrl" src="" alt="Profile Image" aria-label="Profile image displayed here">
+            <div id="posterName" aria-label="Poster's name"></div>
+            <div id="posterDetails" aria-label="Poster's details"></div>
+            <div id="postContent" aria-label="Content of the post"></div>
+            <img id="postImage" src="" alt="Post Image" aria-label="Image posted">
+        </div>
+
+        <div class="custom-container" id="custom-container" aria-label="Toxicity scores display">
+            <div class="custom-card">
+                <div class="custom-box" style="display: flex; justify-content: space-around; width: 100%;">
+                    <div>
+                        <div class="custom-percent" aria-label="Text toxicity score">
+                            <svg>
+                                <circle cx="70" cy="70" r="70"></circle>
+                                <circle cx="70" cy="70" r="70"></circle>
+                            </svg>
+                            <div class="custom-num">
+                                <h2><span id="textToxicityScore">0%</span></h2>
+                            </div>
+                        </div>
+                        <h2 class="custom-text">Text Toxicity</h2>
+                    </div>
+                    <div class="image-toxicity">
+                        <div class="custom-percent" aria-label="Image toxicity score">
+                            <svg>
+                                <circle cx="70" cy="70" r="70"></circle>
+                                <circle cx="70" cy="70" r="70"></circle>
+                            </svg>
+                            <div class="custom-num">
+                                <h2><span id="imageToxicityScore">0%</span></h2>
+                            </div>
+                        </div>
+                        <h2 class="custom-text">Image Toxicity</h2>
+                    </div>
                 </div>
             </div>
         </div>
@@ -103,7 +114,6 @@
     </footer>
 
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
-    <script src="index.html"></script>
     <script src="fetchAndDisplayContent.js"></script>
 </body>
 
