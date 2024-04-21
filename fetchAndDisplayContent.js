@@ -4,26 +4,23 @@ document.addEventListener('DOMContentLoaded', () => {
     const twitterEmbedContainer = document.getElementById('twitterEmbedContainer');
     const contentContainer = document.getElementById('content');
     const customContainer = document.querySelector('.custom-container');
+    const submitButton = form.querySelector('.btn');
 
     let apiRequestCount = sessionStorage.getItem('apiRequestCount') || 0;
     sessionStorage.setItem('apiRequestCount', apiRequestCount);
 
-    const submitButton = form.querySelector('.btn');
     form.addEventListener('submit', async (e) => {
         e.preventDefault();
     
-        // Check if API request limit has been exceeded
         if (parseInt(apiRequestCount) >= 10) {
             alert('You have reached the maximum number of requests allowed.');
-            return; // Stop further execution
+            return; 
         }
     
         try {
-            // Process form and send request to the Perspective API
-            const result = await analyseContentForToxicity(...);
+            const result = await analyseContentForToxicity(postUrlInput.value, 'textToxicityScore');
             apiRequestCount++;
             sessionStorage.setItem('apiRequestCount', apiRequestCount);
-            // Additional code to handle the response
         } catch (error) {
             console.error('Submission error:', error);
             alert('Failed to process the submission');
@@ -39,7 +36,7 @@ document.addEventListener('DOMContentLoaded', () => {
             console.error('Submission error:', error);
             alert('Failed to process the submission');
         }
-    });
+    });    
 
     function startLoadingAnimation(button) {
         button.disabled = true;
