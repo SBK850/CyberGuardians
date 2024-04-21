@@ -284,3 +284,12 @@ form input {
 .custom-container {
 	display: none;
 }
+
+.btn-large {
+    padding: 12px;
+    width: 100%;
+}
+
+.hidden {
+    display: none;
+}

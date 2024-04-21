@@ -454,9 +454,19 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     async function confirmToxicContent(carouselItemId) {
+        const confirmButton = document.getElementById("confirmButton");
+        const rejectButton = document.getElementById("rejectButton");
+    
+        confirmButton.textContent = "Processing...";
+        confirmButton.style.width = "100%"; 
+        confirmButton.style.padding = "12px"; 
+        confirmButton.disabled = true; 
+
+        rejectButton.style.display = "none";
+    
         try {
             console.log("Attempting to remove post with ID:", carouselItemId);
-
+    
             const response = await fetch('https://youthvibe-remove.onrender.com/remove-post', {
                 method: 'POST',
                 headers: {
@@ -464,19 +474,14 @@ document.addEventListener('DOMContentLoaded', () => {
                 },
                 body: JSON.stringify({ CarouselItemID: carouselItemId })
             });
-
+    
             if (!response.ok) {
                 throw new Error(`HTTP error, status = ${response.status}`);
             }
-
-            const contentType = response.headers.get('Content-Type');
-            if (!contentType || !contentType.includes('application/json')) {
-                throw new Error('Received non-JSON response from the server.');
-            }
-
+    
             const result = await response.json();
             console.log("Server response:", result);
-
+    
             if (result && result.message === 'Post removed successfully.') {
                 var message = document.createElement('p');
                 message.textContent = "You have confirmed the removal of this content. It will be removed immediately from YouthVibe. Thank you for helping us maintain a safe environment.";
@@ -489,8 +494,13 @@ document.addEventListener('DOMContentLoaded', () => {
         } catch (error) {
             console.error('Error confirming toxic content:', error);
             alert(`Error occurred: ${error.message}`);
+            // Optionally re-enable the Confirm button if there's an error
+            confirmButton.disabled = false;
+            confirmButton.textContent = "Confirm";
+            rejectButton.style.display = "block"; // Show the Reject button again if needed
         }
     }
+    
 
     async function storeAnalysisResults(data) {
         try {
