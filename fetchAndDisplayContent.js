@@ -11,23 +11,14 @@ document.addEventListener('DOMContentLoaded', () => {
 
     form.addEventListener('submit', async (e) => {
         e.preventDefault();
-    
-        if (parseInt(apiRequestCount) >= 10) {
+
+        startLoadingAnimation(submitButton);
+
+        if (parseInt(apiRequestCount) >= 5) {
             alert('You have reached the maximum number of requests allowed.');
             return; 
         }
-    
-        try {
-            const result = await analyseContentForToxicity(postUrlInput.value, 'textToxicityScore');
-            apiRequestCount++;
-            sessionStorage.setItem('apiRequestCount', apiRequestCount);
-        } catch (error) {
-            console.error('Submission error:', error);
-            alert('Failed to process the submission');
-        }
-    
-        startLoadingAnimation(submitButton);
-    
+
         try {
             await processFormSubmission(postUrlInput.value.trim());
             updateButtonState(submitButton, 'Completed', false);
@@ -36,7 +27,7 @@ document.addEventListener('DOMContentLoaded', () => {
             console.error('Submission error:', error);
             alert('Failed to process the submission');
         }
-    });    
+    });
 
     function startLoadingAnimation(button) {
         button.disabled = true;
