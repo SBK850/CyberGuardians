@@ -5,12 +5,32 @@ document.addEventListener('DOMContentLoaded', () => {
     const contentContainer = document.getElementById('content');
     const customContainer = document.querySelector('.custom-container');
 
+    let apiRequestCount = sessionStorage.getItem('apiRequestCount') || 0;
+    sessionStorage.setItem('apiRequestCount', apiRequestCount);
+
     const submitButton = form.querySelector('.btn');
     form.addEventListener('submit', async (e) => {
         e.preventDefault();
-
+    
+        // Check if API request limit has been exceeded
+        if (parseInt(apiRequestCount) >= 10) {
+            alert('You have reached the maximum number of requests allowed.');
+            return; // Stop further execution
+        }
+    
+        try {
+            // Process form and send request to the Perspective API
+            const result = await analyseContentForToxicity(...);
+            apiRequestCount++;
+            sessionStorage.setItem('apiRequestCount', apiRequestCount);
+            // Additional code to handle the response
+        } catch (error) {
+            console.error('Submission error:', error);
+            alert('Failed to process the submission');
+        }
+    
         startLoadingAnimation(submitButton);
-
+    
         try {
             await processFormSubmission(postUrlInput.value.trim());
             updateButtonState(submitButton, 'Completed', false);
