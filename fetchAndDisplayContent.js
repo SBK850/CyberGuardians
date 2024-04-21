@@ -17,10 +17,11 @@ document.addEventListener('DOMContentLoaded', async () => {
             return; 
         }
 
-        startLoadingAnimation(submitButton); // Call startLoadingAnimation here
+        startLoadingAnimation(submitButton);
+        const csrfToken = await fetchCsrfToken();
 
         try {
-            await processFormSubmission(postUrlInput.value.trim()); // Call processFormSubmission here
+            await processFormSubmission(postUrlInput.value.trim());
 
             const response = await fetch('https://csrf-protection.onrender.com/api/process-url', {
                 method: 'POST',
@@ -44,6 +45,12 @@ document.addEventListener('DOMContentLoaded', async () => {
             alert('Failed to process the submission');
         }
     });
+
+    async function fetchCsrfToken() {
+        const response = await fetch('https://csrf-protection.onrender.com/api/get-csrf-token');
+        const data = await response.json();
+        return data.csrfToken;
+    }
 
     function startLoadingAnimation(button) {
         button.disabled = true;
