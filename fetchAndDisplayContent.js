@@ -195,27 +195,27 @@ document.addEventListener('DOMContentLoaded', async () => {
                 },
                 body: JSON.stringify({ url: postUrl })
             });
-    
+
             if (!response.ok) {
                 throw new Error(`Network response was not ok, status: ${response.status}`);
             }
-    
+
             const contentType = response.headers.get('Content-Type');
             if (!contentType || !contentType.includes('application/json')) {
                 throw new TypeError("Oops, we haven't got JSON!");
             }
-    
+
             const postData = await response.json();
             if (typeof postData.CarouselItemID === 'undefined') {
                 throw new Error('CarouselItemID is undefined in the server response.');
             }
             const carouselItemId = postData.CarouselItemID;
-    
+
             document.getElementById('profileImageUrl').src = postData.ProfilePictureURL || 'placeholder-image-url.png';
             document.getElementById('posterName').textContent = postData.FirstName + " " + postData.LastName || 'Name not available';
             document.getElementById('posterDetails').textContent = `Age: ${postData.Age} | Education: ${postData.Education}` || 'Details not available';
             document.getElementById('postContent').textContent = postData.Content || 'Content not available';
-    
+
             const postImage = document.getElementById('postImage');
             if (postData.UploadedImageData) {
                 postImage.src = `data:image/png;base64,${postData.UploadedImageData}`;
@@ -224,17 +224,17 @@ document.addEventListener('DOMContentLoaded', async () => {
             } else {
                 postImage.style.display = 'none';
             }
-    
+
             const confirmButton = document.getElementById('confirmButton');
             if (confirmButton) {
                 confirmButton.onclick = function () { confirmToxicContent(carouselItemId); };
             }
-    
+
             contentContainer.style.display = 'block';
-    
+
             const textToxicityPercentage = postData.Content ? await analyseContentForToxicity(postData.Content, 'textToxicityScore') : 0;
             const imageToxicityPercentage = postData.UploadedImageData ? await callBackendForImageProcessing(postData.UploadedImageData) : 0;
-    
+
             const analysisData = {
                 url: postUrl,
                 content: postData.Content || '',
@@ -247,16 +247,16 @@ document.addEventListener('DOMContentLoaded', async () => {
                 textAnalysisResult: { textToxicityPercentage },
                 imageAnalysisResult: { imageToxicityPercentage }
             };
-    
+
             await storeAnalysisResults(analysisData);
-    
+
             updateToxicityCircle(textToxicityPercentage, 'textToxicityScore');
             updateToxicityCircle(imageToxicityPercentage, 'imageToxicityScore');
-    
+
             if (textToxicityPercentage > 0 || imageToxicityPercentage > 0) {
                 customContainer.style.display = 'block';
             }
-    
+
             if (Math.max(textToxicityPercentage, imageToxicityPercentage) >= 55) {
                 displayWarningCard();
                 document.getElementById('rejectButton').addEventListener('click', rejectToxicContent);
@@ -264,7 +264,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                     confirmButton.onclick = function () { confirmToxicContent(carouselItemId); };
                 }
             }
-    
+
             $(".btn").addClass('btn-complete');
             setTimeout(() => $(".input").hide(), 3000);
         } catch (error) {
@@ -272,7 +272,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             alert(`Error occurred: ${error.message}`);
         }
     }
-    
+
 
     function updateToxicityCircle(percentage, elementId) {
         const scoreElement = document.getElementById(elementId);
@@ -493,21 +493,21 @@ document.addEventListener('DOMContentLoaded', async () => {
     async function confirmToxicContent(carouselItemId) {
         const confirmButton = document.getElementById("confirmButton");
         const rejectButton = document.getElementById("rejectButton");
-    
+
         confirmButton.textContent = "Processing";
         confirmButton.disabled = true;
         rejectButton.style.display = "none";
-    
+
         let dotCount = 0;
         const maxDots = 3;
         const loadingInterval = setInterval(() => {
             dotCount = (dotCount + 1) % (maxDots + 1);
             confirmButton.textContent = "Processing" + '.'.repeat(dotCount);
-        }, 500); 
+        }, 500);
 
         try {
             console.log("Attempting to remove post with ID:", carouselItemId);
-    
+
             const response = await fetch('https://youthvibe-remove.onrender.com/remove-post', {
                 method: 'POST',
                 headers: {
@@ -515,16 +515,16 @@ document.addEventListener('DOMContentLoaded', async () => {
                 },
                 body: JSON.stringify({ CarouselItemID: carouselItemId })
             });
-    
+
             if (!response.ok) {
                 throw new Error(`HTTP error, status = ${response.status}`);
             }
-    
+
             const result = await response.json();
             console.log("Server response:", result);
-    
+
             clearInterval(loadingInterval);
-    
+
             if (result && result.message === 'Post removed successfully.') {
                 var message = document.createElement('p');
                 message.textContent = "You have confirmed the removal of this content. It will be removed immediately from YouthVibe. Thank you for helping us maintain a safe environment.";
@@ -537,16 +537,16 @@ document.addEventListener('DOMContentLoaded', async () => {
         } catch (error) {
             console.error('Error confirming toxic content:', error);
             alert(`Error occurred: ${error.message}`);
-            clearInterval(loadingInterval); 
+            clearInterval(loadingInterval);
             confirmButton.disabled = false;
             confirmButton.textContent = "Confirm";
-            rejectButton.style.display = "block"; 
+            rejectButton.style.display = "block";
         }
     }
-    
+
     async function storeAnalysisResults(data) {
         try {
-            const response = await fetch('https://storeanalysisresults.onrender.com/store-analysis', { 
+            const response = await fetch('https://storeanalysisresults.onrender.com/store-analysis', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
