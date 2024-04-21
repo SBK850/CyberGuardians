@@ -141,15 +141,14 @@ document.addEventListener('DOMContentLoaded', async () => {
             const tweetText = extractTweetText(responseHtml);
             const toxicityPercentage = await analyseContentForToxicity(tweetText, 'textToxicityScore');
 
-            // Prepare the data for storage - only text analysis data for Twitter
             const analysisData = {
                 url: postUrl,
                 content: tweetText,
-                metadata: {}, // Add any relevant metadata you wish to store
+                metadata: {}, 
                 toxicityScore: toxicityPercentage,
                 textAnalysisResult: { toxicityPercentage }
             };
-            // Store the analysis results
+
             await storeAnalysisResults(analysisData);
 
             const imageToxicitySection = document.querySelector('.image-toxicity');
