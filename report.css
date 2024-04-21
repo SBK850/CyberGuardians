@@ -266,6 +266,8 @@ form input {
 #warning-section {
 	display: none;
 	margin: 0 auto;
+	text-align: center;
+	margin-bottom: 1rem;
 }
 
 .bg-primary,
@@ -286,10 +288,10 @@ form input {
 }
 
 .btn-large {
-    padding: 12px;
-    width: 100%;
+	padding: 12px;
+	width: 100%;
 }
 
 .hidden {
-    display: none;
+	display: none;
 }
