@@ -11,42 +11,32 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     form.addEventListener('submit', async (e) => {
         e.preventDefault();
-
         if (apiRequestCount >= 5) {
             alert('You have reached the maximum number of requests allowed.');
             return;
         }
-
         startLoadingAnimation(submitButton);
-
-        if (!isValidUrl(postUrlInput.value.trim())) {
-            alert('Invalid URL');
-            updateButtonState(submitButton, 'Failed', true);
-            return;
-        }
-
         const csrfToken = await fetchCsrfToken();
         console.log("CSRF Token fetched:", csrfToken);
-        
+        if (!csrfToken) {
+            updateButtonState(submitButton, 'Failed', true);
+            alert('Failed to fetch CSRF token');
+            return;
+        }
         try {
             const response = await fetch('https://csrf-protection.onrender.com/api/process-url', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
-                    'CSRF-Token': csrfToken
+                    'CSRF-Token': csrfToken  
                 },
-                credentials: 'include', 
+                credentials: 'include',
                 body: JSON.stringify({ url: postUrlInput.value.trim() })
-            });            
-
-            if (!response.ok) {
-                throw new Error(`HTTP error, status = ${response.status}`);
-            }
-
+            });
+            if (!response.ok) throw new Error(`HTTP error, status = ${response.status}`);
+            updateButtonState(submitButton, 'Completed', true);
             apiRequestCount++;
             sessionStorage.setItem('apiRequestCount', apiRequestCount);
-
-            updateButtonState(submitButton, 'Completed', true);
         } catch (error) {
             console.error('Submission error:', error);
             alert('Failed to process the submission');
@@ -55,9 +45,16 @@ document.addEventListener('DOMContentLoaded', async () => {
     });
 
     async function fetchCsrfToken() {
-        const response = await fetch('https://csrf-protection.onrender.com/api/get-csrf-token');
-        const data = await response.json();
-        return data.csrfToken;
+        try {
+            const response = await fetch('https://csrf-protection.onrender.com/api/get-csrf-token', {
+                credentials: 'include' 
+            });
+            const data = await response.json();
+            return data.csrfToken;
+        } catch (error) {
+            console.error('Error fetching CSRF token:', error);
+            return null;
+        }
     }
 
     function startLoadingAnimation(button) {
