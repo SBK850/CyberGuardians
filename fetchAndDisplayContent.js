@@ -14,20 +14,25 @@ document.addEventListener('DOMContentLoaded', async () => {
 
         if (apiRequestCount >= 5) {
             alert('You have reached the maximum number of requests allowed.');
-            return; 
+            return;
         }
 
         startLoadingAnimation(submitButton);
+
+        if (!isValidUrl(postUrlInput.value.trim())) {
+            alert('Invalid URL');
+            updateButtonState(submitButton, 'Failed', true);
+            return;
+        }
+
         const csrfToken = await fetchCsrfToken();
 
         try {
-            await processFormSubmission(postUrlInput.value.trim());
-
             const response = await fetch('https://csrf-protection.onrender.com/api/process-url', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
-                    'CSRF-Token': document.querySelector('[name="csrf_token"]').value
+                    'CSRF-Token': csrfToken
                 },
                 body: JSON.stringify({ url: postUrlInput.value.trim() })
             });
@@ -36,13 +41,14 @@ document.addEventListener('DOMContentLoaded', async () => {
                 throw new Error(`HTTP error, status = ${response.status}`);
             }
 
-            updateButtonState(submitButton, 'Completed', false);
             apiRequestCount++;
             sessionStorage.setItem('apiRequestCount', apiRequestCount);
+
+            updateButtonState(submitButton, 'Completed', true);
         } catch (error) {
-            updateButtonState(submitButton, 'Failed', false);
             console.error('Submission error:', error);
             alert('Failed to process the submission');
+            updateButtonState(submitButton, 'Failed', true);
         }
     });
 
