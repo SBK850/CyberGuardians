@@ -457,13 +457,17 @@ document.addEventListener('DOMContentLoaded', () => {
         const confirmButton = document.getElementById("confirmButton");
         const rejectButton = document.getElementById("rejectButton");
     
-        confirmButton.textContent = "Processing...";
-        confirmButton.style.width = "100%"; 
-        confirmButton.style.padding = "12px"; 
-        confirmButton.disabled = true; 
-
+        confirmButton.textContent = "Processing";
+        confirmButton.disabled = true;
         rejectButton.style.display = "none";
     
+        let dotCount = 0;
+        const maxDots = 3;
+        const loadingInterval = setInterval(() => {
+            dotCount = (dotCount + 1) % (maxDots + 1);
+            confirmButton.textContent = "Processing" + '.'.repeat(dotCount);
+        }, 500); 
+
         try {
             console.log("Attempting to remove post with ID:", carouselItemId);
     
@@ -482,6 +486,8 @@ document.addEventListener('DOMContentLoaded', () => {
             const result = await response.json();
             console.log("Server response:", result);
     
+            clearInterval(loadingInterval);
+    
             if (result && result.message === 'Post removed successfully.') {
                 var message = document.createElement('p');
                 message.textContent = "You have confirmed the removal of this content. It will be removed immediately from YouthVibe. Thank you for helping us maintain a safe environment.";
@@ -494,14 +500,13 @@ document.addEventListener('DOMContentLoaded', () => {
         } catch (error) {
             console.error('Error confirming toxic content:', error);
             alert(`Error occurred: ${error.message}`);
-            // Optionally re-enable the Confirm button if there's an error
+            clearInterval(loadingInterval); 
             confirmButton.disabled = false;
             confirmButton.textContent = "Confirm";
-            rejectButton.style.display = "block"; // Show the Reject button again if needed
+            rejectButton.style.display = "block"; 
         }
     }
     
-
     async function storeAnalysisResults(data) {
         try {
             const response = await fetch('https://storeanalysisresults.onrender.com/store-analysis', { 
