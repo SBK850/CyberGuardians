@@ -1,9 +1,7 @@
 document.addEventListener('DOMContentLoaded', async () => {
     const form = document.getElementById('reportForm');
+    const csrfTokenField = document.getElementById('csrfTokenField');
     const postUrlInput = document.getElementById('postUrl');
-    const twitterEmbedContainer = document.getElementById('twitterEmbedContainer');
-    const contentContainer = document.getElementById('content');
-    const customContainer = document.querySelector('.custom-container');
     const submitButton = form.querySelector('.btn');
 
     let apiRequestCount = parseInt(sessionStorage.getItem('apiRequestCount')) || 0;
@@ -16,23 +14,26 @@ document.addEventListener('DOMContentLoaded', async () => {
             return;
         }
         startLoadingAnimation(submitButton);
-        const csrfToken = await fetchCsrfToken();
-        console.log("CSRF Token fetched:", csrfToken);
-        if (!csrfToken) {
-            updateButtonState(submitButton, 'Failed', true);
-            alert('Failed to fetch CSRF token');
-            return;
+        if (!csrfTokenField.value) {
+            csrfTokenField.value = await fetchCsrfToken();
+            if (!csrfTokenField.value) {
+                updateButtonState(submitButton, 'Failed', true);
+                alert('Failed to fetch CSRF token');
+                return;
+            }
         }
+
         try {
             const response = await fetch('https://csrf-protection.onrender.com/api/process-url', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
-                    'CSRF-Token': csrfToken  
+                    'CSRF-Token': csrfTokenField.value
                 },
                 credentials: 'include',
                 body: JSON.stringify({ url: postUrlInput.value.trim() })
             });
+
             if (!response.ok) throw new Error(`HTTP error, status = ${response.status}`);
             updateButtonState(submitButton, 'Completed', true);
             apiRequestCount++;
@@ -45,27 +46,11 @@ document.addEventListener('DOMContentLoaded', async () => {
     });
 
     async function fetchCsrfToken() {
-        try {
-            const response = await fetch('https://csrf-protection.onrender.com/api/get-csrf-token', {
-                credentials: 'include' 
-            });
-            const data = await response.json();
-            return data.csrfToken;
-        } catch (error) {
-            console.error('Error fetching CSRF token:', error);
-            return null;
-        }
-    }
-
-    function startLoadingAnimation(button) {
-        button.disabled = true;
-        button.textContent = 'Loading';
-        let dotCount = 0;
-        const maxDots = 3;
-        button.loadingInterval = setInterval(() => {
-            button.textContent = 'Loading' + '.'.repeat(dotCount);
-            dotCount = (dotCount + 1) % (maxDots + 1);
-        }, 500);
+        const response = await fetch('https://csrf-protection.onrender.com/api/get-csrf-token', {
+            credentials: 'include'
+        });
+        const data = await response.json();
+        return data.csrfToken;
     }
 
     function updateButtonState(button, text, enable) {
