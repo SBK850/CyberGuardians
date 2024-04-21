@@ -26,7 +26,8 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
 
         const csrfToken = await fetchCsrfToken();
-
+        console.log("CSRF Token fetched:", csrfToken);
+        
         try {
             const response = await fetch('https://csrf-protection.onrender.com/api/process-url', {
                 method: 'POST',
@@ -34,8 +35,9 @@ document.addEventListener('DOMContentLoaded', async () => {
                     'Content-Type': 'application/json',
                     'CSRF-Token': csrfToken
                 },
+                credentials: 'include', 
                 body: JSON.stringify({ url: postUrlInput.value.trim() })
-            });
+            });            
 
             if (!response.ok) {
                 throw new Error(`HTTP error, status = ${response.status}`);
