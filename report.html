@@ -60,9 +60,10 @@
         <h2 style="text-align: center; margin-bottom: 1rem;">Empowering Action Against Cyberbullying: <span>Report
                 Online Abuse</span></h2>
 
-        <form id="reportForm" class="input">
+        <form id="reportForm" method="POST">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
             <input type="text" id="postUrl" autofocus="true" required placeholder="Enter Post URL">
-            <button type="submit" class='btn'>Submit</button>
+            <button type="submit" class="btn">Submit</button>
         </form>
     </div>
 

@@ -12,6 +12,13 @@ document.addEventListener('DOMContentLoaded', () => {
     form.addEventListener('submit', async (e) => {
         e.preventDefault();
 
+        const postUrl = postUrlInput.value.trim();
+
+        if (!isValidUrl(postUrl)) {
+            alert('Invalid URL');
+            return;
+        }
+
         startLoadingAnimation(submitButton);
 
         if (parseInt(apiRequestCount) >= 5) {
@@ -20,10 +27,23 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         try {
-            await processFormSubmission(postUrlInput.value.trim());
-            updateButtonState(submitButton, 'Completed', false);
+            // Send the URL to the server for processing along with CSRF token
+            const response = await fetch('https://csrf-protection.onrender.com/api/process-url', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'CSRF-Token': document.querySelector('[name="csrf_token"]').value
+                },
+                body: JSON.stringify({ url: postUrl })
+            });
+
+            if (!response.ok) {
+                throw new Error(`HTTP error, status = ${response.status}`);
+            }
+
+            updateButtonState(submitButton, 'Completed', true);
         } catch (error) {
-            updateButtonState(submitButton, 'Failed', false);
+            updateButtonState(submitButton, 'Failed', true);
             console.error('Submission error:', error);
             alert('Failed to process the submission');
         }
