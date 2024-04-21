@@ -1,4 +1,4 @@
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', async () => {
     const form = document.getElementById('reportForm');
     const postUrlInput = document.getElementById('postUrl');
     const twitterEmbedContainer = document.getElementById('twitterEmbedContainer');
@@ -6,44 +6,35 @@ document.addEventListener('DOMContentLoaded', () => {
     const customContainer = document.querySelector('.custom-container');
     const submitButton = form.querySelector('.btn');
 
-    let apiRequestCount = sessionStorage.getItem('apiRequestCount') || 0;
+    let apiRequestCount = parseInt(sessionStorage.getItem('apiRequestCount')) || 0;
     sessionStorage.setItem('apiRequestCount', apiRequestCount);
 
     form.addEventListener('submit', async (e) => {
         e.preventDefault();
 
-        const postUrl = postUrlInput.value.trim();
-
-        if (!isValidUrl(postUrl)) {
-            alert('Invalid URL');
-            return;
-        }
-
-        startLoadingAnimation(submitButton);
-
-        if (parseInt(apiRequestCount) >= 5) {
+        if (apiRequestCount >= 5) {
             alert('You have reached the maximum number of requests allowed.');
             return; 
         }
-
         try {
-            // Send the URL to the server for processing along with CSRF token
             const response = await fetch('https://csrf-protection.onrender.com/api/process-url', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                     'CSRF-Token': document.querySelector('[name="csrf_token"]').value
                 },
-                body: JSON.stringify({ url: postUrl })
+                body: JSON.stringify({ url: postUrlInput.value.trim() })
             });
 
             if (!response.ok) {
                 throw new Error(`HTTP error, status = ${response.status}`);
             }
 
-            updateButtonState(submitButton, 'Completed', true);
+            updateButtonState(submitButton, 'Completed', false);
+            apiRequestCount++;
+            sessionStorage.setItem('apiRequestCount', apiRequestCount);
         } catch (error) {
-            updateButtonState(submitButton, 'Failed', true);
+            updateButtonState(submitButton, 'Failed', false);
             console.error('Submission error:', error);
             alert('Failed to process the submission');
         }
