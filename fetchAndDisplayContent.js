@@ -16,7 +16,12 @@ document.addEventListener('DOMContentLoaded', async () => {
             alert('You have reached the maximum number of requests allowed.');
             return; 
         }
+
+        startLoadingAnimation(submitButton); // Call startLoadingAnimation here
+
         try {
+            await processFormSubmission(postUrlInput.value.trim()); // Call processFormSubmission here
+
             const response = await fetch('https://csrf-protection.onrender.com/api/process-url', {
                 method: 'POST',
                 headers: {
