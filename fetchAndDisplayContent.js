@@ -26,6 +26,8 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         try {
+            await processFormSubmission(postUrlInput.value.trim());
+
             const response = await fetch('https://csrf-protection.onrender.com/api/process-url', {
                 method: 'POST',
                 headers: {
