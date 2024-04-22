@@ -1,4 +1,4 @@
-document.addEventListener('DOMContentLoaded', async () => {
+document.addEventListener('DOMContentLoaded', () => {
     const form = document.getElementById('reportForm');
     const postUrlInput = document.getElementById('postUrl');
     const twitterEmbedContainer = document.getElementById('twitterEmbedContainer');
@@ -53,17 +53,6 @@ document.addEventListener('DOMContentLoaded', async () => {
         });
         const data = await response.json();
         return data.csrfToken;
-    }
-
-    function startLoadingAnimation(button) {
-        button.disabled = true;
-        button.textContent = 'Loading';
-        let dotCount = 0;
-        const maxDots = 3;
-        button.loadingInterval = setInterval(() => {
-            button.textContent = 'Loading' + '.'.repeat(dotCount);
-            dotCount = (dotCount + 1) % (maxDots + 1);
-        }, 500);
     }
 
     function updateButtonState(button, text, enable) {
