@@ -6,15 +6,27 @@ document.addEventListener('DOMContentLoaded', () => {
     const customContainer = document.querySelector('.custom-container');
     const submitButton = form.querySelector('.btn');
 
+    // Rate limiting check
+    function checkRateLimit() {
+        let apiRequestCount = parseInt(sessionStorage.getItem('apiRequestCount')) || 0;
+        if (apiRequestCount >= 5) {
+            showAlert('You have reached the maximum number of requests allowed.');
+            updateButtonState(submitButton, 'Failed', false);
+            return false;
+        }
+        sessionStorage.setItem('apiRequestCount', apiRequestCount + 1);
+        return true;
+    }
+
     form.addEventListener('submit', async (e) => {
         e.preventDefault();
-        if (!checkRateLimit()) return;
+        if (!checkRateLimit()) return; 
 
         startLoadingAnimation(submitButton);
         const postUrl = postUrlInput.value.trim();
-        const domain = getDomainFromUrl(postUrl);
 
         try {
+            const domain = getDomainFromUrl(postUrl);
             if (domain === 'x.com' || domain === 'twitter.com') {
                 await processTwitterUrl(postUrl);
             } else if (domain.includes('youthvibe.rf.gd')) {
@@ -53,7 +65,7 @@ document.addEventListener('DOMContentLoaded', () => {
             errorMessageContainer.textContent = message;
             errorMessageContainer.style.display = 'block';
         } else {
-            alert(message); // Fallback in case the container isn't found
+            alert(message); 
         }
     }
 
@@ -76,15 +88,14 @@ document.addEventListener('DOMContentLoaded', () => {
             const tweetText = extractTweetText(responseHtml);
             const toxicityPercentage = await analyseContentForToxicity(tweetText, 'textToxicityScore');
 
-            // Prepare the data for storage - only text analysis data for Twitter
             const analysisData = {
                 url: postUrl,
                 content: tweetText,
-                metadata: {}, // Add any relevant metadata you wish to store
+                metadata: {}, 
                 toxicityScore: toxicityPercentage,
                 textAnalysisResult: { toxicityPercentage }
             };
-            // Store the analysis results
+
             await storeAnalysisResults(analysisData);
 
             const imageToxicitySection = document.querySelector('.image-toxicity');
