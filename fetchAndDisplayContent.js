@@ -16,16 +16,27 @@ document.addEventListener('DOMContentLoaded', () => {
 
         if (parseInt(apiRequestCount) >= 5) {
             alert('You have reached the maximum number of requests allowed.');
+            updateButtonState(submitButton, 'Failed', false);
             return; 
         }
 
+        const postUrl = postUrlInput.value.trim();
+        const domain = getDomainFromUrl(postUrl);
+        
         try {
-            await processFormSubmission(postUrlInput.value.trim());
-            updateButtonState(submitButton, 'Completed', false);
+            if (domain === 'x.com' || domain === 'twitter.com') {
+                await processTwitterUrl(postUrl);
+                updateButtonState(submitButton, 'Completed', false);
+            } else if (domain.includes('youthvibe.rf.gd')) {
+                await fetchAndDisplayContent(postUrl, contentContainer);
+                updateButtonState(submitButton, 'Completed', false);
+            } else {
+                throw new Error('URL domain not recognised for special handling.');
+            }
         } catch (error) {
+            console.error(error);
+            alert('Error! ' + error.message);
             updateButtonState(submitButton, 'Failed', false);
-            console.error('Submission error:', error);
-            alert('Failed to process the submission');
         }
     });
 
@@ -46,46 +57,15 @@ document.addEventListener('DOMContentLoaded', () => {
         button.disabled = !enable;
     }
 
-    async function processFormSubmission(postUrl) {
-        return new Promise((resolve, reject) => {
-            setTimeout(() => {
-                if (postUrl) {
-                    resolve();
-                } else {
-                    reject(new Error('Invalid URL'));
-                }
-            }, 1200000);
-        });
-    }
-
-    const toggleDisplay = (elements, displayStyle) => {
-        elements.forEach(element => {
-            if (typeof element === 'string') {
-                document.getElementById(element).style.display = displayStyle;
-            } else if (element instanceof HTMLElement) {
-                element.style.display = displayStyle;
-            }
-        });
-    };
-
-    form.addEventListener('submit', async (e) => {
-        e.preventDefault();
-        const postUrl = postUrlInput.value.trim();
-
-        const domain = getDomainFromUrl(postUrl);
+    function getDomainFromUrl(url) {
         try {
-            if (domain === 'x.com' || domain === 'twitter.com') {
-                await processTwitterUrl(postUrl);
-            } else if (domain.includes('youthvibe.rf.gd')) {
-                await fetchAndDisplayContent(postUrl, contentContainer);
-            } else {
-                throw new Error('URL domain not recognised for special handling.');
-            }
-        } catch (error) {
-            console.error(error);
-            alert('Error! ' + error.message);
+            const newUrl = new URL(url);
+            return newUrl.hostname.replace('www.', '').toLowerCase();
+        } catch (e) {
+            console.error('Invalid URL format:', e);
+            throw new Error('Invalid URL');
         }
-    });
+    }
 
     async function processTwitterUrl(postUrl) {
         const responseHtml = await fetchTwitterEmbedCode(postUrl);
@@ -142,6 +122,10 @@ document.addEventListener('DOMContentLoaded', () => {
             }, 3000);
         }
     }
+
+    //other functions....
+
+});
 
     async function fetchAndDisplayContent(postUrl, contentContainer) {
         try {
