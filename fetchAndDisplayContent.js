@@ -123,10 +123,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    //other functions....
-
-});
-
     async function fetchAndDisplayContent(postUrl, contentContainer) {
         try {
             const response = await fetch('https://cyberguardians.onrender.com/scrape', {
