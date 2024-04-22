@@ -8,7 +8,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     form.addEventListener('submit', async (e) => {
         e.preventDefault();
-        if (!checkRateLimit()) return; // Stops processing if rate limit is exceeded
+        if (!checkRateLimit()) return;
 
         startLoadingAnimation(submitButton);
         const postUrl = postUrlInput.value.trim();
