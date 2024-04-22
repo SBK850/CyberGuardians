@@ -122,7 +122,7 @@ document.addEventListener('DOMContentLoaded', () => {
             }, 3000);
         }
     }
-
+    
     async function fetchAndDisplayContent(postUrl, contentContainer) {
         try {
             const response = await fetch('https://cyberguardians.onrender.com/scrape', {
@@ -206,9 +206,14 @@ document.addEventListener('DOMContentLoaded', () => {
             setTimeout(() => $(".input").hide(), 3000);
         } catch (error) {
             console.error('Error fetching and displaying content:', error);
-            alert(`Error occurred: ${error.message}`);
+            const errorMessageContainer = document.querySelector('.errorMessageContainer');
+            if (errorMessageContainer) {
+                errorMessageContainer.textContent = `Error occurred: ${error.message}`;
+                errorMessageContainer.style.display = 'block';
+            }
         }
     }
+    
     
 
     function updateToxicityCircle(percentage, elementId) {
