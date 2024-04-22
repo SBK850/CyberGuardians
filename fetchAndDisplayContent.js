@@ -5,6 +5,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const contentContainer = document.getElementById('content');
     const customContainer = document.querySelector('.custom-container');
     const submitButton = form.querySelector('.btn');
+    const csrfTokenField = document.getElementById('csrfTokenField');
+
 
     let apiRequestCount = parseInt(sessionStorage.getItem('apiRequestCount')) || 0;
     sessionStorage.setItem('apiRequestCount', apiRequestCount);
