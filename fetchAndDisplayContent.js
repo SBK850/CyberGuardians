@@ -11,10 +11,17 @@ document.addEventListener('DOMContentLoaded', () => {
 
     form.addEventListener('submit', async (e) => {
         e.preventDefault();
+
         if (apiRequestCount >= 5) {
             alert('You have reached the maximum number of requests allowed.');
             return;
         }
+
+        if (!isValidUrl(postUrlInput.value.trim())) {
+            alert('Invalid URL');
+            return;
+        }
+
         startLoadingAnimation(submitButton);
         if (!csrfTokenField.value) {
             csrfTokenField.value = await fetchCsrfToken();
@@ -26,22 +33,11 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         try {
-            await processFormSubmission(postUrlInput.value.trim());
-
-            const response = await fetch('https://csrf-protection.onrender.com/api/process-url', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'CSRF-Token': csrfTokenField.value
-                },
-                credentials: 'include',
-                body: JSON.stringify({ url: postUrlInput.value.trim() })
-            });
-
-            if (!response.ok) throw new Error(`HTTP error, status = ${response.status}`);
+            // Assuming `processFormSubmission` handles the URL processing logic
+            await processFormSubmission(postUrlInput.value.trim(), csrfTokenField.value);
             updateButtonState(submitButton, 'Completed', true);
             apiRequestCount++;
-            sessionStorage.setItem('apiRequestCount', apiRequestCount);
+            sessionStorage.setItem('apiRequestCount', apiRequestCount.toString());
         } catch (error) {
             console.error('Submission error:', error);
             alert('Failed to process the submission');
