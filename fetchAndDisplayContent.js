@@ -6,55 +6,49 @@ document.addEventListener('DOMContentLoaded', () => {
     const customContainer = document.querySelector('.custom-container');
     const submitButton = form.querySelector('.btn');
 
-    let apiRequestCount = sessionStorage.getItem('apiRequestCount') || 0;
-    sessionStorage.setItem('apiRequestCount', apiRequestCount);
+    // Rate limiting check
+    function checkRateLimit() {
+        let apiRequestCount = parseInt(sessionStorage.getItem('apiRequestCount')) || 0;
+        if (apiRequestCount >= 5) {
+            showAlert('You have reached the maximum number of requests allowed.');
+            updateButtonState(submitButton, 'Failed', false);
+            return false;
+        }
+        sessionStorage.setItem('apiRequestCount', apiRequestCount + 1);
+        return true;
+    }
 
     form.addEventListener('submit', async (e) => {
         e.preventDefault();
+        if (!checkRateLimit()) return; // Stops processing if rate limit is exceeded
 
         startLoadingAnimation(submitButton);
-
-        if (parseInt(apiRequestCount) >= 5) {
-            const errorMessageContainer = document.querySelector('.errorMessageContainer');
-            if (errorMessageContainer) {
-                errorMessageContainer.textContent = 'You have reached the maximum number of requests allowed.';
-                errorMessageContainer.style.display = 'block';
-            }
-            updateButtonState(submitButton, 'Failed', false);
-            return;
-        }
-
         const postUrl = postUrlInput.value.trim();
-        const domain = getDomainFromUrl(postUrl);
 
         try {
+            const domain = getDomainFromUrl(postUrl);
             if (domain === 'x.com' || domain === 'twitter.com') {
                 await processTwitterUrl(postUrl);
-                updateButtonState(submitButton, 'Completed', false);
             } else if (domain.includes('youthvibe.rf.gd')) {
                 await fetchAndDisplayContent(postUrl, contentContainer);
-                updateButtonState(submitButton, 'Completed', false);
             } else {
                 throw new Error('URL domain not recognised for special handling.');
             }
+            updateButtonState(submitButton, 'Completed', false);
         } catch (error) {
-            console.error(error);
-            const errorMessageContainer = document.querySelector('.errorMessageContainer');
-            if (errorMessageContainer) {
-                errorMessageContainer.textContent = 'Error! ' + error.message;
-                errorMessageContainer.style.display = 'block';
-            }
+            console.error('Submission error:', error);
+            showAlert('Error! ' + error.message);
             updateButtonState(submitButton, 'Failed', false);
         }
     });
 
     function startLoadingAnimation(button) {
         button.disabled = true;
-        button.textContent = 'Loading';
+        button.textContent = 'Loading...';
         let dotCount = 0;
         const maxDots = 3;
         button.loadingInterval = setInterval(() => {
-            button.textContent = 'Loading' + '.'.repeat(dotCount);
+            button.textContent = `Loading${'.'.repeat(dotCount)}`;
             dotCount = (dotCount + 1) % (maxDots + 1);
         }, 500);
     }
@@ -63,6 +57,16 @@ document.addEventListener('DOMContentLoaded', () => {
         clearInterval(button.loadingInterval);
         button.textContent = text;
         button.disabled = !enable;
+    }
+
+    function showAlert(message) {
+        const errorMessageContainer = document.querySelector('.errorMessageContainer');
+        if (errorMessageContainer) {
+            errorMessageContainer.textContent = message;
+            errorMessageContainer.style.display = 'block';
+        } else {
+            alert(message); // Fallback in case the container isn't found
+        }
     }
 
     function getDomainFromUrl(url) {
@@ -222,8 +226,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-
-
     function updateToxicityCircle(percentage, elementId) {
         const scoreElement = document.getElementById(elementId);
         if (!scoreElement) {
@@ -305,7 +307,6 @@ document.addEventListener('DOMContentLoaded', () => {
             return 0;
         }
     }
-
 
     function filterAndCleanText(text) {
         const filterPatterns = [
@@ -425,11 +426,6 @@ document.addEventListener('DOMContentLoaded', () => {
         div.innerHTML = html;
         const tweetParagraph = div.querySelector('p');
         return tweetParagraph ? tweetParagraph.textContent : "";
-    }
-
-    function getDomainFromUrl(url) {
-        const matches = url.match(/^https?:\/\/([^\/]+)/i);
-        return matches && matches[1] ? matches[1].replace('www.', '').toLowerCase() : '';
     }
 
     function displayWarningCard() {
