@@ -1,45 +1,43 @@
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', async () => {
     const form = document.getElementById('reportForm');
     const postUrlInput = document.getElementById('postUrl');
+    const csrfTokenField = document.getElementById('csrfTokenField');
     const twitterEmbedContainer = document.getElementById('twitterEmbedContainer');
     const contentContainer = document.getElementById('content');
     const customContainer = document.querySelector('.custom-container');
     const submitButton = form.querySelector('.btn');
-    const csrfTokenField = document.getElementById('csrfTokenField');
-
 
     let apiRequestCount = parseInt(sessionStorage.getItem('apiRequestCount')) || 0;
     sessionStorage.setItem('apiRequestCount', apiRequestCount);
 
     form.addEventListener('submit', async (e) => {
         e.preventDefault();
-
         if (apiRequestCount >= 5) {
             alert('You have reached the maximum number of requests allowed.');
             return;
         }
-
-        if (!isValidUrl(postUrlInput.value.trim())) {
-            alert('Invalid URL');
+        startLoadingAnimation(submitButton);
+        const csrfToken = await fetchCsrfToken();
+        console.log("CSRF Token fetched:", csrfToken);
+        if (!csrfToken) {
+            updateButtonState(submitButton, 'Failed', true);
+            alert('Failed to fetch CSRF token');
             return;
         }
-
-        startLoadingAnimation(submitButton);
-        if (!csrfTokenField.value) {
-            csrfTokenField.value = await fetchCsrfToken();
-            if (!csrfTokenField.value) {
-                updateButtonState(submitButton, 'Failed', true);
-                alert('Failed to fetch CSRF token');
-                return;
-            }
-        }
-
         try {
-            // Assuming `processFormSubmission` handles the URL processing logic
-            await processFormSubmission(postUrlInput.value.trim(), csrfTokenField.value);
+            const response = await fetch('https://csrf-protection.onrender.com/api/process-url', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'CSRF-Token': csrfToken 
+                },
+                credentials: 'include', 
+                body: JSON.stringify({ url: postUrlInput.value.trim() })
+            });
+            if (!response.ok) throw new Error(`HTTP error, status = ${response.status}`);
             updateButtonState(submitButton, 'Completed', true);
             apiRequestCount++;
-            sessionStorage.setItem('apiRequestCount', apiRequestCount.toString());
+            sessionStorage.setItem('apiRequestCount', apiRequestCount);
         } catch (error) {
             console.error('Submission error:', error);
             alert('Failed to process the submission');
@@ -48,11 +46,27 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     async function fetchCsrfToken() {
-        const response = await fetch('https://csrf-protection.onrender.com/api/get-csrf-token', {
-            credentials: 'include'
-        });
-        const data = await response.json();
-        return data.csrfToken;
+        try {
+            const response = await fetch('https://csrf-protection.onrender.com/api/get-csrf-token', {
+                credentials: 'include' 
+            });
+            const data = await response.json();
+            return data.csrfToken;
+        } catch (error) {
+            console.error('Error fetching CSRF token:', error);
+            return null;
+        }
+    }
+
+    function startLoadingAnimation(button) {
+        button.disabled = true;
+        button.textContent = 'Loading';
+        let dotCount = 0;
+        const maxDots = 3;
+        button.loadingInterval = setInterval(() => {
+            button.textContent = 'Loading' + '.'.repeat(dotCount);
+            dotCount = (dotCount + 1) % (maxDots + 1);
+        }, 500);
     }
 
     function updateButtonState(button, text, enable) {
