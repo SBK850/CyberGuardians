@@ -68,23 +68,9 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     };
 
-    const isValidUrl = (string) => {
-        try {
-            new URL(string);
-            return true;
-        } catch (error) {
-            return false;
-        }
-    };
-
     form.addEventListener('submit', async (e) => {
         e.preventDefault();
         const postUrl = postUrlInput.value.trim();
-
-        if (!isValidUrl(postUrl)) {
-            alert('Invalid URL');
-            return;
-        }
 
         const domain = getDomainFromUrl(postUrl);
         try {
@@ -93,7 +79,7 @@ document.addEventListener('DOMContentLoaded', () => {
             } else if (domain.includes('youthvibe.rf.gd')) {
                 await fetchAndDisplayContent(postUrl, contentContainer);
             } else {
-                throw new Error('URL domain not recognized for special handling.');
+                throw new Error('URL domain not recognised for special handling.');
             }
         } catch (error) {
             console.error(error);
