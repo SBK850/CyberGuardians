@@ -1,7 +1,7 @@
 document.addEventListener('DOMContentLoaded', async () => {
     const form = document.getElementById('reportForm');
     const postUrlInput = document.getElementById('postUrl');
-    const csrfTokenField = document.getElementById('csrfTokenField');
+    const csrfTokenField = document.getElementById('csrfTokenField'); // Make sure this field exists in your HTML to display the token
     const twitterEmbedContainer = document.getElementById('twitterEmbedContainer');
     const contentContainer = document.getElementById('content');
     const customContainer = document.querySelector('.custom-container');
@@ -24,14 +24,15 @@ document.addEventListener('DOMContentLoaded', async () => {
             alert('Failed to fetch CSRF token');
             return;
         }
+        csrfTokenField.value = csrfToken; // Update the CSRF token field in your form
         try {
             const response = await fetch('https://csrf-protection.onrender.com/api/process-url', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
-                    'CSRF-Token': csrfToken 
+                    'CSRF-Token': csrfToken  // Make sure the server is looking for this header
                 },
-                credentials: 'include', 
+                credentials: 'include',  // Ensure cookies are included with the request
                 body: JSON.stringify({ url: postUrlInput.value.trim() })
             });
             if (!response.ok) throw new Error(`HTTP error, status = ${response.status}`);
@@ -48,7 +49,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     async function fetchCsrfToken() {
         try {
             const response = await fetch('https://csrf-protection.onrender.com/api/get-csrf-token', {
-                credentials: 'include' 
+                credentials: 'include'  // Ensure cookies are included with the request
             });
             const data = await response.json();
             return data.csrfToken;
@@ -74,7 +75,6 @@ document.addEventListener('DOMContentLoaded', async () => {
         button.textContent = text;
         button.disabled = !enable;
     }
-
     async function processFormSubmission(postUrl) {
         return new Promise((resolve, reject) => {
             setTimeout(() => {
