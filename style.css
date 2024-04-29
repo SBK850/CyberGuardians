@@ -3,13 +3,11 @@
   background-color: red;
   z-index: 10000;
 
-  /* Comment out to debug */
+ 
   visibility: hidden;
 }
 
-/*
-  Content swaps between one to two columns based on content-width
-*/
+
 
 :root {
   --min-text-width: 34rem;
@@ -17,21 +15,21 @@
 }
 
 main {
-  /* already a flexbox container */
+ 
 
-  /* Attach animations and scope */
+ 
   timeline-scope: --content-width;
   animation: expand-content;
   animation-timeline: --content-width;
 
-  /* Attach animation timeline to all children */
+ 
   & > *,
   &::before,
   &::after {
     animation-timeline: --content-width;
   }
 
-  /* Now attach individual animation */
+ 
   &::before {
     animation-name: wall;
     --border-position: initial;
@@ -45,7 +43,7 @@ main {
   }
 }
 
-/* Swaps to a two-column layout when marker is in-view */
+
 @keyframes expand-content {
   0%,
   100% {
@@ -75,8 +73,6 @@ main {
 .left-content {
   animation-name: main-content;
 
-  /* Content width marker */
-  /* When this is in-view, the animations will trigger */
   &::after {
     content: "";
     position: fixed;
@@ -112,9 +108,7 @@ main {
   }
 }
 
-/*
-  Navigation swaps between hidden to expanded when there's enough space
-*/
+
 
 :root {
   timeline-scope: --expanded-navigation;
@@ -124,7 +118,7 @@ main {
   overflow: hidden;
 }
 
-/* Navigation */
+
 .site-navigation {
   flex-shrink: 0;
   position: relative;
@@ -134,7 +128,7 @@ main {
   animation-name: expand-navigation;
   animation-timeline: --expanded-navigation;
 
-  /* Marker */
+ 
   &::after {
     content: "";
     display: block;
@@ -152,7 +146,7 @@ main {
 @keyframes expand-navigation {
   0%,
   100% {
-    /* Setting custom props for children */
+   
     --nav-wrapper-display: block;
     --nav-wrapper-transform: none;
     --nav-wrapper-background: transparent;
@@ -161,12 +155,12 @@ main {
   }
 }
 
-/* Navigation list */
+
 .nav-list {
   display: flex;
 }
 
-/* Menu button, display:none on large screens */
+
 .hamburger-icon {
   animation-name: hide-menu-button;
   animation-timeline: --expanded-navigation;
@@ -179,17 +173,17 @@ main {
   }
 }
 
-/* Menu close button, display:none unless menu opened */
+
 .close-icon {
   display: none;
   position: fixed;
   z-index: 100;
 }
 
-/* Open/close animation */
 
-/* Menu styling */
-/* Since the custom props are set inside the animation (which triggers on large screens), the defaults will be used on small screens */
+
+
+
 .navigation-animation-wrapper {
   background-color: var(--nav-wrapper-background, var(--color-background));
   display: var(--nav-wrapper-display, flex);
@@ -200,15 +194,12 @@ main {
   z-index: 100;
 }
 
-/* On open */
+
 
 html:has(.open-navigation:checked) {
   overflow: hidden;
 
-  /* 
-    expand-navigation is automatically triggered and the element becomes visible
-    due to the properties we are applying that move the marker within the viewport
-  */
+ 
   .navigation-animation-wrapper {
     background-color: var(--color-background);
     display: flex;
@@ -231,7 +222,7 @@ html:has(.open-navigation:checked) {
   }
 }
 
-/* On close */
+
 html:has(.close-navigation:checked) {
   .navigation-animation-wrapper {
     animation: slide-out 0.25s ease-out;
@@ -242,11 +233,7 @@ html:has(.close-navigation:checked) {
   }
 }
 
-/* 
-  Because we're swapping non-animatable properties, we'll use a keyframe animation
-  to first animate the animatable properties while preserving the layout
-  and then, at the last moment, allow the non-animatable properties to swap out
-*/
+
 
 @keyframes slide-out {
   0% {
@@ -257,7 +244,7 @@ html:has(.close-navigation:checked) {
     transform: translateX(100%);
   }
 
-  /* Preserve properties until right before the end */
+ 
   0%,
   99% {
     background-color: var(--color-background);
@@ -276,7 +263,7 @@ html:has(.close-navigation:checked) {
     opacity: 0;
   }
 
-  /* Preserve properties until right before the end */
+ 
   0%,
   99% {
     flex-direction: column;
@@ -284,7 +271,7 @@ html:has(.close-navigation:checked) {
 }
 
 @supports not (animation-timeline: view(inline)) {
-  /* Show warning on non-supporting browsers */
+ 
   .warning {
     display: block;
     font-size: 0.8em;
@@ -292,8 +279,8 @@ html:has(.close-navigation:checked) {
     padding-inline: var(--image-aware-padding);
   }
 
-  /* Smooth menu transition on non-supporting browsers */
-  /* Just because it doesn't work doesn't mean it can't be pretty #me */
+ 
+ 
   .site-navigation {
     transition: 0.25s ease-in-out;
     visibility: visible;
@@ -310,13 +297,13 @@ body {
 }
 
 .container-s {
-  /* display: none; */
+ 
   align-items: center;
 }
 
 .custom-container {
   position: relative;
-  /* display: flex !important; */
+ 
   justify-content: space-around;
 }
 
@@ -331,21 +318,9 @@ body {
   transition: 0.5s;
 }
 
-/* .custom-container .custom-card:hover {
-  transform: translateY(-10px);
-  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.5);
-} */
 
-/* .custom-container .custom-card:before {
-  content: "";
-  position: absolute;
-  top: 0;
-  left: -50%;
-  width: 100%;
-  height: 100%;
-  pointer-events: none;
-  z-index: 1;
-} */
+
+
 
 .custom-percent {
   position: relative;
@@ -384,7 +359,7 @@ body {
 
 .custom-percent .custom-num h2 span {
   color: #777;
-  /* font-size: 24px; */
+ 
   transition: 0.5s;
 }
 
