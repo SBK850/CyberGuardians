@@ -3,11 +3,8 @@
   background-color: red;
   z-index: 10000;
 
- 
   visibility: hidden;
 }
-
-
 
 :root {
   --min-text-width: 34rem;
@@ -15,21 +12,16 @@
 }
 
 main {
- 
-
- 
   timeline-scope: --content-width;
   animation: expand-content;
   animation-timeline: --content-width;
 
- 
   & > *,
   &::before,
   &::after {
     animation-timeline: --content-width;
   }
 
- 
   &::before {
     animation-name: wall;
     --border-position: initial;
@@ -42,7 +34,6 @@ main {
     z-index: 0;
   }
 }
-
 
 @keyframes expand-content {
   0%,
@@ -108,8 +99,6 @@ main {
   }
 }
 
-
-
 :root {
   timeline-scope: --expanded-navigation;
 }
@@ -117,7 +106,6 @@ main {
 .site-header {
   overflow: hidden;
 }
-
 
 .site-navigation {
   flex-shrink: 0;
@@ -128,7 +116,6 @@ main {
   animation-name: expand-navigation;
   animation-timeline: --expanded-navigation;
 
- 
   &::after {
     content: "";
     display: block;
@@ -146,7 +133,6 @@ main {
 @keyframes expand-navigation {
   0%,
   100% {
-   
     --nav-wrapper-display: block;
     --nav-wrapper-transform: none;
     --nav-wrapper-background: transparent;
@@ -155,11 +141,9 @@ main {
   }
 }
 
-
 .nav-list {
   display: flex;
 }
-
 
 .hamburger-icon {
   animation-name: hide-menu-button;
@@ -173,16 +157,11 @@ main {
   }
 }
 
-
 .close-icon {
   display: none;
   position: fixed;
   z-index: 100;
 }
-
-
-
-
 
 .navigation-animation-wrapper {
   background-color: var(--nav-wrapper-background, var(--color-background));
@@ -194,12 +173,9 @@ main {
   z-index: 100;
 }
 
-
-
 html:has(.open-navigation:checked) {
   overflow: hidden;
 
- 
   .navigation-animation-wrapper {
     background-color: var(--color-background);
     display: flex;
@@ -222,7 +198,6 @@ html:has(.open-navigation:checked) {
   }
 }
 
-
 html:has(.close-navigation:checked) {
   .navigation-animation-wrapper {
     animation: slide-out 0.25s ease-out;
@@ -233,8 +208,6 @@ html:has(.close-navigation:checked) {
   }
 }
 
-
-
 @keyframes slide-out {
   0% {
     transform: none;
@@ -244,7 +217,6 @@ html:has(.close-navigation:checked) {
     transform: translateX(100%);
   }
 
- 
   0%,
   99% {
     background-color: var(--color-background);
@@ -263,7 +235,6 @@ html:has(.close-navigation:checked) {
     opacity: 0;
   }
 
- 
   0%,
   99% {
     flex-direction: column;
@@ -271,7 +242,6 @@ html:has(.close-navigation:checked) {
 }
 
 @supports not (animation-timeline: view(inline)) {
- 
   .warning {
     display: block;
     font-size: 0.8em;
@@ -279,8 +249,6 @@ html:has(.close-navigation:checked) {
     padding-inline: var(--image-aware-padding);
   }
 
- 
- 
   .site-navigation {
     transition: 0.25s ease-in-out;
     visibility: visible;
@@ -297,13 +265,12 @@ body {
 }
 
 .container-s {
- 
   align-items: center;
 }
 
 .custom-container {
   position: relative;
- 
+
   justify-content: space-around;
 }
 
@@ -317,10 +284,6 @@ body {
   overflow: hidden;
   transition: 0.5s;
 }
-
-
-
-
 
 .custom-percent {
   position: relative;
@@ -359,7 +322,7 @@ body {
 
 .custom-percent .custom-num h2 span {
   color: #777;
- 
+
   transition: 0.5s;
 }
 
