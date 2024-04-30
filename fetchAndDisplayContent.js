@@ -539,10 +539,13 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function redirectToPost() {
-        if (savedUrl) {
-            window.location.href = savedUrl;
+        if (url) {
+            displayUrlLink.href = url;
+            displayUrlLink.textContent = url;
+            displayUrlLink.style.display = 'block'; 
         } else {
             alert('No URL saved');
+            displayUrlLink.style.display = 'none';
         }
     }
 });
