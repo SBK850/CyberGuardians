@@ -4,47 +4,30 @@ document.addEventListener('DOMContentLoaded', () => {
     const twitterEmbedContainer = document.getElementById('twitterEmbedContainer');
     const contentContainer = document.getElementById('content');
     const customContainer = document.querySelector('.custom-container');
-    const submitButton = form.querySelector('.btn');
 
+    const submitButton = form.querySelector('.btn');
     form.addEventListener('submit', async (e) => {
         e.preventDefault();
+
         startLoadingAnimation(submitButton);
-        const postUrl = postUrlInput.value.trim();
 
         try {
-            const domain = getDomainFromUrl(postUrl);
-            let fetchPromise;
-
-            if (domain === 'x.com' || domain === 'twitter.com') {
-                fetchPromise = processTwitterUrl(postUrl);
-            } else if (domain.includes('youthvibe.rf.gd')) {
-                fetchPromise = fetchAndDisplayContent(postUrl, contentContainer);
-            } else {
-                throw new Error('URL domain not recognised for special handling.');
-            }
-
-            await fetchPromise;
-            updateButtonState(submitButton, 'Completed', true);
+            await processFormSubmission(postUrlInput.value.trim());
+            updateButtonState(submitButton, 'Completed', false);
         } catch (error) {
-            if (error instanceof FetchError && error.response.status === 429) {
-                showAlert('You have reached the maximum number of requests allowed. Please wait and try again later.');
-            } else {
-                console.error('Submission error:', error);
-                showAlert('Error! ' + error.message);
-            }
-            updateButtonState(submitButton, 'Failed', true);
-        } finally {
-            stopLoadingAnimation(submitButton);
+            updateButtonState(submitButton, 'Failed', false);
+            console.error('Submission error:', error);
+            alert('Failed to process the submission');
         }
     });
-    
+
     function startLoadingAnimation(button) {
         button.disabled = true;
-        button.textContent = 'Loading...';
+        button.textContent = 'Loading';
         let dotCount = 0;
         const maxDots = 3;
         button.loadingInterval = setInterval(() => {
-            button.textContent = `Loading${'.'.repeat(dotCount)}`;
+            button.textContent = 'Loading' + '.'.repeat(dotCount);
             dotCount = (dotCount + 1) % (maxDots + 1);
         }, 500);
     }
@@ -55,25 +38,60 @@ document.addEventListener('DOMContentLoaded', () => {
         button.disabled = !enable;
     }
 
-    function showAlert(message) {
-        const errorMessageContainer = document.querySelector('.errorMessageContainer');
-        if (errorMessageContainer) {
-            errorMessageContainer.textContent = message;
-            errorMessageContainer.style.display = 'block';
-        } else {
-            alert(message);
-        }
+    async function processFormSubmission(postUrl) {
+        return new Promise((resolve, reject) => {
+            setTimeout(() => {
+                if (postUrl) {
+                    resolve();
+                } else {
+                    reject(new Error('Invalid URL'));
+                }
+            }, 1200000);
+        });
     }
 
-    function getDomainFromUrl(url) {
+    const toggleDisplay = (elements, displayStyle) => {
+        elements.forEach(element => {
+            if (typeof element === 'string') {
+                document.getElementById(element).style.display = displayStyle;
+            } else if (element instanceof HTMLElement) {
+                element.style.display = displayStyle;
+            }
+        });
+    };
+
+    const isValidUrl = (string) => {
         try {
-            const newUrl = new URL(url);
-            return newUrl.hostname.replace('www.', '').toLowerCase();
-        } catch (e) {
-            console.error('Invalid URL format:', e);
-            throw new Error('Invalid URL');
+            new URL(string);
+            return true;
+        } catch (error) {
+            return false;
         }
-    }
+    };
+
+    form.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const postUrl = postUrlInput.value.trim();
+
+        if (!isValidUrl(postUrl)) {
+            alert('Invalid URL');
+            return;
+        }
+
+        const domain = getDomainFromUrl(postUrl);
+        try {
+            if (domain === 'x.com' || domain === 'twitter.com') {
+                await processTwitterUrl(postUrl);
+            } else if (domain.includes('youthvibe.rf.gd')) {
+                await fetchAndDisplayContent(postUrl, contentContainer);
+            } else {
+                throw new Error('URL domain not recognized for special handling.');
+            }
+        } catch (error) {
+            console.error(error);
+            alert('Error! ' + error.message);
+        }
+    });
 
     async function processTwitterUrl(postUrl) {
         const responseHtml = await fetchTwitterEmbedCode(postUrl);
@@ -82,17 +100,8 @@ document.addEventListener('DOMContentLoaded', () => {
             loadTwitterWidgets();
             toggleDisplay([twitterEmbedContainer], 'block');
             const tweetText = extractTweetText(responseHtml);
+
             const toxicityPercentage = await analyseContentForToxicity(tweetText, 'textToxicityScore');
-
-            const analysisData = {
-                url: postUrl,
-                content: tweetText,
-                metadata: {},
-                toxicityScore: toxicityPercentage,
-                textAnalysisResult: { toxicityPercentage }
-            };
-
-            await storeAnalysisResults(analysisData);
 
             const imageToxicitySection = document.querySelector('.image-toxicity');
             if (imageToxicitySection) {
@@ -144,6 +153,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 throw new Error(`Network response was not ok, status: ${response.status}`);
             }
 
+            // Checking for the correct content type
             const contentType = response.headers.get('Content-Type');
             if (!contentType || !contentType.includes('application/json')) {
                 throw new TypeError("Oops, we haven't got JSON!");
@@ -176,27 +186,16 @@ document.addEventListener('DOMContentLoaded', () => {
 
             contentContainer.style.display = 'block';
 
-            const textToxicityPercentage = postData.Content ? await analyseContentForToxicity(postData.Content, 'textToxicityScore') : 0;
-            const imageToxicityPercentage = postData.UploadedImageData ? await callBackendForImageProcessing(postData.UploadedImageData) : 0;
+            let textToxicityPromise = postData.Content ? analyseContentForToxicity(postData.Content, 'textToxicityScore') : Promise.resolve(0);
 
-            const analysisData = {
-                url: postUrl,
-                content: postData.Content || '',
-                metadata: {
-                    profileImageUrl: postData.ProfilePictureURL,
-                    posterName: postData.FirstName + " " + postData.LastName,
-                    posterDetails: `Age: ${postData.Age} | Education: ${postData.Education}`
-                },
-                toxicityScore: textToxicityPercentage,
-                textAnalysisResult: { textToxicityPercentage },
-                imageAnalysisResult: { imageToxicityPercentage }
-            };
+            let imageToxicityPromise = postData.UploadedImageData ? callBackendForImageProcessing(postData.UploadedImageData) : Promise.resolve(0);
 
-            await storeAnalysisResults(analysisData);
+            const [textToxicityPercentage, imageToxicityPercentage] = await Promise.all([textToxicityPromise, imageToxicityPromise]);
 
             updateToxicityCircle(textToxicityPercentage, 'textToxicityScore');
             updateToxicityCircle(imageToxicityPercentage, 'imageToxicityScore');
 
+            const customContainer = document.querySelector('.custom-container');
             if (textToxicityPercentage > 0 || imageToxicityPercentage > 0) {
                 customContainer.style.display = 'block';
             }
@@ -204,6 +203,7 @@ document.addEventListener('DOMContentLoaded', () => {
             if (Math.max(textToxicityPercentage, imageToxicityPercentage) >= 55) {
                 displayWarningCard();
                 document.getElementById('rejectButton').addEventListener('click', rejectToxicContent);
+                const confirmButton = document.getElementById('confirmButton');
                 if (confirmButton) {
                     confirmButton.onclick = function () { confirmToxicContent(carouselItemId); };
                 }
@@ -213,11 +213,7 @@ document.addEventListener('DOMContentLoaded', () => {
             setTimeout(() => $(".input").hide(), 3000);
         } catch (error) {
             console.error('Error fetching and displaying content:', error);
-            const errorMessageContainer = document.querySelector('.errorMessageContainer');
-            if (errorMessageContainer) {
-                errorMessageContainer.textContent = `Error occurred: ${error.message}`;
-                errorMessageContainer.style.display = 'block';
-            }
+            alert(`Error occurred: ${error.message}`);
         }
     }
 
@@ -293,15 +289,12 @@ document.addEventListener('DOMContentLoaded', () => {
             return imageToxicityPercentage;
         } catch (error) {
             console.error('Error processing image:', error);
-            const errorMessageContainer = document.querySelector('.errorMessageContainer');
-            if (errorMessageContainer) {
-                errorMessageContainer.textContent = `Error occurred during image processing: ${error.message}`;
-                errorMessageContainer.style.display = 'block';
-            }
+            alert(`Error occurred during image processing: ${error.message}`);
             updateToxicityCircle(0, 'imageToxicityScore');
             return 0;
         }
     }
+
 
     function filterAndCleanText(text) {
         const filterPatterns = [
@@ -423,6 +416,11 @@ document.addEventListener('DOMContentLoaded', () => {
         return tweetParagraph ? tweetParagraph.textContent : "";
     }
 
+    function getDomainFromUrl(url) {
+        const matches = url.match(/^https?:\/\/([^\/]+)/i);
+        return matches && matches[1] ? matches[1].replace('www.', '').toLowerCase() : '';
+    }
+
     function displayWarningCard() {
         document.getElementById("warning-section").style.display = "block";
     }
@@ -436,23 +434,9 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     async function confirmToxicContent(carouselItemId) {
-        const confirmButton = document.getElementById("confirmButton");
-        const rejectButton = document.getElementById("rejectButton");
-
-        confirmButton.textContent = "Processing";
-        confirmButton.disabled = true;
-        rejectButton.style.display = "none";
-
-        let dotCount = 0;
-        const maxDots = 3;
-        const loadingInterval = setInterval(() => {
-            dotCount = (dotCount + 1) % (maxDots + 1);
-            confirmButton.textContent = "Processing" + '.'.repeat(dotCount);
-        }, 500);
-
         try {
             console.log("Attempting to remove post with ID:", carouselItemId);
-
+    
             const response = await fetch('https://youthvibe-remove.onrender.com/remove-post', {
                 method: 'POST',
                 headers: {
@@ -460,16 +444,19 @@ document.addEventListener('DOMContentLoaded', () => {
                 },
                 body: JSON.stringify({ CarouselItemID: carouselItemId })
             });
-
+    
             if (!response.ok) {
                 throw new Error(`HTTP error, status = ${response.status}`);
             }
-
+    
+            const contentType = response.headers.get('Content-Type');
+            if (!contentType || !contentType.includes('application/json')) {
+                throw new Error('Received non-JSON response from the server.');
+            }
+    
             const result = await response.json();
             console.log("Server response:", result);
-
-            clearInterval(loadingInterval);
-
+    
             if (result && result.message === 'Post removed successfully.') {
                 var message = document.createElement('p');
                 message.textContent = "You have confirmed the removal of this content. It will be removed immediately from YouthVibe. Thank you for helping us maintain a safe environment.";
@@ -481,34 +468,7 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         } catch (error) {
             console.error('Error confirming toxic content:', error);
-            const errorMessageContainer = document.querySelector('.errorMessageContainer');
-            if (errorMessageContainer) {
-                errorMessageContainer.textContent = `Error occurred: ${error.message}`;
-                errorMessageContainer.style.display = 'block';
-            }
-            clearInterval(loadingInterval);
-            confirmButton.disabled = false;
-            confirmButton.textContent = "Confirm";
-            rejectButton.style.display = "block";
+            alert(`Error occurred: ${error.message}`);
         }
-    }
-
-    async function storeAnalysisResults(data) {
-        try {
-            const response = await fetch('https://storeanalysisresults.onrender.com/store-analysis', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify(data)
-            });
-            if (!response.ok) {
-                throw new Error(`HTTP error, status = ${response.status}`);
-            }
-            const responseData = await response.json();
-            console.log('Store analysis results:', responseData);
-        } catch (error) {
-            console.error('Error storing analysis results:', error);
-        }
-    }
+    }    
 });
