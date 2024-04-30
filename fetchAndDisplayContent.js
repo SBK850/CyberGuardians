@@ -73,19 +73,7 @@ document.addEventListener('DOMContentLoaded', () => {
             console.error('Invalid URL format:', e);
             throw new Error('Invalid URL');
         }
-    }
-    function loadTwitterWidgets(callback) {
-        const script = document.createElement('script');
-        script.src = 'https://platform.twitter.com/widgets.js';
-        script.async = true;
-        script.onload = () => {
-            twttr.widgets.load(twitterEmbedContainer).then(() => {
-                if (callback) callback();  // Ensure callback is called after tweets are loaded
-            });
-        };
-        document.body.appendChild(script);
-    }    
-
+    } 
 
     async function processTwitterUrl(postUrl) {
         const responseHtml = await fetchTwitterEmbedCode(postUrl);
