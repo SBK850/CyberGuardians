@@ -406,7 +406,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
             return percentage;
         } catch (error) {
-            console.error('Error analyzing content:', error);
+            console.error('Error analysing content:', error);
         }
     }
 
