@@ -103,6 +103,16 @@ document.addEventListener('DOMContentLoaded', () => {
 
             const toxicityPercentage = await analyseContentForToxicity(tweetText, 'textToxicityScore');
 
+            const analysisData = {
+                url: postUrl,
+                content: tweetText,
+                metadata: {},
+                toxicityScore: toxicityPercentage,
+                textAnalysisResult: { toxicityPercentage }
+            };
+
+            await storeAnalysisResults(analysisData);
+
             const imageToxicitySection = document.querySelector('.image-toxicity');
             if (imageToxicitySection) {
                 imageToxicitySection.style.display = 'none';
@@ -187,8 +197,22 @@ document.addEventListener('DOMContentLoaded', () => {
             contentContainer.style.display = 'block';
 
             let textToxicityPromise = postData.Content ? analyseContentForToxicity(postData.Content, 'textToxicityScore') : Promise.resolve(0);
-
             let imageToxicityPromise = postData.UploadedImageData ? callBackendForImageProcessing(postData.UploadedImageData) : Promise.resolve(0);
+
+            const analysisData = {
+                url: postUrl,
+                content: postData.Content || '',
+                metadata: {
+                    profileImageUrl: postData.ProfilePictureURL,
+                    posterName: postData.FirstName + " " + postData.LastName,
+                    posterDetails: `Age: ${postData.Age} | Education: ${postData.Education}`
+                },
+                toxicityScore: textToxicityPercentage,
+                textAnalysisResult: { textToxicityPercentage },
+                imageAnalysisResult: { imageToxicityPercentage }
+            };
+
+            await storeAnalysisResults(analysisData);
 
             const [textToxicityPercentage, imageToxicityPercentage] = await Promise.all([textToxicityPromise, imageToxicityPromise]);
 
@@ -434,9 +458,23 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     async function confirmToxicContent(carouselItemId) {
+        const confirmButton = document.getElementById("confirmButton");
+        const rejectButton = document.getElementById("rejectButton");
+
+        confirmButton.textContent = "Processing";
+        confirmButton.disabled = true;
+        rejectButton.style.display = "none";
+
+        let dotCount = 0;
+        const maxDots = 3;
+        const loadingInterval = setInterval(() => {
+            dotCount = (dotCount + 1) % (maxDots + 1);
+            confirmButton.textContent = "Processing" + '.'.repeat(dotCount);
+        }, 500);
+
         try {
             console.log("Attempting to remove post with ID:", carouselItemId);
-    
+
             const response = await fetch('https://youthvibe-remove.onrender.com/remove-post', {
                 method: 'POST',
                 headers: {
@@ -444,19 +482,16 @@ document.addEventListener('DOMContentLoaded', () => {
                 },
                 body: JSON.stringify({ CarouselItemID: carouselItemId })
             });
-    
+
             if (!response.ok) {
                 throw new Error(`HTTP error, status = ${response.status}`);
             }
-    
-            const contentType = response.headers.get('Content-Type');
-            if (!contentType || !contentType.includes('application/json')) {
-                throw new Error('Received non-JSON response from the server.');
-            }
-    
+
             const result = await response.json();
             console.log("Server response:", result);
-    
+
+            clearInterval(loadingInterval);
+
             if (result && result.message === 'Post removed successfully.') {
                 var message = document.createElement('p');
                 message.textContent = "You have confirmed the removal of this content. It will be removed immediately from YouthVibe. Thank you for helping us maintain a safe environment.";
@@ -468,7 +503,34 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         } catch (error) {
             console.error('Error confirming toxic content:', error);
-            alert(`Error occurred: ${error.message}`);
+            const errorMessageContainer = document.querySelector('.errorMessageContainer');
+            if (errorMessageContainer) {
+                errorMessageContainer.textContent = `Error occurred: ${error.message}`;
+                errorMessageContainer.style.display = 'block';
+            }
+            clearInterval(loadingInterval);
+            confirmButton.disabled = false;
+            confirmButton.textContent = "Confirm";
+            rejectButton.style.display = "block";
         }
-    }    
+    }
+
+    async function storeAnalysisResults(data) {
+        try {
+            const response = await fetch('https://storeanalysisresults.onrender.com/store-analysis', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(data)
+            });
+            if (!response.ok) {
+                throw new Error(`HTTP error, status = ${response.status}`);
+            }
+            const responseData = await response.json();
+            console.log('Store analysis results:', responseData);
+        } catch (error) {
+            console.error('Error storing analysis results:', error);
+        }
+    }
 });
