@@ -121,6 +121,10 @@ document.addEventListener('DOMContentLoaded', () => {
             const customContainer = document.querySelector('.custom-container');
             customContainer.style.display = 'block';
 
+
+            const twitterContainer = document.querySelector('.report-twitter');
+            twitterContainer.style.display = 'block';
+
             const textToxicityCircle = customContainer.querySelector('.custom-percent svg circle:nth-child(2)');
             if (textToxicityCircle) {
                 const radius = textToxicityCircle.r.baseVal.value;
