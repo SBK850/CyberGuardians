@@ -73,9 +73,11 @@ document.addEventListener('DOMContentLoaded', () => {
             console.error('Invalid URL format:', e);
             throw new Error('Invalid URL');
         }
-    } 
+    }
 
     async function processTwitterUrl(postUrl) {
+
+        console.log("HEY");
         const responseHtml = await fetchTwitterEmbedCode(postUrl);
         if (responseHtml) {
             twitterEmbedContainer.innerHTML = responseHtml;
@@ -409,6 +411,18 @@ document.addEventListener('DOMContentLoaded', () => {
         } catch (error) {
             console.error('Error analysing content:', error);
         }
+    }
+
+    function loadTwitterWidgets(callback) {
+        const script = document.createElement('script');
+        script.src = 'https://platform.twitter.com/widgets.js';
+        script.async = true;
+        script.onload = () => {
+            twttr.widgets.load(twitterEmbedContainer).then(() => {
+                if (callback) callback();  // Ensure callback is called after tweets are loaded
+            });
+        };
+        document.body.appendChild(script);
     }
 
     function extractTweetText(html) {
