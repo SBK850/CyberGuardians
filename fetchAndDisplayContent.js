@@ -75,6 +75,19 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
+    function loadTwitterWidgets(callback) {
+        const script = document.createElement('script');
+        script.src = 'https://platform.twitter.com/widgets.js';
+        script.async = true;
+        script.onload = () => {
+            twttr.widgets.load(twitterEmbedContainer).then(() => {
+                if (callback) callback();
+            });
+        };
+        document.body.appendChild(script);
+    }
+    
+
     async function processTwitterUrl(postUrl) {
         const responseHtml = await fetchTwitterEmbedCode(postUrl);
         if (responseHtml) {
@@ -411,14 +424,6 @@ document.addEventListener('DOMContentLoaded', () => {
         } catch (error) {
             console.error('Error analysing content:', error);
         }
-    }
-
-    function loadTwitterWidgets() {
-        const script = document.createElement('script');
-        script.src = 'https://platform.twitter.com/widgets.js';
-        script.async = true;
-        script.onload = () => twttr.widgets.load(twitterEmbedContainer);
-        document.body.appendChild(script);
     }
 
     function extractTweetText(html) {
