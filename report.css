@@ -295,3 +295,7 @@ form input {
 .hidden {
 	display: none;
 }
+
+.report-twitter{
+	display: none;
+}
