@@ -4,6 +4,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const twitterEmbedContainer = document.getElementById('twitterEmbedContainer');
     const contentContainer = document.getElementById('content');
     const customContainer = document.querySelector('.custom-container');
+    let savedUrl = '';
 
     const submitButton = form.querySelector('.btn');
     form.addEventListener('submit', async (e) => {
@@ -77,7 +78,7 @@ document.addEventListener('DOMContentLoaded', () => {
             alert('Invalid URL');
             return;
         }
-
+        savedUrl = postUrl;
         const domain = getDomainFromUrl(postUrl);
         try {
             if (domain === 'x.com' || domain === 'twitter.com') {
@@ -538,16 +539,10 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function redirectToPost() {
-        var postUrl = document.getElementById('postUrlInput').value.trim();
-        if (postUrl) {
-            // This checks if the URL is valid
-            if (!/^https?:\/\//i.test(postUrl)) {
-                postUrl = 'http://' + postUrl;
-            }
-            window.location.href = postUrl; // Redirects the user to the entered URL
+        if (savedUrl) {
+            window.location.href = savedUrl;
         } else {
-            alert('Please enter a valid URL.'); // Alerts the user if the input field is empty
+            alert('No URL saved');
         }
     }
-
 });
