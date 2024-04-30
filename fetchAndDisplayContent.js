@@ -129,16 +129,6 @@ document.addEventListener('DOMContentLoaded', () => {
             const tweetText = extractTweetText(responseHtml);
             const toxicityPercentage = await analyseContentForToxicity(tweetText, 'textToxicityScore');
 
-            const analysisData = {
-                url: postUrl,
-                content: tweetText,
-                metadata: {},
-                toxicityScore: toxicityPercentage,
-                textAnalysisResult: { toxicityPercentage }
-            };
-
-            await storeAnalysisResults(analysisData);
-
             const imageToxicitySection = document.querySelector('.image-toxicity');
             if (imageToxicitySection) {
                 imageToxicitySection.style.display = 'none';
