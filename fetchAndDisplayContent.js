@@ -92,6 +92,9 @@ document.addEventListener('DOMContentLoaded', () => {
                 textAnalysisResult: { toxicityPercentage }
             };
 
+            console.log("Embed code received:", responseHtml);
+            console.log("Tweet text extracted:", tweetText);
+
             await storeAnalysisResults(analysisData);
 
             const imageToxicitySection = document.querySelector('.image-toxicity');
@@ -123,9 +126,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
                 textToxicityCircle.style.stroke = color;
             }
-
-            console.log("Embed code received:", responseHtml);
-            console.log("Tweet text extracted:", tweetText);
 
             $(".btn").addClass('btn-complete');
 
