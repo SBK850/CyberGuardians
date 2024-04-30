@@ -78,7 +78,10 @@ document.addEventListener('DOMContentLoaded', () => {
             alert('Invalid URL');
             return;
         }
-        savedUrl = postUrl;
+
+        savedUrl = postUrl; 
+        displayUrl(savedUrl); 
+        
         const domain = getDomainFromUrl(postUrl);
         try {
             if (domain === 'x.com' || domain === 'twitter.com') {
@@ -538,14 +541,14 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    function redirectToPost() {
+    function displayUrl(url) {
         if (url) {
             displayUrlLink.href = url;
             displayUrlLink.textContent = url;
-            displayUrlLink.style.display = 'block'; 
+            displayUrlLink.style.display = 'block'; // Make sure it's visible
         } else {
             alert('No URL saved');
-            displayUrlLink.style.display = 'none';
+            displayUrlLink.style.display = 'none'; // Hide if no URL
         }
     }
 });
