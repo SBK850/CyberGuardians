@@ -296,6 +296,69 @@ form input {
 	display: none;
 }
 
-.report-twitter{
+.report-twitter {
 	display: none;
 }
+
+.report-container {
+	width: 700px; /* adjust the width as needed */
+	padding: 20px;
+	background-color: #f4f4f4; /* light grey background */
+	border-radius: 8px;
+	box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* soft shadow for depth */
+	font-family: Arial, sans-serif; /* simple, clean font */
+}
+
+.report-container h2 {
+	color: #333; /* dark grey for headings */
+	margin-bottom: 12px;
+}
+
+.report-container ol {
+	padding-left: 20px;
+	margin: 0 0 20px 0; /* space below list */
+}
+
+.report-container li {
+	margin-bottom: 10px; /* space between list items */
+	color: #666; /* medium grey for text */
+	line-height: 1.6; /* makes it easier to read */
+}
+
+.report-container li .ellipsis {
+	font-family: Arial, sans-serif; /* ensures the icon uses the same font */
+	font-weight: bold;
+}
+
+.report-container li strong {
+	font-weight: bold;
+}
+
+.report-container p {
+	color: #666; /* consistent text color */
+	margin: 0; /* no space around paragraph */
+	font-size: 0.95em; /* slightly smaller font size */
+}
+
+.report-container input[type="text"] {
+    width: 100%;
+    padding: 8px;
+    margin: 10px 0;
+    box-sizing: border-box; /* Ensures padding doesn't affect width */
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+
+.report-container button {
+    padding: 10px 20px;
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.report-container button:hover {
+    background-color: #45a049;
+}
+

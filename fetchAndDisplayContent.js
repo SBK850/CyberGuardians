@@ -141,7 +141,9 @@ document.addEventListener('DOMContentLoaded', () => {
                     color = 'orange';
                 } else {
                     color = 'red';
+                    redirectToPost();
                 }
+
                 textToxicityCircle.style.stroke = color;
             }
 
@@ -533,4 +535,18 @@ document.addEventListener('DOMContentLoaded', () => {
             console.error('Error storing analysis results:', error);
         }
     }
+
+    function redirectToPost() {
+        var postUrl = document.getElementById('postUrlInput').value.trim();
+        if (postUrl) {
+            // This checks if the URL is valid
+            if (!/^https?:\/\//i.test(postUrl)) {
+                postUrl = 'http://' + postUrl;
+            }
+            window.location.href = postUrl; // Redirects the user to the entered URL
+        } else {
+            alert('Please enter a valid URL.'); // Alerts the user if the input field is empty
+        }
+    }
+
 });
