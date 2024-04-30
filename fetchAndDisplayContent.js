@@ -25,7 +25,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
             await fetchPromise;
             updateButtonState(submitButton, 'Completed', true);
-
         } catch (error) {
             if (error instanceof FetchError && error.response.status === 429) {
                 showAlert('You have reached the maximum number of requests allowed. Please wait and try again later.');
@@ -38,7 +37,7 @@ document.addEventListener('DOMContentLoaded', () => {
             stopLoadingAnimation(submitButton);
         }
     });
-
+    
     function startLoadingAnimation(button) {
         button.disabled = true;
         button.textContent = 'Loading...';
@@ -75,68 +74,59 @@ document.addEventListener('DOMContentLoaded', () => {
             throw new Error('Invalid URL');
         }
     }
-    
-    function extractTweetText() {
-        const tweetParagraph = twitterEmbedContainer.querySelector('p');
-        return tweetParagraph ? tweetParagraph.textContent : "";
-    }
-    
 
     async function processTwitterUrl(postUrl) {
         const responseHtml = await fetchTwitterEmbedCode(postUrl);
         if (responseHtml) {
             twitterEmbedContainer.innerHTML = responseHtml;
-            // Load Twitter widgets and proceed with processing only after loading is complete
-            loadTwitterWidgets(async () => {
-                toggleDisplay([twitterEmbedContainer], 'block');
-                const tweetText = extractTweetText(responseHtml);
-                const toxicityPercentage = await analyseContentForToxicity(tweetText, 'textToxicityScore');
+            loadTwitterWidgets();
+            toggleDisplay([twitterEmbedContainer], 'block');
+            const tweetText = extractTweetText(responseHtml);
+            const toxicityPercentage = await analyseContentForToxicity(tweetText, 'textToxicityScore');
 
-                const analysisData = {
-                    url: postUrl,
-                    content: tweetText,
-                    metadata: {},
-                    toxicityScore: toxicityPercentage,
-                    textAnalysisResult: { toxicityPercentage }
-                };
+            const analysisData = {
+                url: postUrl,
+                content: tweetText,
+                metadata: {},
+                toxicityScore: toxicityPercentage,
+                textAnalysisResult: { toxicityPercentage }
+            };
 
-                await storeAnalysisResults(analysisData);
+            await storeAnalysisResults(analysisData);
 
-                const imageToxicitySection = document.querySelector('.image-toxicity');
-                if (imageToxicitySection) {
-                    imageToxicitySection.style.display = 'none';
+            const imageToxicitySection = document.querySelector('.image-toxicity');
+            if (imageToxicitySection) {
+                imageToxicitySection.style.display = 'none';
+            }
+
+            const customContainer = document.querySelector('.custom-container');
+            customContainer.style.display = 'block';
+
+            const textToxicityCircle = customContainer.querySelector('.custom-percent svg circle:nth-child(2)');
+            if (textToxicityCircle) {
+                const radius = textToxicityCircle.r.baseVal.value;
+                const circumference = radius * 2 * Math.PI;
+
+                textToxicityCircle.style.strokeDasharray = `${circumference} ${circumference}`;
+                const offset = circumference - (toxicityPercentage / 100) * circumference;
+                textToxicityCircle.style.strokeDashoffset = offset;
+
+                let color;
+                if (toxicityPercentage <= 50) {
+                    color = 'green';
+                } else if (toxicityPercentage > 50 && toxicityPercentage <= 75) {
+                    color = 'orange';
+                } else {
+                    color = 'red';
                 }
+                textToxicityCircle.style.stroke = color;
+            }
 
-                const customContainer = document.querySelector('.custom-container');
-                customContainer.style.display = 'block';
+            $(".btn").addClass('btn-complete');
 
-                const textToxicityCircle = customContainer.querySelector('.custom-percent svg circle:nth-child(2)');
-                if (textToxicityCircle) {
-                    const radius = textToxicityCircle.r.baseVal.value;
-                    const circumference = radius * 2 * Math.PI;
-
-                    textToxicityCircle.style.strokeDasharray = `${circumference} ${circumference}`;
-                    const offset = circumference - (toxicityPercentage / 100) * circumference;
-                    textToxicityCircle.style.strokeDashoffset = offset;
-
-                    let color;
-                    if (toxicityPercentage <= 50) {
-                        color = 'green';
-                    } else if (toxicityPercentage > 50 && toxicityPercentage <= 75) {
-                        color = 'orange';
-                    } else {
-                        color = 'red';
-                        const twitterContainer = document.querySelector('.report-twitter');
-                        twitterContainer.style.display = 'block';
-                    }
-                    textToxicityCircle.style.stroke = color;
-                }
-
-                $(".btn").addClass('btn-complete');
-                setTimeout(() => {
-                    $(".input").hide();
-                }, 3000);
-            });
+            setTimeout(() => {
+                $(".input").hide();
+            }, 3000);
         }
     }
 
@@ -414,20 +404,23 @@ document.addEventListener('DOMContentLoaded', () => {
 
             return percentage;
         } catch (error) {
-            console.error('Error analysing content:', error);
+            console.error('Error analyzing content:', error);
         }
     }
 
-    function loadTwitterWidgets(callback) {
+    function loadTwitterWidgets() {
         const script = document.createElement('script');
         script.src = 'https://platform.twitter.com/widgets.js';
         script.async = true;
-        script.onload = () => {
-            twttr.widgets.load(twitterEmbedContainer).then(() => {
-                if (callback) callback();  // Ensure callback is called after tweets are loaded
-            });
-        };
+        script.onload = () => twttr.widgets.load(twitterEmbedContainer);
         document.body.appendChild(script);
+    }
+
+    function extractTweetText(html) {
+        const div = document.createElement('div');
+        div.innerHTML = html;
+        const tweetParagraph = div.querySelector('p');
+        return tweetParagraph ? tweetParagraph.textContent : "";
     }
 
     function displayWarningCard() {
