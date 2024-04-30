@@ -124,6 +124,9 @@ document.addEventListener('DOMContentLoaded', () => {
                 textToxicityCircle.style.stroke = color;
             }
 
+            console.log("Embed code received:", responseHtml);
+            console.log("Tweet text extracted:", tweetText);
+
             $(".btn").addClass('btn-complete');
 
             setTimeout(() => {
