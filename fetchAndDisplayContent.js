@@ -82,8 +82,12 @@ document.addEventListener('DOMContentLoaded', () => {
             loadTwitterWidgets();
             toggleDisplay([twitterEmbedContainer], 'block');
             const tweetText = extractTweetText(responseHtml);
+            console.log("Extracted tweet text:", tweetText);  // Log the extracted text
             const toxicityPercentage = await analyseContentForToxicity(tweetText, 'textToxicityScore');
-
+    
+            // Check if the toxicity analysis is returning a value
+            console.log("Toxicity analysis result:", toxicityPercentage);
+    
             const analysisData = {
                 url: postUrl,
                 content: tweetText,
@@ -91,7 +95,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 toxicityScore: toxicityPercentage,
                 textAnalysisResult: { toxicityPercentage }
             };
-
+    
             await storeAnalysisResults(analysisData);
 
             const imageToxicitySection = document.querySelector('.image-toxicity');
