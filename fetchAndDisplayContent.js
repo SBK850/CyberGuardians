@@ -37,7 +37,7 @@ document.addEventListener('DOMContentLoaded', () => {
             stopLoadingAnimation(submitButton);
         }
     });
-    
+
     function startLoadingAnimation(button) {
         button.disabled = true;
         button.textContent = 'Loading...';
@@ -118,6 +118,8 @@ document.addEventListener('DOMContentLoaded', () => {
                     color = 'orange';
                 } else {
                     color = 'red';
+                    const twitterContainer = document.querySelector('.report-twitter');
+                    twitterContainer.style.display = 'block';
                 }
                 textToxicityCircle.style.stroke = color;
             }
