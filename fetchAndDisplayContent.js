@@ -74,77 +74,74 @@ document.addEventListener('DOMContentLoaded', () => {
             throw new Error('Invalid URL');
         }
     }
-
     function loadTwitterWidgets(callback) {
         const script = document.createElement('script');
         script.src = 'https://platform.twitter.com/widgets.js';
         script.async = true;
         script.onload = () => {
             twttr.widgets.load(twitterEmbedContainer).then(() => {
-                if (callback) callback();
+                if (callback) callback();  // Ensure callback is called after tweets are loaded
             });
         };
         document.body.appendChild(script);
-    }
+    }    
 
 
     async function processTwitterUrl(postUrl) {
         const responseHtml = await fetchTwitterEmbedCode(postUrl);
         if (responseHtml) {
             twitterEmbedContainer.innerHTML = responseHtml;
-            loadTwitterWidgets();
-            toggleDisplay([twitterEmbedContainer], 'block');
-            const tweetText = extractTweetText(responseHtml);
-            const toxicityPercentage = await analyseContentForToxicity(tweetText, 'textToxicityScore');
+            // Load Twitter widgets and proceed with processing only after loading is complete
+            loadTwitterWidgets(async () => {
+                toggleDisplay([twitterEmbedContainer], 'block');
+                const tweetText = extractTweetText(responseHtml);
+                const toxicityPercentage = await analyseContentForToxicity(tweetText, 'textToxicityScore');
 
-            const analysisData = {
-                url: postUrl,
-                content: tweetText,
-                metadata: {},
-                toxicityScore: toxicityPercentage,
-                textAnalysisResult: { toxicityPercentage }
-            };
+                const analysisData = {
+                    url: postUrl,
+                    content: tweetText,
+                    metadata: {},
+                    toxicityScore: toxicityPercentage,
+                    textAnalysisResult: { toxicityPercentage }
+                };
 
-            console.log("Embed code received:", responseHtml);
-            console.log("Tweet text extracted:", tweetText);
+                await storeAnalysisResults(analysisData);
 
-            await storeAnalysisResults(analysisData);
-
-            const imageToxicitySection = document.querySelector('.image-toxicity');
-            if (imageToxicitySection) {
-                imageToxicitySection.style.display = 'none';
-            }
-
-            const customContainer = document.querySelector('.custom-container');
-            customContainer.style.display = 'block';
-
-            const textToxicityCircle = customContainer.querySelector('.custom-percent svg circle:nth-child(2)');
-            if (textToxicityCircle) {
-                const radius = textToxicityCircle.r.baseVal.value;
-                const circumference = radius * 2 * Math.PI;
-
-                textToxicityCircle.style.strokeDasharray = `${circumference} ${circumference}`;
-                const offset = circumference - (toxicityPercentage / 100) * circumference;
-                textToxicityCircle.style.strokeDashoffset = offset;
-
-                let color;
-                if (toxicityPercentage <= 50) {
-                    color = 'green';
-                } else if (toxicityPercentage > 50 && toxicityPercentage <= 75) {
-                    color = 'orange';
-                } else {
-                    color = 'red';
-                    const twitterContainer = document.querySelector('.report-twitter');
-                    twitterContainer.style.display = 'block';
+                const imageToxicitySection = document.querySelector('.image-toxicity');
+                if (imageToxicitySection) {
+                    imageToxicitySection.style.display = 'none';
                 }
-                textToxicityCircle.style.stroke = color;
-            }
 
-            $(".btn").addClass('btn-complete');
+                const customContainer = document.querySelector('.custom-container');
+                customContainer.style.display = 'block';
 
-            setTimeout(() => {
-                $(".input").hide();
-            }, 3000);
+                const textToxicityCircle = customContainer.querySelector('.custom-percent svg circle:nth-child(2)');
+                if (textToxicityCircle) {
+                    const radius = textToxicityCircle.r.baseVal.value;
+                    const circumference = radius * 2 * Math.PI;
+
+                    textToxicityCircle.style.strokeDasharray = `${circumference} ${circumference}`;
+                    const offset = circumference - (toxicityPercentage / 100) * circumference;
+                    textToxicityCircle.style.strokeDashoffset = offset;
+
+                    let color;
+                    if (toxicityPercentage <= 50) {
+                        color = 'green';
+                    } else if (toxicityPercentage > 50 && toxicityPercentage <= 75) {
+                        color = 'orange';
+                    } else {
+                        color = 'red';
+                        const twitterContainer = document.querySelector('.report-twitter');
+                        twitterContainer.style.display = 'block';
+                    }
+                    textToxicityCircle.style.stroke = color;
+                }
+
+                $(".btn").addClass('btn-complete');
+                setTimeout(() => {
+                    $(".input").hide();
+                }, 3000);
+            });
         }
     }
 
