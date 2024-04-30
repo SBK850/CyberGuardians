@@ -138,10 +138,11 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (toxicityPercentage <= 50) {
                     color = 'green';
                 } else if (toxicityPercentage > 50 && toxicityPercentage <= 75) {
+                    redirectToPost();
                     color = 'orange';
                 } else {
-                    color = 'red';
                     redirectToPost();
+                    color = 'red';
                 }
 
                 textToxicityCircle.style.stroke = color;
