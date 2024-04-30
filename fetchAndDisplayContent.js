@@ -25,6 +25,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
             await fetchPromise;
             updateButtonState(submitButton, 'Completed', true);
+
         } catch (error) {
             if (error instanceof FetchError && error.response.status === 429) {
                 showAlert('You have reached the maximum number of requests allowed. Please wait and try again later.');
@@ -74,10 +75,14 @@ document.addEventListener('DOMContentLoaded', () => {
             throw new Error('Invalid URL');
         }
     }
+    
+    function extractTweetText() {
+        const tweetParagraph = twitterEmbedContainer.querySelector('p');
+        return tweetParagraph ? tweetParagraph.textContent : "";
+    }
+    
 
     async function processTwitterUrl(postUrl) {
-
-        console.log("HEY");
         const responseHtml = await fetchTwitterEmbedCode(postUrl);
         if (responseHtml) {
             twitterEmbedContainer.innerHTML = responseHtml;
@@ -423,13 +428,6 @@ document.addEventListener('DOMContentLoaded', () => {
             });
         };
         document.body.appendChild(script);
-    }
-
-    function extractTweetText(html) {
-        const div = document.createElement('div');
-        div.innerHTML = html;
-        const tweetParagraph = div.querySelector('p');
-        return tweetParagraph ? tweetParagraph.textContent : "";
     }
 
     function displayWarningCard() {
