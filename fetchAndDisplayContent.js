@@ -4,47 +4,30 @@ document.addEventListener('DOMContentLoaded', () => {
     const twitterEmbedContainer = document.getElementById('twitterEmbedContainer');
     const contentContainer = document.getElementById('content');
     const customContainer = document.querySelector('.custom-container');
-    const submitButton = form.querySelector('.btn');
 
+    const submitButton = form.querySelector('.btn');
     form.addEventListener('submit', async (e) => {
         e.preventDefault();
+
         startLoadingAnimation(submitButton);
-        const postUrl = postUrlInput.value.trim();
 
         try {
-            const domain = getDomainFromUrl(postUrl);
-            let fetchPromise;
-
-            if (domain === 'x.com' || domain === 'twitter.com') {
-                fetchPromise = processTwitterUrl(postUrl);
-            } else if (domain.includes('youthvibe.rf.gd')) {
-                fetchPromise = fetchAndDisplayContent(postUrl, contentContainer);
-            } else {
-                throw new Error('URL domain not recognised for special handling.');
-            }
-
-            await fetchPromise;
-            updateButtonState(submitButton, 'Completed', true);
+            await processFormSubmission(postUrlInput.value.trim());
+            updateButtonState(submitButton, 'Completed', false);
         } catch (error) {
-            if (error instanceof FetchError && error.response.status === 429) {
-                showAlert('You have reached the maximum number of requests allowed. Please wait and try again later.');
-            } else {
-                console.error('Submission error:', error);
-                showAlert('Error! ' + error.message);
-            }
-            updateButtonState(submitButton, 'Failed', true);
-        } finally {
-            stopLoadingAnimation(submitButton);
+            updateButtonState(submitButton, 'Failed', false);
+            console.error('Submission error:', error);
+            alert('Failed to process the submission');
         }
     });
-    
+
     function startLoadingAnimation(button) {
         button.disabled = true;
-        button.textContent = 'Loading...';
+        button.textContent = 'Loading';
         let dotCount = 0;
         const maxDots = 3;
         button.loadingInterval = setInterval(() => {
-            button.textContent = `Loading${'.'.repeat(dotCount)}`;
+            button.textContent = 'Loading' + '.'.repeat(dotCount);
             dotCount = (dotCount + 1) % (maxDots + 1);
         }, 500);
     }
@@ -55,25 +38,60 @@ document.addEventListener('DOMContentLoaded', () => {
         button.disabled = !enable;
     }
 
-    function showAlert(message) {
-        const errorMessageContainer = document.querySelector('.errorMessageContainer');
-        if (errorMessageContainer) {
-            errorMessageContainer.textContent = message;
-            errorMessageContainer.style.display = 'block';
-        } else {
-            alert(message);
-        }
+    async function processFormSubmission(postUrl) {
+        return new Promise((resolve, reject) => {
+            setTimeout(() => {
+                if (postUrl) {
+                    resolve();
+                } else {
+                    reject(new Error('Invalid URL'));
+                }
+            }, 1200000);
+        });
     }
 
-    function getDomainFromUrl(url) {
+    const toggleDisplay = (elements, displayStyle) => {
+        elements.forEach(element => {
+            if (typeof element === 'string') {
+                document.getElementById(element).style.display = displayStyle;
+            } else if (element instanceof HTMLElement) {
+                element.style.display = displayStyle;
+            }
+        });
+    };
+
+    const isValidUrl = (string) => {
         try {
-            const newUrl = new URL(url);
-            return newUrl.hostname.replace('www.', '').toLowerCase();
-        } catch (e) {
-            console.error('Invalid URL format:', e);
-            throw new Error('Invalid URL');
+            new URL(string);
+            return true;
+        } catch (error) {
+            return false;
         }
-    }
+    };
+
+    form.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const postUrl = postUrlInput.value.trim();
+
+        if (!isValidUrl(postUrl)) {
+            alert('Invalid URL');
+            return;
+        }
+
+        const domain = getDomainFromUrl(postUrl);
+        try {
+            if (domain === 'x.com' || domain === 'twitter.com') {
+                await processTwitterUrl(postUrl);
+            } else if (domain.includes('youthvibe.rf.gd')) {
+                await fetchAndDisplayContent(postUrl, contentContainer);
+            } else {
+                throw new Error('URL domain not recognized for special handling.');
+            }
+        } catch (error) {
+            console.error(error);
+            alert('Error! ' + error.message);
+        }
+    });
 
     async function processTwitterUrl(postUrl) {
         const responseHtml = await fetchTwitterEmbedCode(postUrl);
@@ -82,6 +100,7 @@ document.addEventListener('DOMContentLoaded', () => {
             loadTwitterWidgets();
             toggleDisplay([twitterEmbedContainer], 'block');
             const tweetText = extractTweetText(responseHtml);
+
             const toxicityPercentage = await analyseContentForToxicity(tweetText, 'textToxicityScore');
 
             const analysisData = {
@@ -101,6 +120,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
             const customContainer = document.querySelector('.custom-container');
             customContainer.style.display = 'block';
+
+
+            const twitterContainer = document.querySelector('.report-twitter');
+            twitterContainer.style.display = 'flex';
 
             const textToxicityCircle = customContainer.querySelector('.custom-percent svg circle:nth-child(2)');
             if (textToxicityCircle) {
@@ -144,40 +167,16 @@ document.addEventListener('DOMContentLoaded', () => {
                 throw new Error(`Network response was not ok, status: ${response.status}`);
             }
 
-            const contentType = response.headers.get('Content-Type');
-            if (!contentType || !contentType.includes('application/json')) {
-                throw new TypeError("Oops, we haven't got JSON!");
-            }
-
             const postData = await response.json();
             if (typeof postData.CarouselItemID === 'undefined') {
                 throw new Error('CarouselItemID is undefined in the server response.');
             }
             const carouselItemId = postData.CarouselItemID;
 
-            document.getElementById('profileImageUrl').src = postData.ProfilePictureURL || 'placeholder-image-url.png';
-            document.getElementById('posterName').textContent = postData.FirstName + " " + postData.LastName || 'Name not available';
-            document.getElementById('posterDetails').textContent = `Age: ${postData.Age} | Education: ${postData.Education}` || 'Details not available';
-            document.getElementById('postContent').textContent = postData.Content || 'Content not available';
+            let textToxicityPromise = postData.Content ? analyseContentForToxicity(postData.Content, 'textToxicityScore') : Promise.resolve(0);
+            let imageToxicityPromise = postData.UploadedImageData ? callBackendForImageProcessing(postData.UploadedImageData) : Promise.resolve(0);
 
-            const postImage = document.getElementById('postImage');
-            if (postData.UploadedImageData) {
-                postImage.src = `data:image/png;base64,${postData.UploadedImageData}`;
-                postImage.alt = "Post Image";
-                postImage.style.display = 'block';
-            } else {
-                postImage.style.display = 'none';
-            }
-
-            const confirmButton = document.getElementById('confirmButton');
-            if (confirmButton) {
-                confirmButton.onclick = function () { confirmToxicContent(carouselItemId); };
-            }
-
-            contentContainer.style.display = 'block';
-
-            const textToxicityPercentage = postData.Content ? await analyseContentForToxicity(postData.Content, 'textToxicityScore') : 0;
-            const imageToxicityPercentage = postData.UploadedImageData ? await callBackendForImageProcessing(postData.UploadedImageData) : 0;
+            const [textToxicityPercentage, imageToxicityPercentage] = await Promise.all([textToxicityPromise, imageToxicityPromise]);
 
             const analysisData = {
                 url: postUrl,
@@ -197,10 +196,28 @@ document.addEventListener('DOMContentLoaded', () => {
             updateToxicityCircle(textToxicityPercentage, 'textToxicityScore');
             updateToxicityCircle(imageToxicityPercentage, 'imageToxicityScore');
 
-            if (textToxicityPercentage > 0 || imageToxicityPercentage > 0) {
-                customContainer.style.display = 'block';
+            // Display the content and user interactions based on analysis
+            contentContainer.style.display = 'block';
+            document.getElementById('profileImageUrl').src = postData.ProfilePictureURL || 'placeholder-image-url.png';
+            document.getElementById('posterName').textContent = postData.FirstName + " " + postData.LastName || 'Name not available';
+            document.getElementById('posterDetails').textContent = `Age: ${postData.Age} | Education: ${postData.Education}` || 'Details not available';
+            document.getElementById('postContent').textContent = postData.Content || 'Content not available';
+
+            const postImage = document.getElementById('postImage');
+            if (postData.UploadedImageData) {
+                postImage.src = `data:image/png;base64,${postData.UploadedImageData}`;
+                postImage.alt = "Post Image";
+                postImage.style.display = 'block';
+            } else {
+                postImage.style.display = 'none';
             }
 
+            const confirmButton = document.getElementById('confirmButton');
+            if (confirmButton) {
+                confirmButton.onclick = function () { confirmToxicContent(carouselItemId); };
+            }
+
+            // Check toxicity levels to determine if additional user interactions are needed
             if (Math.max(textToxicityPercentage, imageToxicityPercentage) >= 55) {
                 displayWarningCard();
                 document.getElementById('rejectButton').addEventListener('click', rejectToxicContent);
@@ -209,17 +226,20 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
             }
 
+            // If there is any toxicity, display custom UI elements for detailed analysis
+            const customContainer = document.querySelector('.custom-container');
+            if (textToxicityPercentage > 0 || imageToxicityPercentage > 0) {
+                customContainer.style.display = 'block';
+            }
+
             $(".btn").addClass('btn-complete');
             setTimeout(() => $(".input").hide(), 3000);
         } catch (error) {
             console.error('Error fetching and displaying content:', error);
-            const errorMessageContainer = document.querySelector('.errorMessageContainer');
-            if (errorMessageContainer) {
-                errorMessageContainer.textContent = `Error occurred: ${error.message}`;
-                errorMessageContainer.style.display = 'block';
-            }
+            alert(`Error occurred: ${error.message}`);
         }
-    }
+    };
+
 
     function updateToxicityCircle(percentage, elementId) {
         const scoreElement = document.getElementById(elementId);
@@ -293,15 +313,12 @@ document.addEventListener('DOMContentLoaded', () => {
             return imageToxicityPercentage;
         } catch (error) {
             console.error('Error processing image:', error);
-            const errorMessageContainer = document.querySelector('.errorMessageContainer');
-            if (errorMessageContainer) {
-                errorMessageContainer.textContent = `Error occurred during image processing: ${error.message}`;
-                errorMessageContainer.style.display = 'block';
-            }
+            alert(`Error occurred during image processing: ${error.message}`);
             updateToxicityCircle(0, 'imageToxicityScore');
             return 0;
         }
     }
+
 
     function filterAndCleanText(text) {
         const filterPatterns = [
@@ -421,6 +438,11 @@ document.addEventListener('DOMContentLoaded', () => {
         div.innerHTML = html;
         const tweetParagraph = div.querySelector('p');
         return tweetParagraph ? tweetParagraph.textContent : "";
+    }
+
+    function getDomainFromUrl(url) {
+        const matches = url.match(/^https?:\/\/([^\/]+)/i);
+        return matches && matches[1] ? matches[1].replace('www.', '').toLowerCase() : '';
     }
 
     function displayWarningCard() {

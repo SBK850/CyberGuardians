@@ -123,7 +123,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
             const twitterContainer = document.querySelector('.report-twitter');
-            twitterContainer.style.display = 'block';
+            twitterContainer.style.display = 'flex';
 
             const textToxicityCircle = customContainer.querySelector('.custom-percent svg circle:nth-child(2)');
             if (textToxicityCircle) {
