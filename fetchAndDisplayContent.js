@@ -86,7 +86,7 @@ document.addEventListener('DOMContentLoaded', () => {
         };
         document.body.appendChild(script);
     }
-    
+
 
     async function processTwitterUrl(postUrl) {
         const responseHtml = await fetchTwitterEmbedCode(postUrl);
