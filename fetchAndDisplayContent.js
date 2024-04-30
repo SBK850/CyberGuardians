@@ -37,7 +37,7 @@ document.addEventListener('DOMContentLoaded', () => {
             stopLoadingAnimation(submitButton);
         }
     });
-
+    
     function startLoadingAnimation(button) {
         button.disabled = true;
         button.textContent = 'Loading...';
@@ -75,6 +75,51 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
+    async function fetchTwitterEmbedCode(twitterUrl) {
+        const apiEndpoint = 'https://twitter-n01a.onrender.com/get-twitter-embed';
+        return await fetchJsonData(apiEndpoint, { url: twitterUrl });
+    }
+
+    async function fetchJsonData(apiEndpoint, data) {
+        try {
+            const response = await fetch(apiEndpoint, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(data),
+            });
+
+            if (!response.ok) {
+                throw new Error(`Network response was not ok, status: ${response.status}`);
+            }
+
+            const responseData = await response.json();
+            return responseData.html || responseData[0];
+        } catch (error) {
+            console.error('Fetch error:', error);
+            throw error;
+        }
+    }
+
+    function loadTwitterWidgets(callback) {
+        const script = document.createElement('script');
+        script.src = 'https://platform.twitter.com/widgets.js';
+        script.async = true;
+        script.onload = () => {
+            twttr.widgets.load(twitterEmbedContainer).then(() => {
+                console.log("Twitter widgets are fully loaded and tweets are rendered.");
+                callback(); // Perform actions after tweets are fully loaded
+            });
+        };
+        document.body.appendChild(script);
+    }    
+
+    function extractTweetText(html) {
+        const div = document.createElement('div');
+        div.innerHTML = html;
+        const tweetParagraph = div.querySelector('p');
+        return tweetParagraph ? tweetParagraph.textContent : "";
+    }
+
     async function processTwitterUrl(postUrl) {
         const responseHtml = await fetchTwitterEmbedCode(postUrl);
         if (responseHtml) {
@@ -82,11 +127,7 @@ document.addEventListener('DOMContentLoaded', () => {
             loadTwitterWidgets();
             toggleDisplay([twitterEmbedContainer], 'block');
             const tweetText = extractTweetText(responseHtml);
-            console.log("Extracted tweet text:", tweetText);  // Log the extracted text
             const toxicityPercentage = await analyseContentForToxicity(tweetText, 'textToxicityScore');
-
-            // Check if the toxicity analysis is returning a value
-            console.log("Toxicity analysis result:", toxicityPercentage);
 
             const analysisData = {
                 url: postUrl,
@@ -344,32 +385,6 @@ document.addEventListener('DOMContentLoaded', () => {
         return text.trim();
     }
 
-
-    async function fetchTwitterEmbedCode(twitterUrl) {
-        const apiEndpoint = 'https://twitter-n01a.onrender.com/get-twitter-embed';
-        return await fetchJsonData(apiEndpoint, { url: twitterUrl });
-    }
-
-    async function fetchJsonData(apiEndpoint, data) {
-        try {
-            const response = await fetch(apiEndpoint, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(data),
-            });
-
-            if (!response.ok) {
-                throw new Error(`Network response was not ok, status: ${response.status}`);
-            }
-
-            const responseData = await response.json();
-            return responseData.html || responseData[0];
-        } catch (error) {
-            console.error('Fetch error:', error);
-            throw error;
-        }
-    }
-
     async function analyseContentForToxicity(content, scoreElementId) {
         const analysisEndpoint = 'https://google-perspective-api.onrender.com/analyse-content';
         try {
@@ -412,33 +427,11 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    function setupTweetObserver() {
-        const observer = new MutationObserver((mutations, obs) => {
-            const tweetLoaded = mutations.some(mutation =>
-                Array.from(mutation.addedNodes).some(node =>
-                    node.nodeType === Node.ELEMENT_NODE && node.matches('twitter-widget')
-                )
-            );
-            if (tweetLoaded) {
-                processTwitterUrl(postUrl); // Ensure postUrl is accessible here, might need adjustment
-                obs.disconnect(); // Stop observing after the tweet is loaded
-            }
-        });
-
-        observer.observe(twitterEmbedContainer, {
-            childList: true,
-            subtree: true
-        });
-    }
-
     function loadTwitterWidgets() {
         const script = document.createElement('script');
         script.src = 'https://platform.twitter.com/widgets.js';
         script.async = true;
-        script.onload = () => {
-            twttr.widgets.load(twitterEmbedContainer);
-            setupTweetObserver(); // Setup observer after the script is loaded
-        };
+        script.onload = () => twttr.widgets.load(twitterEmbedContainer);
         document.body.appendChild(script);
     }
 
