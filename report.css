@@ -298,6 +298,9 @@ form input {
 
 .report-twitter {
 	display: none;
+	text-align: center;
+	width: 30rem;
+	margin: auto;
 }
 
 .report-container {
@@ -341,24 +344,23 @@ form input {
 }
 
 .report-container input[type="text"] {
-    width: 100%;
-    padding: 8px;
-    margin: 10px 0;
-    box-sizing: border-box; /* Ensures padding doesn't affect width */
-    border: 1px solid #ccc;
-    border-radius: 4px;
+	width: 100%;
+	padding: 8px;
+	margin: 10px 0;
+	box-sizing: border-box; /* Ensures padding doesn't affect width */
+	border: 1px solid #ccc;
+	border-radius: 4px;
 }
 
 .report-container button {
-    padding: 10px 20px;
-    background-color: #4CAF50;
-    color: white;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
+	padding: 10px 20px;
+	background-color: #4caf50;
+	color: white;
+	border: none;
+	border-radius: 4px;
+	cursor: pointer;
 }
 
 .report-container button:hover {
-    background-color: #45a049;
+	background-color: #45a049;
 }
-
