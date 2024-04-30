@@ -37,7 +37,7 @@ document.addEventListener('DOMContentLoaded', () => {
             stopLoadingAnimation(submitButton);
         }
     });
-    
+
     function startLoadingAnimation(button) {
         button.disabled = true;
         button.textContent = 'Loading...';
@@ -84,10 +84,10 @@ document.addEventListener('DOMContentLoaded', () => {
             const tweetText = extractTweetText(responseHtml);
             console.log("Extracted tweet text:", tweetText);  // Log the extracted text
             const toxicityPercentage = await analyseContentForToxicity(tweetText, 'textToxicityScore');
-    
+
             // Check if the toxicity analysis is returning a value
             console.log("Toxicity analysis result:", toxicityPercentage);
-    
+
             const analysisData = {
                 url: postUrl,
                 content: tweetText,
@@ -95,7 +95,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 toxicityScore: toxicityPercentage,
                 textAnalysisResult: { toxicityPercentage }
             };
-    
+
             await storeAnalysisResults(analysisData);
 
             const imageToxicitySection = document.querySelector('.image-toxicity');
@@ -412,11 +412,33 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
+    function setupTweetObserver() {
+        const observer = new MutationObserver((mutations, obs) => {
+            const tweetLoaded = mutations.some(mutation =>
+                Array.from(mutation.addedNodes).some(node =>
+                    node.nodeType === Node.ELEMENT_NODE && node.matches('twitter-widget')
+                )
+            );
+            if (tweetLoaded) {
+                processTwitterUrl(postUrl); // Ensure postUrl is accessible here, might need adjustment
+                obs.disconnect(); // Stop observing after the tweet is loaded
+            }
+        });
+
+        observer.observe(twitterEmbedContainer, {
+            childList: true,
+            subtree: true
+        });
+    }
+
     function loadTwitterWidgets() {
         const script = document.createElement('script');
         script.src = 'https://platform.twitter.com/widgets.js';
         script.async = true;
-        script.onload = () => twttr.widgets.load(twitterEmbedContainer);
+        script.onload = () => {
+            twttr.widgets.load(twitterEmbedContainer);
+            setupTweetObserver(); // Setup observer after the script is loaded
+        };
         document.body.appendChild(script);
     }
 
