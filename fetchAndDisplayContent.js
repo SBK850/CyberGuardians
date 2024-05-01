@@ -70,6 +70,16 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     };
 
+    function displayUrl(url) {
+        const displayUrlLink = document.getElementById('displayUrlLink');
+        if (url && isValidUrl(url)) {
+            displayUrlLink.href = url;
+            displayUrlLink.style.display = 'inline'; // Make sure it's visible
+        } else {
+            displayUrlLink.style.display = 'none'; // Hide if no URL
+        }
+    }
+
     form.addEventListener('submit', async (e) => {
         e.preventDefault();
         const postUrl = postUrlInput.value.trim();
@@ -541,17 +551,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    function displayUrl(url) {
-        const displayUrlLink = document.getElementById('displayUrlLink');
-        if (url) {
-            displayUrlLink.href = url;  // Set the href attribute to the passed URL
-            displayUrlLink.textContent = "post"; // Set text to "post"
-            displayUrlLink.style.display = 'inline'; // Make the link visible
-            displayUrlLink.style.color = '#ef4444'; // Ensuring color styling is correct even if modified elsewhere
-        } else {
-            alert('No URL saved');
-            displayUrlLink.style.display = 'none'; // Hide if no URL
-        }
-    }
+
     
 });
