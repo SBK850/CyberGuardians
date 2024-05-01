@@ -542,11 +542,12 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function displayUrl(url) {
+        const displayUrlLink = document.getElementById('displayUrlLink');
         if (url) {
-            const displayUrlLink = document.getElementById('displayUrlLink'); // Ensure this line is here in case it's not defined elsewhere in the provided snippet
-            displayUrlLink.href = url; // Update the href attribute
-            displayUrlLink.textContent = "post"; // Keep text as "post"
-            displayUrlLink.style.display = 'block'; // Make sure it's visible
+            displayUrlLink.href = url;  // Set the href attribute to the passed URL
+            displayUrlLink.textContent = "post"; // Set text to "post"
+            displayUrlLink.style.display = 'inline'; // Make the link visible
+            displayUrlLink.style.color = '#ef4444'; // Ensuring color styling is correct even if modified elsewhere
         } else {
             alert('No URL saved');
             displayUrlLink.style.display = 'none'; // Hide if no URL
