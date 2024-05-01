@@ -542,15 +542,13 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function displayUrl(url) {
-        const displayUrlLink = document.getElementById('displayUrlLink');
         if (url) {
-            displayUrlLink.href = url;  // Set the href attribute to the passed URL
-            displayUrlLink.textContent = "post"; // Set text to "post"
-            displayUrlLink.style.display = 'inline'; // Make the link visible
-            displayUrlLink.style.color = '#ef4444'; // Ensuring color styling is correct even if modified elsewhere
+            displayUrlLink.href = url;
+            displayUrlLink.textContent = url;
+            displayUrlLink.style.display = 'block'; // Make sure it's visible
         } else {
             alert('No URL saved');
             displayUrlLink.style.display = 'none'; // Hide if no URL
         }
-    }    
+    }
 });
