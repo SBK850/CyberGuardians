@@ -543,12 +543,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function displayUrl(url) {
         if (url) {
-            displayUrlLink.href = url;
-            displayUrlLink.textContent = url;
+            const displayUrlLink = document.getElementById('displayUrlLink'); // Ensure this line is here in case it's not defined elsewhere in the provided snippet
+            displayUrlLink.href = url; // Update the href attribute
+            displayUrlLink.textContent = "post"; // Keep text as "post"
             displayUrlLink.style.display = 'block'; // Make sure it's visible
         } else {
             alert('No URL saved');
             displayUrlLink.style.display = 'none'; // Hide if no URL
         }
-    }
+    }    
 });
