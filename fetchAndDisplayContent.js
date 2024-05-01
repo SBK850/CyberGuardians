@@ -164,7 +164,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const displayUrlLink = document.getElementById('displayUrlLink');
         if (url && isValidUrl(url)) {
             displayUrlLink.href = url;
-            displayUrlLink.style.display = 'inline';
+            displayUrlLink.style.display = 'contents';
         } else {
             displayUrlLink.style.display = 'none'; 
         }
