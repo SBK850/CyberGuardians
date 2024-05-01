@@ -142,10 +142,10 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (toxicityPercentage <= 50) {
                     color = 'green';
                 } else if (toxicityPercentage > 50 && toxicityPercentage <= 75) {
-                    redirectToPost();
+                    displayUrl();
                     color = 'orange';
                 } else {
-                    redirectToPost();
+                    displayUrl();
                     color = 'red';
                 }
 
