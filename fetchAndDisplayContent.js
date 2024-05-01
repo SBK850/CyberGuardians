@@ -70,16 +70,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     };
 
-    function displayUrl(url) {
-        const displayUrlLink = document.getElementById('displayUrlLink');
-        if (url && isValidUrl(url)) {
-            displayUrlLink.href = url;
-            displayUrlLink.style.display = 'inline';
-        } else {
-            displayUrlLink.style.display = 'none'; 
-        }
-    }
-
     form.addEventListener('submit', async (e) => {
         e.preventDefault();
         const postUrl = postUrlInput.value.trim();
@@ -167,6 +157,16 @@ document.addEventListener('DOMContentLoaded', () => {
             setTimeout(() => {
                 $(".input").hide();
             }, 3000);
+        }
+    }
+
+    function displayUrl(url) {
+        const displayUrlLink = document.getElementById('displayUrlLink');
+        if (url && isValidUrl(url)) {
+            displayUrlLink.href = url;
+            displayUrlLink.style.display = 'inline';
+        } else {
+            displayUrlLink.style.display = 'none'; 
         }
     }
 
@@ -550,7 +550,4 @@ document.addEventListener('DOMContentLoaded', () => {
             console.error('Error storing analysis results:', error);
         }
     }
-
-
-    
 });
