@@ -81,7 +81,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         savedUrl = postUrl; 
         displayUrl(savedUrl); 
-
+        
         const domain = getDomainFromUrl(postUrl);
         try {
             if (domain === 'x.com' || domain === 'twitter.com') {
@@ -542,13 +542,16 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function displayUrl(url) {
+        const displayUrlLink = document.getElementById('displayUrlLink');
         if (url) {
-            displayUrlLink.href = url;
-            displayUrlLink.textContent = url;
-            displayUrlLink.style.display = 'block'; // Make sure it's visible
+            displayUrlLink.href = url;  // Set the href attribute to the passed URL
+            displayUrlLink.textContent = "post"; // Set text to "post"
+            displayUrlLink.style.display = 'inline'; // Make the link visible
+            displayUrlLink.style.color = '#ef4444'; // Ensuring color styling is correct even if modified elsewhere
         } else {
             alert('No URL saved');
             displayUrlLink.style.display = 'none'; // Hide if no URL
         }
     }
+    
 });
