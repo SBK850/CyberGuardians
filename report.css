@@ -354,7 +354,6 @@ form input {
 #displayUrlLink {
     color: blue;
     text-decoration: underline;
-    display: none; 
     margin-bottom: 20px;
     cursor: pointer; 
 }
