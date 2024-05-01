@@ -364,3 +364,10 @@ form input {
 .report-container button:hover {
 	background-color: #45a049;
 }
+
+#displayUrlLink {
+    color: blue;
+    text-decoration: underline;
+    display: none; /* Initially hidden */
+    margin-top: 10px;
+}
