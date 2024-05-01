@@ -81,7 +81,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         savedUrl = postUrl; 
         displayUrl(savedUrl); 
-        
+
         const domain = getDomainFromUrl(postUrl);
         try {
             if (domain === 'x.com' || domain === 'twitter.com') {
@@ -127,7 +127,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
             const twitterContainer = document.querySelector('.report-twitter');
-            twitterContainer.style.display = 'flex';
+            twitterContainer.style.display = 'block';
 
             const textToxicityCircle = customContainer.querySelector('.custom-percent svg circle:nth-child(2)');
             if (textToxicityCircle) {
