@@ -74,9 +74,9 @@ document.addEventListener('DOMContentLoaded', () => {
         const displayUrlLink = document.getElementById('displayUrlLink');
         if (url && isValidUrl(url)) {
             displayUrlLink.href = url;
-            displayUrlLink.style.display = 'inline'; // Make sure it's visible
+            displayUrlLink.style.display = 'inline';
         } else {
-            displayUrlLink.style.display = 'none'; // Hide if no URL
+            displayUrlLink.style.display = 'none'; 
         }
     }
 
