@@ -179,22 +179,40 @@ document.addEventListener('DOMContentLoaded', () => {
                 },
                 body: JSON.stringify({ url: postUrl })
             });
-
+    
             if (!response.ok) {
                 throw new Error(`Network response was not ok, status: ${response.status}`);
             }
-
+    
             const postData = await response.json();
             if (typeof postData.CarouselItemID === 'undefined') {
                 throw new Error('CarouselItemID is undefined in the server response.');
             }
             const carouselItemId = postData.CarouselItemID;
-
+    
+            // Trigger toxicity checks without waiting for them to complete
             let textToxicityPromise = postData.Content ? analyseContentForToxicity(postData.Content, 'textToxicityScore') : Promise.resolve(0);
             let imageToxicityPromise = postData.UploadedImageData ? callBackendForImageProcessing(postData.UploadedImageData) : Promise.resolve(0);
-
+    
+            // Update the UI immediately
+            contentContainer.style.display = 'block';
+            document.getElementById('profileImageUrl').src = postData.ProfilePictureURL || 'placeholder-image-url.png';
+            document.getElementById('posterName').textContent = postData.FirstName + " " + postData.LastName || 'Name not available';
+            document.getElementById('posterDetails').textContent = `Age: ${postData.Age} | Education: ${postData.Education}` || 'Details not available';
+            document.getElementById('postContent').textContent = postData.Content || 'Content not available';
+    
+            const postImage = document.getElementById('postImage');
+            if (postData.UploadedImageData) {
+                postImage.src = `data:image/png;base64,${postData.UploadedImageData}`;
+                postImage.alt = "Post Image";
+                postImage.style.display = 'block';
+            } else {
+                postImage.style.display = 'none';
+            }
+    
+            // Handle toxicity results once available
             const [textToxicityPercentage, imageToxicityPercentage] = await Promise.all([textToxicityPromise, imageToxicityPromise]);
-
+    
             const analysisData = {
                 url: postUrl,
                 content: postData.Content || '',
@@ -207,48 +225,27 @@ document.addEventListener('DOMContentLoaded', () => {
                 textAnalysisResult: { textToxicityPercentage },
                 imageAnalysisResult: { imageToxicityPercentage }
             };
-
+    
             await storeAnalysisResults(analysisData);
-
+    
             updateToxicityCircle(textToxicityPercentage, 'textToxicityScore');
             updateToxicityCircle(imageToxicityPercentage, 'imageToxicityScore');
-
-            // Display the content and user interactions based on analysis
-            contentContainer.style.display = 'block';
-            document.getElementById('profileImageUrl').src = postData.ProfilePictureURL || 'placeholder-image-url.png';
-            document.getElementById('posterName').textContent = postData.FirstName + " " + postData.LastName || 'Name not available';
-            document.getElementById('posterDetails').textContent = `Age: ${postData.Age} | Education: ${postData.Education}` || 'Details not available';
-            document.getElementById('postContent').textContent = postData.Content || 'Content not available';
-
-            const postImage = document.getElementById('postImage');
-            if (postData.UploadedImageData) {
-                postImage.src = `data:image/png;base64,${postData.UploadedImageData}`;
-                postImage.alt = "Post Image";
-                postImage.style.display = 'block';
-            } else {
-                postImage.style.display = 'none';
-            }
-
+    
             const confirmButton = document.getElementById('confirmButton');
-            if (confirmButton) {
-                confirmButton.onclick = function () { confirmToxicContent(carouselItemId); };
-            }
-
+            confirmButton.onclick = function () { confirmToxicContent(carouselItemId); };
+    
             // Check toxicity levels to determine if additional user interactions are needed
             if (Math.max(textToxicityPercentage, imageToxicityPercentage) >= 55) {
                 displayWarningCard();
                 document.getElementById('rejectButton').addEventListener('click', rejectToxicContent);
-                if (confirmButton) {
-                    confirmButton.onclick = function () { confirmToxicContent(carouselItemId); };
-                }
             }
-
+    
             // If there is any toxicity, display custom UI elements for detailed analysis
             const customContainer = document.querySelector('.custom-container');
             if (textToxicityPercentage > 0 || imageToxicityPercentage > 0) {
                 customContainer.style.display = 'block';
             }
-
+    
             $(".btn").addClass('btn-complete');
             setTimeout(() => $(".input").hide(), 3000);
         } catch (error) {
@@ -256,7 +253,7 @@ document.addEventListener('DOMContentLoaded', () => {
             alert(`Error occurred: ${error.message}`);
         }
     };
-
+    
 
     function updateToxicityCircle(percentage, elementId) {
         const scoreElement = document.getElementById(elementId);
